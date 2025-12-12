@@ -24,7 +24,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/sharing_message/pref_names.h"
@@ -140,7 +139,7 @@ enum {
   kAutofillWorkMetadata = 89,
   kFacilitatedPaymentsA2AEnabled = 90,
   kFacilitatedPaymentsA2ATriggeredOnce = 91,
-  kFingerprintingProtectionEnabled = 92,
+  // kFingerprintingProtectionEnabled = 92, (deprecated)
   kAutofillNameAndEmailProfileSignature = 93,
   kAutofillNameAndEmailProfileNotSelectedCounter = 94,
   kAutofillAiLastVersionDeduped = 96,
@@ -447,9 +446,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},
-        {prefs::kFingerprintingProtectionEnabled,
-         {syncable_prefs_ids::kFingerprintingProtectionEnabled,
-          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {autofill::prefs::kAutofillAmountExtractionAiTermsSeen,
          {syncable_prefs_ids::kAutofillAmountExtractionAiTermsSeen,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},

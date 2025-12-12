@@ -241,11 +241,6 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
         prefs::kBlockAll3pcToggleEnabled, enabled);
   }
 
-  void EnableFpProtection() {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kFingerprintingProtectionEnabled, true);
-  }
-
   void BlockThirdPartyCookies() {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,

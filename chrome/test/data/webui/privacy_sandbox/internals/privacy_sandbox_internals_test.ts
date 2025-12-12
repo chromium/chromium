@@ -65,15 +65,15 @@ suite('PrivacySandboxInternalsSearchTest', function() {
   const MOCK_PREFS: PrivacySandboxInternalsPref[] = [
     {name: 'enable_do_not_track', value: {boolValue: false}},
     {
-      name: 'tracking_protection.fingerprinting_protection_enabled',
+      name: 'tracking_protection.pref_a',
       value: {boolValue: true},
     },
     {
-      name: 'tracking_protection.tracking_protection_onboarding_acked',
+      name: 'tracking_protection.pref_b',
       value: {boolValue: false},
     },
     {name: 'profile.cookie_controls_mode', value: {intValue: 2}},
-    {name: 'tpcd_experiment.profile_state', value: {intValue: 0}},
+    {name: 'tpcd_experiment.pref', value: {intValue: 0}},
   ];
 
   setup(async function() {
@@ -116,7 +116,7 @@ suite('PrivacySandboxInternalsSearchTest', function() {
 
   test('filtersPrefsBySearchTerm', async () => {
     await navigateTo('tracking-protection');
-    await typeInSearch('onboarding');
+    await typeInSearch('pref_b');
 
     const tpPanel =
         await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
@@ -139,7 +139,7 @@ suite('PrivacySandboxInternalsSearchTest', function() {
     const tpPanel =
         await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
     await waitForElement(tpPanel, 'pref-display');
-    await typeInSearch('fingerprinting');
+    await typeInSearch('pref_a');
     await waitForCondition(() => {
       return tpPanel.querySelectorAll('pref-display:not([hidden])').length ===
           1;
@@ -159,7 +159,7 @@ suite('PrivacySandboxInternalsSearchTest', function() {
 
   test('highlightsMatchingTextInPrefs', async () => {
     await navigateTo('tracking-protection');
-    const searchTerm = 'fingerprinting';
+    const searchTerm = 'pref_a';
     await typeInSearch(searchTerm);
 
     const tpPanel =

@@ -288,7 +288,7 @@ enum {
   kGrayscaleThemeEnabled = 100221,
   kUserColor = 100222,
   kBlockAll3pcToggleEnabled = 100223,
-  kTrackingProtectionLevel = 100224,
+  // kTrackingProtectionLevel = 100224, (deprecated)
   kUserSpeakOnMuteDetectionEnabled = 100225,
   kShouldShowSpeakOnMuteOptInNudge = 100226,
   kSpeakOnMuteOptInNudgeShownCount = 100227,
@@ -313,7 +313,7 @@ enum {
   // kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246, (deprecated)
   kApplicationLocale = 100247,
   kListenToThisPageEnabled = 100248,
-  kIpProtectionEnabled = 100249,
+  // kIpProtectionEnabled = 100249, (deprecated)
   kAccessibilityReadAnythingLinksEnabled = 100250,
   kProfileContentSettingsPartitionedExceptionsAntiAbuse = 100251,
   kProfileContentSettingsPartitionedExceptionsAutomaticDownloads = 100252,
@@ -1796,14 +1796,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kBlockAll3pcToggleEnabled,
      {syncable_prefs_ids::kBlockAll3pcToggleEnabled, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kTrackingProtectionLevel,
-     {syncable_prefs_ids::kTrackingProtectionLevel, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kIpProtectionEnabled,
-     {syncable_prefs_ids::kIpProtectionEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kHttpsFirstModeIncognito,

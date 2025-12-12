@@ -61,7 +61,6 @@
 #import "components/policy/core/common/policy_statistics_collector.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "components/privacy_sandbox/tracking_protection_prefs.h"
 #import "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #import "components/regional_capabilities/regional_capabilities_prefs.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -250,6 +249,10 @@ inline constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
 
 // Deprecated 12/2025.
 inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
+
+// Deprecated 12/2025.
+inline constexpr char kFingerprintingProtectionEnabled[] =
+    "tracking_protection.fingerprinting_protection_enabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1171,7 +1174,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 10/2025.
   registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
-  registry->RegisterBooleanPref(prefs::kFingerprintingProtectionEnabled, true);
+  registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, true);
 
   // Deprecated 11/2025.
   registry->RegisterListPref(kReaderModeRecentlyUsedTimestampsPref);
@@ -1377,7 +1380,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kLongFeedVisitTimeAggregateKey);
   prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
   prefs->ClearPref(kLegacySyncSessionsGUID);
-  prefs->ClearPref(prefs::kFingerprintingProtectionEnabled);
+  prefs->ClearPref(kFingerprintingProtectionEnabled);
 
   // Added 11/2025.
   prefs->ClearPref(kReaderModeRecentlyUsedTimestampsPref);

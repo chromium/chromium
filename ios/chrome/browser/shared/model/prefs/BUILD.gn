@@ -74,7 +74,6 @@ source_set("browser_prefs") {
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/proxy_config",
     "//components/reading_list/core",
     "//components/regional_capabilities",

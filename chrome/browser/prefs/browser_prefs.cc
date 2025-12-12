@@ -905,6 +905,38 @@ constexpr char kReduceUserAgentMinorVersion[] = "user_agent_reduction";
 // Deprecated 12/2025.
 constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 
+// Deprecated 12/2025.
+constexpr char kTrackingProtectionEligibleSince[] =
+    "tracking_protection.tracking_protection_eligible_since";
+constexpr char kTrackingProtectionOnboardedSince[] =
+    "tracking_protection.tracking_protection_onboarded_since";
+constexpr char kTrackingProtectionNoticeLastShown[] =
+    "tracking_protection.tracking_protection_notice_last_shown";
+constexpr char kTrackingProtectionOnboardingAckedSince[] =
+    "tracking_protection.tracking_protection_onboarding_acked_since";
+constexpr char kTrackingProtectionOnboardingAcked[] =
+    "tracking_protection.tracking_protection_onboarding_acked";
+constexpr char kTrackingProtectionOnboardingAckAction[] =
+    "tracking_protection.tracking_protection_onboarding_ack_action";
+constexpr char kTrackingProtectionSilentEligibleSince[] =
+    "tracking_protection.tracking_protection_silent_eligible_since";
+constexpr char kTrackingProtectionSilentOnboardedSince[] =
+    "tracking_protection.tracking_protection_silent_onboarded_since";
+constexpr char kAllowAll3pcToggleEnabled[] =
+    "tracking_protection.allow_all_3pc_toggle_enabled";
+constexpr char kTrackingProtectionLevel[] =
+    "tracking_protection.tracking_protection_level";
+constexpr char kIpProtectionEnabled[] =
+    "tracking_protection.ip_protection_enabled";
+constexpr char kIpProtectionInitializedByDogfood[] =
+    "tracking_protection.ip_protection_initialized_by_dogfood";
+constexpr char kUserBypass3pcExceptionsMigrated[] =
+    "tracking_protection.user_bypass_3pc_exceptions_migrated";
+constexpr char kTrackingProtectionSilentOnboardingStatus[] =
+    "tracking_protection.tracking_protection_silent_onboarding_status";
+constexpr char kFingerprintingProtectionEnabled[] =
+    "tracking_protection.fingerprinting_protection_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -998,6 +1030,26 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 12/2025.
   registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
+
+  // Deprecated 12/2025.
+  registry->RegisterBooleanPref(kFingerprintingProtectionEnabled, false);
+  registry->RegisterBooleanPref(kIpProtectionEnabled, false);
+  registry->RegisterBooleanPref(kAllowAll3pcToggleEnabled, false);
+  registry->RegisterBooleanPref(kUserBypass3pcExceptionsMigrated, false);
+  registry->RegisterIntegerPref(kTrackingProtectionLevel, 0);
+  registry->RegisterTimePref(kTrackingProtectionSilentOnboardedSince,
+                             base::Time());
+  registry->RegisterTimePref(kTrackingProtectionSilentEligibleSince,
+                             base::Time());
+  registry->RegisterTimePref(kTrackingProtectionEligibleSince, base::Time());
+  registry->RegisterTimePref(kTrackingProtectionOnboardedSince, base::Time());
+  registry->RegisterTimePref(kTrackingProtectionNoticeLastShown, base::Time());
+  registry->RegisterTimePref(kTrackingProtectionOnboardingAckedSince,
+                             base::Time());
+  registry->RegisterBooleanPref(kTrackingProtectionOnboardingAcked, false);
+  registry->RegisterIntegerPref(kTrackingProtectionOnboardingAckAction, 0);
+  registry->RegisterBooleanPref(kIpProtectionInitializedByDogfood, false);
+  registry->RegisterIntegerPref(kTrackingProtectionSilentOnboardingStatus, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2164,6 +2216,23 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 12/2025
   local_state->ClearPref(kAutofillStatesDataDir);
+
+  // Added 12/2025
+  local_state->ClearPref(kFingerprintingProtectionEnabled);
+  local_state->ClearPref(kIpProtectionEnabled);
+  local_state->ClearPref(kAllowAll3pcToggleEnabled);
+  local_state->ClearPref(kUserBypass3pcExceptionsMigrated);
+  local_state->ClearPref(kTrackingProtectionLevel);
+  local_state->ClearPref(kTrackingProtectionSilentOnboardedSince);
+  local_state->ClearPref(kTrackingProtectionSilentEligibleSince);
+  local_state->ClearPref(kTrackingProtectionEligibleSince);
+  local_state->ClearPref(kTrackingProtectionOnboardedSince);
+  local_state->ClearPref(kTrackingProtectionNoticeLastShown);
+  local_state->ClearPref(kTrackingProtectionOnboardingAckedSince);
+  local_state->ClearPref(kTrackingProtectionOnboardingAcked);
+  local_state->ClearPref(kTrackingProtectionOnboardingAckAction);
+  local_state->ClearPref(kIpProtectionInitializedByDogfood);
+  local_state->ClearPref(kTrackingProtectionSilentOnboardingStatus);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

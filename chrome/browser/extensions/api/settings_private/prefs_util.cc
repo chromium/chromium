@@ -394,7 +394,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::safe_browsing::kGeneratedSecuritySettingsBundlePref] =
       settings_api::PrefType::kNumber;
 
-  // Tracking protection page
+  // Third-party cookie settings page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[::content_settings::kCookieDefaultContentSetting] =
@@ -405,15 +405,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kBlockAll3pcToggleEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kAllowAll3pcToggleEnabled] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kTrackingProtectionLevel] =
-      settings_api::PrefType::kNumber;
   (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kIpProtectionEnabled] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kFingerprintingProtectionEnabled] =
-      settings_api::PrefType::kBoolean;
 
   // Sync and personalization page.
   (*s_allowlist)[::prefs::kSearchSuggestEnabled] =

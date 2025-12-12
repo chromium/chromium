@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
   <int value="89" label="AutofillWorkMetadata"/>
   <int value="90" label="FacilitatedPaymentsA2AEnabled"/>
   <int value="91" label="FacilitatedPaymentsA2ATriggeredOnce"/>
-  <int value="92" label="FingerprintingProtectionEnabled"/>
+  <int value="92" label="(Obsolete) FingerprintingProtectionEnabled"/>
   <int value="93" label="AutofillNameAndEmailProfileSignature"/>
   <int value="94" label="AutofillNameAndEmailProfileNotSelectedCounter"/>
   <int value="96" label="AutofillAiLastVersionDeduped"/>
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
   <int value="100221" label="GrayscaleThemeEnabled"/>
   <int value="100222" label="UserColor"/>
   <int value="100223" label="BlockAll3pcToggleEnabled"/>
-  <int value="100224" label="TrackingProtectionLevel"/>
+  <int value="100224" label="(Obsolete) TrackingProtectionLevel"/>
   <int value="100225" label="UserSpeakOnMuteDetectionEnabled"/>
   <int value="100226" label="ShouldShowSpeakOnMuteOptInNudge"/>
   <int value="100227" label="SpeakOnMuteOptInNudgeShownCount"/>
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
       label="(obsolete) AccessibilityReadAnythingOmniboxIconLabelShownCount"/>
   <int value="100247" label="ApplicationLocale"/>
   <int value="100248" label="ListenToThisPageEnabled"/>
-  <int value="100249" label="IpProtectionEnabled"/>
+  <int value="100249" label="(Obsolete) IpProtectionEnabled"/>
   <int value="100250" label="AccessibilityReadAnythingLinksEnabled"/>
   <int value="100251"
       label="kProfileContentSettingsPartitionedExceptionsAntiAbuse"/>
