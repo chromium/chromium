@@ -82,10 +82,7 @@ window.onload = () => {
                           standardDivFast);
     let expected_offset = 0;
 
-    // If Fluent is enabled, Linux and Windows behavior should match
-    if (onLinuxPlatform && !internals.runtimeFlags.fluentScrollbarsEnabled)
-      expected_offset =  92;
-    else if (onMacPlatform)
+    if (onMacPlatform)
       expected_offset = 46.5;
     else
       expected_offset = window.devicePixelRatio == 1 ? 71 : 73;
@@ -131,10 +128,7 @@ window.onload = () => {
     await mouseClickHelper(point);
     await scrollPromise;
     let expected_offset = 0;
-    // If Fluent is enabled, Linux and Windows behavior should match
-    if (onLinuxPlatform && !internals.runtimeFlags.fluentScrollbarsEnabled)
-      expected_offset = 87;
-    else if (onMacPlatform)
+    if (onMacPlatform)
       expected_offset = 72.5;
     else
       expected_offset = 82;

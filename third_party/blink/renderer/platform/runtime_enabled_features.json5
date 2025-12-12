@@ -2613,12 +2613,6 @@
       base_feature: "none",
     },
     {
-      name: "FluentScrollbars",
-      // The associated base feature is defined in
-      // ui/native_theme/features/native_theme_features.cc.
-      base_feature: "none",
-    },
-    {
       // https://open-ui.org/components/scoped-focusgroup.explainer/
       name: "Focusgroup",
       status: "experimental",

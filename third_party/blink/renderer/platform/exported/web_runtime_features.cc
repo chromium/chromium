@@ -61,7 +61,6 @@ void WebRuntimeFeatures::EnableOverlayScrollbars(bool enable) {
 }
 
 void WebRuntimeFeatures::EnableFluentScrollbars(bool enable) {
-  RuntimeEnabledFeatures::SetFluentScrollbarsEnabled(enable);
   ScrollbarThemeSettings::SetFluentScrollbarsEnabled(enable);
 }
 
