@@ -708,6 +708,8 @@ void NewTabPageHandler::UpdateDisabledModules() {
 
 void NewTabPageHandler::OnModulesLoadedWithData(
     const std::vector<std::string>& module_ids) {
+  UpdateModulesStaleness(profile_, module_ids);
+
   for (const auto& module_id : module_ids) {
     IncrementDictPrefKeyCount(prefs::kNtpModulesLoadedCountDict, module_id);
   }
