@@ -2046,6 +2046,7 @@ enum ContentAttributeType {
   // Image chunks.
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
+  // Root SVG nodes.
   CONTENT_ATTRIBUTE_SVG = 25;
 
   CONTENT_ATTRIBUTE_CANVAS = 26;

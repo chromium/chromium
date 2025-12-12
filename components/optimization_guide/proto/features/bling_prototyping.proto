@@ -21,7 +21,7 @@ option java_outer_classname = "BlingPrototypingProto";
 // http://go/chrome-mqls-onboarding (Google-internal link), and then changes will
 // be synced with Chrome automatically.
 
-// Next ID: 4
+// Next ID: 5
 message BlingPrototypingLoggingData {
   // The feature request.
   BlingPrototypingRequest request = 1 [features = { field_presence: EXPLICIT }];
@@ -31,6 +31,9 @@ message BlingPrototypingLoggingData {
 
   // Internal logging information from the model execution.
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
+
+  // Optional metadata about the data.
+  BlingPrototypingMetadata metadata = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // The request to execute a prototyping prompt in Bling.
@@ -77,4 +80,15 @@ message BlingPrototypingRequest {
 message BlingPrototypingResponse {
   // The model's output.
   string output = 1 [features = { field_presence: IMPLICIT }];
+}
+
+// Additional information about the evaluation/prototyping session.
+// Next ID: 3
+message BlingPrototypingMetadata {
+  // An optional tag to use for querying the record from MQLS logs.
+  string logging_tag = 1 [features = { field_presence: IMPLICIT }];
+
+  // An optional description to provide more context about the data uploaded by
+  // the user.
+  string logging_description = 2 [features = { field_presence: IMPLICIT }];
 }
