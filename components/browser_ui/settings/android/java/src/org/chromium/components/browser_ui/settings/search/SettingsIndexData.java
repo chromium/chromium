@@ -356,8 +356,18 @@ public class SettingsIndexData {
     }
 
     /** Set the flag indicating the index became stale and needs reindexing. */
-    public void setNeedsIndexing(boolean needsIndexing) {
-        sNeedsIndexing = needsIndexing;
+    public void setNeedsIndexing() {
+        sNeedsIndexing = true;
+    }
+
+    /**
+     * Resets the flag indicating the index needs refreshing.
+     *
+     * <p>Ideally this method should only be used by the coordinator to reset the flag after the
+     * index is initialized.
+     */
+    public void resetNeedsIndexing() {
+        sNeedsIndexing = false;
     }
 
     /** Return whether the index data needs to be refreshed. */

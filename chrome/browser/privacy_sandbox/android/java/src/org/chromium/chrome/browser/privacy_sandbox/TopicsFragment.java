@@ -321,7 +321,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
             if (indexData.getEntryForKey(prefFrag, ACTIVE_TOPICS_PREFERENCE) == null
                     || indexData.getEntryForKey(prefFrag, BLOCKED_TOPICS_PREFERENCE) == null
                     || indexData.getEntryForKey(prefFrag, MANAGE_TOPICS_PREFERENCE) == null) {
-                indexData.setNeedsIndexing(true);
+                indexData.setNeedsIndexing();
             }
         } else {
             if (indexData.getEntryForKey(prefFrag, ACTIVE_TOPICS_PREFERENCE) != null

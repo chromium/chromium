@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
@@ -84,6 +85,9 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
                                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
+            if (SettingsIndexData.getInstance() != null) {
+                SettingsIndexData.getInstance().setNeedsIndexing();
+            }
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return;
         }
