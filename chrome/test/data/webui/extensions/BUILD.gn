@@ -17,6 +17,7 @@ build_webui_tests("build") {
     "async_map_directive_test.ts",
     "code_section_test.ts",
     "detail_view_test.ts",
+    "drag_and_drop_handler_test.ts",
     "error_console_test.ts",
     "error_page_test.ts",
     "extension_options_dialog_test.ts",

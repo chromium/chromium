@@ -21,6 +21,7 @@ export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER} from './activity_log/
 export {asyncMap} from './async_map_directive.js';
 export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
+export {DragAndDropHandler} from './drag_and_drop_handler.js';
 export type {ErrorPageDelegate} from './error_page.js';
 export {ExtensionsErrorPageElement} from './error_page.js';
 export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_toggle_list.js';
