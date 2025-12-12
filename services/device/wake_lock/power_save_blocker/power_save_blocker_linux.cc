@@ -92,6 +92,16 @@ const char* GetUninhibitMethodName(DBusApi api) {
   }
 }
 
+GnomeApiInhibitFlags WakeLockTypeToGnomeInhibitFlag(mojom::WakeLockType type) {
+  switch (type) {
+    case mojom::WakeLockType::kPreventAppSuspension:
+      return GnomeApiInhibitFlags::kSuspendSession;
+    case mojom::WakeLockType::kPreventDisplaySleep:
+    case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
+      return GnomeApiInhibitFlags::kMarkSessionIdle;
+  }
+}
+
 }  // namespace
 
 class PowerSaveBlocker::Delegate {
@@ -216,23 +226,8 @@ class PowerSaveBlocker::Delegate {
             base::CommandLine::ForCurrentProcess()->GetProgram().value());
         writer.AppendUint32(0);  // toplevel_xid
         writer.AppendString(description_);
-        {
-          uint32_t flags = 0;
-          switch (type_) {
-            case mojom::WakeLockType::kPreventDisplaySleep:
-            case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-              flags |=
-                  static_cast<uint32_t>(GnomeApiInhibitFlags::kMarkSessionIdle);
-              flags |=
-                  static_cast<uint32_t>(GnomeApiInhibitFlags::kSuspendSession);
-              break;
-            case mojom::WakeLockType::kPreventAppSuspension:
-              flags |=
-                  static_cast<uint32_t>(GnomeApiInhibitFlags::kSuspendSession);
-              break;
-          }
-          writer.AppendUint32(flags);
-        }
+        writer.AppendUint32(
+            static_cast<uint32_t>(WakeLockTypeToGnomeInhibitFlag(type_)));
         break;
       case DBusApi::kFreedesktopPower:
       case DBusApi::kFreedesktopScreensaver:
