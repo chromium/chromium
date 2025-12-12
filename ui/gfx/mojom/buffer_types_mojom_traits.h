@@ -215,52 +215,6 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
 };
 #endif  // BUILDFLAG(USE_BLINK)
 
-template <>
-struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
-    EnumTraits<gfx::mojom::BufferPlane, gfx::BufferPlane> {
-  static gfx::mojom::BufferPlane ToMojom(gfx::BufferPlane format) {
-    switch (format) {
-      case gfx::BufferPlane::DEFAULT:
-        return gfx::mojom::BufferPlane::DEFAULT;
-      case gfx::BufferPlane::Y:
-        return gfx::mojom::BufferPlane::Y;
-      case gfx::BufferPlane::UV:
-        return gfx::mojom::BufferPlane::UV;
-      case gfx::BufferPlane::U:
-        return gfx::mojom::BufferPlane::U;
-      case gfx::BufferPlane::V:
-        return gfx::mojom::BufferPlane::V;
-      case gfx::BufferPlane::A:
-        return gfx::mojom::BufferPlane::A;
-    }
-    NOTREACHED();
-  }
-
-  static bool FromMojom(gfx::mojom::BufferPlane input, gfx::BufferPlane* out) {
-    switch (input) {
-      case gfx::mojom::BufferPlane::DEFAULT:
-        *out = gfx::BufferPlane::DEFAULT;
-        return true;
-      case gfx::mojom::BufferPlane::Y:
-        *out = gfx::BufferPlane::Y;
-        return true;
-      case gfx::mojom::BufferPlane::UV:
-        *out = gfx::BufferPlane::UV;
-        return true;
-      case gfx::mojom::BufferPlane::U:
-        *out = gfx::BufferPlane::U;
-        return true;
-      case gfx::mojom::BufferPlane::V:
-        *out = gfx::BufferPlane::V;
-        return true;
-      case gfx::mojom::BufferPlane::A:
-        *out = gfx::BufferPlane::A;
-        return true;
-    }
-    NOTREACHED();
-  }
-};
-
 }  // namespace mojo
 
 #endif  // UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_

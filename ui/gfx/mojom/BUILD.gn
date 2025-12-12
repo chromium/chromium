@@ -67,10 +67,6 @@ mojom("mojom") {
           mojom = "gfx.mojom.BufferUsage"
           cpp = "::gfx::BufferUsage"
         },
-        {
-          mojom = "gfx.mojom.BufferPlane"
-          cpp = "::gfx::BufferPlane"
-        },
       ]
 
       traits_headers = [ "buffer_types_mojom_traits.h" ]
