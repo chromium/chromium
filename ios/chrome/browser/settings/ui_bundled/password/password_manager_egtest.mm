@@ -3641,7 +3641,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Checks opening the password manager with a failed reauthentication does not
 // show passwords and closes the Password Manager.
-- (void)testOpenPasswordManagerWithFailedAuth {
+//
+// TODO(crbug.com/468305089): This test is flaky.
+- (void)FLAKY_testOpenPasswordManagerWithFailedAuth {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
   // Delay the auth result to be able to validate that the passwords are not
