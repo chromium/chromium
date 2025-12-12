@@ -52,6 +52,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void PinTab(size_t tab_index) override;
   void MoveTab(size_t tab_index, BrowserDelegate& target_browser) override;
   bool CreateWebAppFromActiveWebContents() override;
+  void ResetLocationBar() override;
 
  private:
   const raw_ref<Browser> browser_;

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -217,6 +218,10 @@ void BrowserDelegateImpl::MoveTab(size_t tab_index,
 
 bool BrowserDelegateImpl::CreateWebAppFromActiveWebContents() {
   return chrome::ExecuteCommand(&*browser_, IDC_INSTALL_PWA);
+}
+
+void BrowserDelegateImpl::ResetLocationBar() {
+  browser_->window()->GetLocationBar()->Revert();
 }
 
 }  // namespace ash

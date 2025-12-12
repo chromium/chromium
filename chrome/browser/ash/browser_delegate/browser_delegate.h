@@ -160,6 +160,9 @@ class BrowserDelegate {
   // Initiates user install of a WebApp for the current page.
   virtual bool CreateWebAppFromActiveWebContents() = 0;
 
+  // Resets the location bar so that its permanent text is shown.
+  virtual void ResetLocationBar() = 0;
+
  protected:
   ~BrowserDelegate() = default;
 

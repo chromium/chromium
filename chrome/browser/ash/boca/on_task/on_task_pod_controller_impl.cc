@@ -17,13 +17,14 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -93,7 +94,10 @@ void OnTaskPodControllerImpl::MaybeNavigateToPreviousPage() {
     return;
   }
   boca::RecordOnTaskPodNavigateBackClicked();
-  chrome::GoBack(&browser_->GetBrowser(), WindowOpenDisposition::CURRENT_TAB);
+  if (CanNavigateToPreviousPage()) {
+    browser_->ResetLocationBar();
+    browser_->GetActiveWebContents()->GetController().GoBack();
+  }
 }
 
 void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
@@ -101,8 +105,10 @@ void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
     return;
   }
   boca::RecordOnTaskPodNavigateForwardClicked();
-  chrome::GoForward(&browser_->GetBrowser(),
-                    WindowOpenDisposition::CURRENT_TAB);
+  if (CanNavigateToNextPage()) {
+    browser_->ResetLocationBar();
+    browser_->GetActiveWebContents()->GetController().GoForward();
+  }
 }
 
 void OnTaskPodControllerImpl::ReloadCurrentPage() {
@@ -110,7 +116,13 @@ void OnTaskPodControllerImpl::ReloadCurrentPage() {
     return;
   }
   boca::RecordOnTaskPodReloadPageClicked();
-  chrome::Reload(&browser_->GetBrowser(), WindowOpenDisposition::CURRENT_TAB);
+  browser_->ResetLocationBar();
+  auto* contents = browser_->GetActiveWebContents();
+  if (!contents->FocusLocationBarByDefault()) {
+    contents->Focus();
+  }
+  contents->GetController().Reload(content::ReloadType::NORMAL,
+                                   /*check_for_repost=*/true);
 }
 
 void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
@@ -218,17 +230,13 @@ void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {
 }
 
 bool OnTaskPodControllerImpl::CanNavigateToPreviousPage() {
-  if (!browser_) {
-    return false;
-  }
-  return chrome::CanGoBack(&browser_->GetBrowser());
+  return browser_ &&
+         browser_->GetActiveWebContents()->GetController().CanGoBack();
 }
 
 bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
-  if (!browser_) {
-    return false;
-  }
-  return chrome::CanGoForward(&browser_->GetBrowser());
+  return browser_ &&
+         browser_->GetActiveWebContents()->GetController().CanGoForward();
 }
 
 bool OnTaskPodControllerImpl::CanToggleTabStripVisibility() {

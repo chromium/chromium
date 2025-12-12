@@ -7,7 +7,6 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_command_controller.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
@@ -19,6 +18,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test\\.cc": [
+    "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_navigator_params.h",
     "+chrome/browser/ui/browser_list.h",
@@ -36,6 +36,7 @@ specific_include_rules = {
     "+chrome/test/base/ui_test_utils.h"
   ],
   "on_task_pod_controller_impl_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test/base/ui_test_utils.h",
   ],
