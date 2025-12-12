@@ -12,14 +12,18 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -77,7 +81,7 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
   ActorFunctionalBrowserTest() {
     // TODO(crbug.com/453696965): Broken in multi-instance.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{actor::kActorBindCreatedTabToTask},
         /*disabled_features=*/{features::kGlicMultiInstance});
   }
   ~ActorFunctionalBrowserTest() override = default;
@@ -130,6 +134,15 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
       return *result;
     }
     return base::unexpected("Expected an integer value from JavaScript.");
+  }
+
+  base::expected<std::string, std::string> EvalJsInGlicForString(
+      const std::string_view script) {
+    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
+    if (std::string* result = js_result.GetIfString()) {
+      return base::ok(*result);
+    }
+    return base::unexpected("Expected a string value from JavaScript.");
   }
 
   // Helper for JavaScript calls that return a Base64 encoded string
@@ -280,6 +293,50 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
     return base::ok(static_cast<mojom::ActionResultCode>(action_result_int));
   }
 
+  // Helper to call the CreateActorTab TS API.
+  // Returns the TabId of the newly created tab, or base::unexpected on failure.
+  base::expected<tabs::TabHandle, std::string> CreateActorTab(
+      TaskId task_id,
+      std::optional<bool> open_in_background,
+      std::optional<std::string> initiator_tab_id,
+      std::optional<std::string> initiator_window_id) {
+    static constexpr std::string_view kCreateActorTabScript = R"(
+      (async (taskId, openInBackground, initiatorTabId, initiatorWindowId) => {
+        const options = {};
+        if (openInBackground !== null) {
+          options.openInBackground = openInBackground;
+        }
+        if (initiatorTabId !== null) {
+          options.initiatorTabId = initiatorTabId;
+        }
+        if (initiatorWindowId !== null) {
+          options.initiatorWindowId = initiatorWindowId;
+        }
+        const tabData = await window.client.browser.createActorTab(
+            taskId, options);
+        // "NO_TAB_ID" triggers the parsing error on C++ side.
+        return tabData ? tabData.tabId : "NO_TAB_ID";
+      })($1, $2, $3, $4)
+    )";
+    base::expected<std::string, std::string> result =
+        EvalJsInGlicForString(content::JsReplace(
+            kCreateActorTabScript, task_id.value(),
+            open_in_background ? base::Value(*open_in_background)
+                               : base::Value(),
+            initiator_tab_id ? base::Value(*initiator_tab_id) : base::Value(),
+            initiator_window_id ? base::Value(*initiator_window_id)
+                                : base::Value()));
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
+    }
+    int tab_id;
+    if (!base::StringToInt(result.value(), &tab_id)) {
+      return base::unexpected(base::StringPrintf(
+          "Failed to parse tab ID %s from TS API.", result.value().c_str()));
+    }
+    return tabs::TabHandle(tab_id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -425,6 +482,47 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, PauseAndResumeInactiveTask) {
                       glic::mojom::GetTabContextOptions().To<base::Value>()),
       ErrorHasSubstr("resumeActorTask failed: No such task"));
 }
+
+class ActorFunctionalBrowserTestCreateActorTab
+    : public ActorFunctionalBrowserTest,
+      public ::testing::WithParamInterface<GURL> {
+ public:
+  ActorFunctionalBrowserTestCreateActorTab() = default;
+  ~ActorFunctionalBrowserTestCreateActorTab() override = default;
+
+  GURL GetInitiatorTabUrl() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(ActorFunctionalBrowserTestCreateActorTab,
+                       CreateActorTab) {
+  // Navigate the current tab to the initiator URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1u);
+  SessionID initiator_window_id = browser()->session_id();
+  tabs::TabHandle initiator_tab = active_tab()->GetHandle();
+
+  base::expected<TaskId, std::string> task_id = CreateTask();
+  ASSERT_TRUE(task_id.has_value()) << task_id.error();
+
+  // Create a new tab for the task.
+  base::expected<tabs::TabHandle, std::string> new_tab_handler =
+      CreateActorTab(task_id.value(), /*open_in_background=*/false,
+                     base::ToString(initiator_tab.raw_value()),
+                     base::ToString(initiator_window_id.id()));
+  ASSERT_TRUE(new_tab_handler.has_value()) << new_tab_handler.error();
+
+  // Verify it is bound to the task.
+  EXPECT_TRUE(actor_keyed_service()
+                  ->GetTask(task_id.value())
+                  ->GetTabs()
+                  .contains(new_tab_handler.value()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ActorFunctionalBrowserTestCreateActorTab,
+    ::testing::Values(GURL(chrome::kChromeUINewTabURL),
+                      GURL(url::kAboutBlankURL)));
 
 }  // namespace
 }  // namespace actor

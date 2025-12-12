@@ -53,6 +53,35 @@ void RunLater(base::OnceClosure task) {
                                                               std::move(task));
 }
 
+void OnCreateActorTabComplete(
+    actor::ActorTask& task,
+    actor::ActorKeyedService::CreateActorTabCallback callback,
+    actor::AggregatedJournal& journal,
+    tabs::TabInterface* tab) {
+  if (base::FeatureList::IsEnabled(actor::kActorBindCreatedTabToTask) && tab) {
+    task.AddTab(
+        tab->GetHandle(),
+        base::BindOnce(
+            [](actor::ActorKeyedService::CreateActorTabCallback callback,
+               tabs::TabHandle handle, actor::TaskId task_id,
+               base::WeakPtr<actor::AggregatedJournal> journal,
+               actor::mojom::ActionResultPtr result) {
+              if (journal) {
+                journal->Log(
+                    GURL(), task_id, "OnCreateActorTabComplete",
+                    actor::JournalDetailsBuilder()
+                        .Add("AddTab result", actor::ToDebugString(*result))
+                        .Build());
+              }
+              std::move(callback).Run(handle.Get());
+            },
+            std::move(callback), tab->GetHandle(), task.id(),
+            journal.GetWeakPtr()));
+  } else {
+    std::move(callback).Run(tab);
+  }
+}
+
 }  // namespace
 
 namespace actor {
@@ -157,7 +186,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
           tab_strip_model->GetIndexOfTab(initiator_tab));
     }
 
-    std::move(callback).Run(initiator_tab);
+    OnCreateActorTabComplete(*task, std::move(callback), journal_,
+                             initiator_tab);
     return;
   }
 
@@ -216,7 +246,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     GetJournal().Log(
         GURL(), task_id, "CreateActorTab",
         JournalDetailsBuilder().AddError("Failed creating navigation").Build());
-    std::move(callback).Run(nullptr);
+    OnCreateActorTabComplete(*task, std::move(callback), journal_, nullptr);
     return;
   }
 
@@ -226,13 +256,14 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
                      JournalDetailsBuilder()
                          .AddError("Navigation missing WebContents")
                          .Build());
-    std::move(callback).Run(nullptr);
+    OnCreateActorTabComplete(*task, std::move(callback), journal_, nullptr);
     return;
   }
 
   // It might be good to wait for this navigation to finish but given we're
   // navigating to about:blank it probably doesn't matter in practice.
-  std::move(callback).Run(tabs::TabInterface::GetFromContents(contents));
+  OnCreateActorTabComplete(*task, std::move(callback), journal_,
+                           tabs::TabInterface::GetFromContents(contents));
 }
 
 base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
