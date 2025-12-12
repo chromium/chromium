@@ -18,6 +18,7 @@ import android.text.style.ClickableSpan;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
@@ -45,6 +46,8 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData.Entry;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
 
@@ -129,14 +132,8 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
     private void createCardBenefitSwitch() {
         ChromeSwitchPreference cardBenefitSwitch = new ChromeSwitchPreference(getStyledContext());
-        cardBenefitSwitch.setTitle(R.string.autofill_settings_page_card_benefits_label);
-        int summaryText =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT)
-                        ? R.string
-                                .autofill_settings_page_card_benefits_toggle_summary_with_issuer_terms_apply_text
-                        : R.string.autofill_settings_page_card_benefits_toggle_summary;
-        cardBenefitSwitch.setSummary(summaryText);
+        cardBenefitSwitch.setTitle(getCardBenefitsTitle());
+        cardBenefitSwitch.setSummary(getCardBenefitsSummary());
         cardBenefitSwitch.setKey(PREF_KEY_ENABLE_CARD_BENEFIT);
         cardBenefitSwitch.setChecked(mPersonalDataManager.isCardBenefitEnabled());
         cardBenefitSwitch.setOnPreferenceChangeListener(this);
@@ -263,6 +260,20 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         super.onDestroyView();
     }
 
+    @StringRes
+    private static int getCardBenefitsTitle() {
+        return R.string.autofill_settings_page_card_benefits_label;
+    }
+
+    @StringRes
+    private static int getCardBenefitsSummary() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT)
+                ? R.string
+                        .autofill_settings_page_card_benefits_toggle_summary_with_issuer_terms_apply_text
+                : R.string.autofill_settings_page_card_benefits_toggle_summary;
+    }
+
     // Custom ItemDecoration class that adds a divider at the end of the list.
     private static class BottomDividerItemDecoration extends RecyclerView.ItemDecoration {
         private static final int[] ATTRS = new int[] {android.R.attr.listDivider};
@@ -300,8 +311,23 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
-    // entries that need adding?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(AutofillCardBenefitsFragment.class.getName(), 0);
+            new ChromeBaseSearchIndexProvider(AutofillCardBenefitsFragment.class.getName(), 0) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    // Add entry for switch. No need for "learn more" link and card details.
+                    int titleId = getCardBenefitsTitle();
+                    int summaryTextId = getCardBenefitsSummary();
+                    String uniqueId = getUniqueId(PREF_KEY_ENABLE_CARD_BENEFIT);
+                    Entry entry =
+                            new Entry.Builder(
+                                            uniqueId,
+                                            PREF_KEY_ENABLE_CARD_BENEFIT,
+                                            context.getString(titleId),
+                                            AutofillCardBenefitsFragment.class.getName())
+                                    .setSummary(context.getString(summaryTextId))
+                                    .build();
+                    indexData.addEntry(uniqueId, entry);
+                }
+            };
 }
