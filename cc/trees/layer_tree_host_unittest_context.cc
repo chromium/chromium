@@ -1453,8 +1453,16 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
       return;
     }
     if (!visible) {
+      // When renderer's visibility is set to false, it evicts all the UI
+      // resources. In TreesInViz mode, renderer does not delete the UI
+      // resource until it gets ack back from the viz on the deletion request
+      // it has sent.
+      if (TreesInViz()) {
+        ASSERT_EQ(2u, sii_->shared_image_count());
+      } else {
+        ASSERT_EQ(0u, sii_->shared_image_count());
+      }
       // All resources should have been evicted.
-      ASSERT_EQ(0u, sii_->shared_image_count());
       EXPECT_EQ(viz::kInvalidResourceId,
                 impl->ResourceIdForUIResource(ui_resource_->id()));
       EXPECT_EQ(viz::kInvalidResourceId,
@@ -1510,9 +1518,18 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         EXPECT_TRUE(impl->CanDraw());
         break;
       case 3:
+        // When renderer's visibility is set to false, it evicts all the UI
+        // resources. In TreesInViz mode, renderer does not delete the UI
+        // resource until it gets ack back from the viz on the deletion request
+        // it has sent.
+        if (TreesInViz()) {
+          ASSERT_EQ(4u, sii_->shared_image_count());
+        } else {
+          ASSERT_EQ(2u, sii_->shared_image_count());
+        }
+
         // The first resource should have been recreated after visibility was
         // restored.
-        ASSERT_EQ(2u, sii_->shared_image_count());
         EXPECT_NE(viz::kInvalidResourceId,
                   impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_EQ(3, ui_resource_->resource_create_count);
@@ -1535,6 +1552,10 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
   }
 
  private:
+  bool TreesInViz() {
+    return base::FeatureList::IsEnabled(features::kTreesInViz);
+  }
+
   std::unique_ptr<FakeScopedUIResource> ui_resource2_;
   std::unique_ptr<FakeScopedUIResource> ui_resource3_;
   bool test_ended_ = false;
