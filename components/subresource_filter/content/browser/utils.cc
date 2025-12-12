@@ -5,7 +5,7 @@
 #include "components/subresource_filter/content/browser/utils.h"
 
 #include "base/check.h"
-#include "components/subresource_filter/content/shared/common/utils.h"
+#include "components/subresource_filter/content/common/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"

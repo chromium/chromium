@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/renderer/filter_utils.h"
+#include "components/subresource_filter/content/renderer/filter_utils.h"
 
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"

@@ -11,8 +11,8 @@ class RenderFrameHost;
 class Page;
 }  // namespace content
 
-// See also //components/subresource_filter/content/shared/common/utils.h for
-// related utils.
+// See also //components/subresource_filter/content/common/utils.h for related
+// utils.
 
 namespace subresource_filter {
 
