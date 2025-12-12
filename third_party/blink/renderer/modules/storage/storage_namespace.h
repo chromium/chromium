@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_hash.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -59,19 +60,20 @@ class StorageController;
 // through `DidDispatchStorageEvent`.
 class MODULES_EXPORT StorageNamespace final
     : public GarbageCollected<StorageNamespace>,
-      public GarbageCollectedMixin {
+      public Supplement<Page> {
  public:
   // `kStandard` is access for a given context's storage, while
   // `kStorageAccessAPI` indicates a desire to load the first-party storage from
   // a third-party context. For more see:
   // third_party/blink/renderer/modules/storage_access/README.md
   enum class StorageContext { kStandard, kStorageAccessAPI };
+  static constexpr auto kSupplementIndex = Page::Supplements::kStorageNamespace;
 
   static void ProvideSessionStorageNamespaceTo(
       Page&,
       const SessionStorageNamespaceId&);
   static StorageNamespace* From(Page* page) {
-    return page->GetStorageNamespace();
+    return Supplement<Page>::From<StorageNamespace>(page);
   }
 
   // Creates a namespace for LocalStorage.
@@ -129,7 +131,6 @@ class MODULES_EXPORT StorageNamespace final
  private:
   void EnsureConnected();
 
-  Member<Page> page_;
   HeapHashSet<WeakMember<InspectorDOMStorageAgent>> inspector_agents_;
 
   // Lives globally.

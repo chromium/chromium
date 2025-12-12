@@ -45,11 +45,11 @@
 namespace blink {
 
 StorageNamespace::StorageNamespace(StorageController* controller)
-    : page_(nullptr), controller_(controller) {}
+    : Supplement(nullptr), controller_(controller) {}
 StorageNamespace::StorageNamespace(Page& page,
                                    StorageController* controller,
                                    const String& namespace_id)
-    : page_(nullptr),
+    : Supplement(nullptr),
       controller_(controller),
       namespace_id_(namespace_id),
       task_runner_(page.GetAgentGroupScheduler().DefaultTaskRunner()) {}
@@ -65,7 +65,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
           page, String(namespace_id));
   if (!ss_namespace)
     return;
-  page.SetStorageNamespace(ss_namespace);
+  ProvideTo(page, ss_namespace);
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
@@ -204,9 +204,9 @@ void StorageNamespace::RemoveInspectorStorageAgent(
 }
 
 void StorageNamespace::Trace(Visitor* visitor) const {
-  visitor->Trace(page_);
   visitor->Trace(inspector_agents_);
   visitor->Trace(namespace_);
+  Supplement<Page>::Trace(visitor);
 }
 
 void StorageNamespace::DidDispatchStorageEvent(

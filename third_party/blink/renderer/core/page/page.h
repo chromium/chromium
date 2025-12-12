@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -104,7 +103,6 @@ class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
-class StorageNamespace;
 
 typedef uint64_t LinkHash;
 
@@ -113,18 +111,19 @@ typedef uint64_t LinkHash;
 //
 // Note that frames can be local or remote to this process.
 class CORE_EXPORT Page final : public GarbageCollected<Page>,
-                               public Supplementable<Page, 5>,
+                               public Supplementable<Page, 6>,
                                public SettingsDelegate,
                                public PageScheduler::Delegate {
   friend class Settings;
 
  public:
   enum class Supplements {
-    kAudioGraphTracer = 0,
+    kStorageNamespace = 0,
     kInternalSettings = 1,
     kNoStatePrefetchClient = 2,
     kSuspendCaptureObserver = 3,
     kPagePopupController = 4,
+    kAudioGraphTracer = 5
   };
 
   // Any pages not owned by a web view should be created using this method.
@@ -548,14 +547,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
-  ForwardDeclaredMember<StorageNamespace> GetStorageNamespace() const {
-    return storage_namespace_;
-  }
-  void SetStorageNamespace(
-      ForwardDeclaredMember<StorageNamespace> storage_namespace) {
-    storage_namespace_ = storage_namespace;
-  }
-
  private:
   friend class ScopedPagePauser;
   class CloseTaskHandler;
@@ -747,8 +738,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       network::mojom::AttributionSupport::kUnset;
 
   Member<CloseTaskHandler> close_task_handler_;
-
-  ForwardDeclaredMember<StorageNamespace> storage_namespace_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;
