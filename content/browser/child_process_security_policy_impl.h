@@ -136,9 +136,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // ChildProcessSecurityPolicy implementation.
   void RegisterWebSafeScheme(const std::string& scheme) override;
-  void RegisterWebSafeIsolatedScheme(
-      const std::string& scheme,
-      bool always_allow_in_origin_headers) override;
+  void RegisterWebSafeIsolatedScheme(const std::string& scheme) override;
   bool IsWebSafeScheme(const std::string& scheme) override;
   void GrantReadFile(int child_id, const base::FilePath& file) override;
   void GrantCreateReadWriteFile(int child_id,
@@ -962,7 +960,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   base::Lock schemes_lock_;
   SchemeSet schemes_okay_to_commit_in_any_process_ GUARDED_BY(schemes_lock_);
   SchemeSet schemes_okay_to_request_in_any_process_ GUARDED_BY(schemes_lock_);
-  SchemeSet schemes_okay_to_appear_as_origin_headers_ GUARDED_BY(schemes_lock_);
 
   // These schemes do not actually represent retrievable URLs.  For example,
   // the the URLs in the "about" scheme are aliases to other URLs.  This set is

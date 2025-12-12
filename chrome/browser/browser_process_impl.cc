@@ -1352,7 +1352,7 @@ void BrowserProcessImpl::PreCreateThreads() {
   // chrome-extension:// URLs are safe to request anywhere, but may only
   // commit (including in iframes) in extension processes.
   ChildProcessSecurityPolicy::GetInstance()->RegisterWebSafeIsolatedScheme(
-      extensions::kExtensionScheme, true);
+      extensions::kExtensionScheme);
 #endif
 
   battery_metrics_ = std::make_unique<BatteryMetrics>();

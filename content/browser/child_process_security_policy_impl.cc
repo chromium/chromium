@@ -1020,8 +1020,7 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme(
 }
 
 void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
-    const std::string& scheme,
-    bool always_allow_in_origin_headers) {
+    const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Add schemes at most once.";
@@ -1029,9 +1028,6 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
       << "Web-safe implies not pseudo.";
 
   schemes_okay_to_request_in_any_process_.insert(scheme);
-  if (always_allow_in_origin_headers) {
-    schemes_okay_to_appear_as_origin_headers_.insert(scheme);
-  }
 }
 
 bool ChildProcessSecurityPolicyImpl::IsWebSafeScheme(
