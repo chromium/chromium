@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
@@ -7719,11 +7718,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCalendarModule,
                                     kNtpCalendarModuleVariations,
                                     "DesktopNtpModules")},
-
-    {"ntp-compose-entrypoint",
-     flag_descriptions::kNtpSearchboxComposeEntrypointName,
-     flag_descriptions::kNtpSearchboxComposeEntrypointDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_composebox::kNtpSearchboxComposeEntrypoint)},
 
     {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
      flag_descriptions::kNtpComposeboxDescription, kOsDesktop,

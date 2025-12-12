@@ -6050,11 +6050,6 @@ inline constexpr char kNtpRealboxNextName[] = "NTP Realbox Next";
 inline constexpr char kNtpRealboxNextDescription[] =
     "Enables the Realbox 'Next' experience.";
 
-inline constexpr char kNtpSearchboxComposeEntrypointName[] =
-    "NTP Compose Entrypoint";
-inline constexpr char kNtpSearchboxComposeEntrypointDescription[] =
-    "Shows the Compose entrypoint on the New Tab Page Searchbox.";
-
 inline constexpr char kNtpDriveModuleName[] = "NTP Drive Module";
 inline constexpr char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";

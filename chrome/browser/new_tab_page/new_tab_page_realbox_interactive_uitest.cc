@@ -7,7 +7,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
@@ -125,13 +124,9 @@ class NtpRealboxUiTest
 
     // Conditionally enable or disable Compose Entrypoint features.
     if (GetParam().compose_button_enabled) {
-      enabled_features.push_back(
-          {ntp_composebox::kNtpSearchboxComposeEntrypoint, {}});
       enabled_features.push_back({ntp_composebox::kNtpComposebox, {}});
     } else {
       disabled_features.push_back(ntp_composebox::kNtpComposebox);
-      disabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypoint);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -146,9 +141,6 @@ class NtpRealboxUiTest
     // didn't, then we can't accurately perform the test.
     ASSERT_EQ(RealboxLayoutModeToString(ntp_realbox::kRealboxLayoutMode.Get()),
               RealboxLayoutModeToString(GetParam().layout_mode));
-    ASSERT_EQ(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
-                  browser()->profile()),
-              GetParam().compose_button_enabled);
   }
 
   void SetUpBrowserContextKeyedServices(

@@ -48,6 +48,10 @@ class AimEligibilityService
   // enabled. Unlike most chrome features, which simply check if the
   // `base::Feature` is enabled, AIM features should use this so that they
   // auto-launch them when the eligibility service launches.
+  // This should not be used for new AIM features so that they don't affect
+  // ineligible users (`GenericKillSwitchFeatureCheck()` was intended for
+  // pre-eligibility-service features that wanted to conditionally ignore
+  // eligibility).
   static bool GenericKillSwitchFeatureCheck(
       const AimEligibilityService* aim_eligibility_service,
       const base::Feature& feature,
