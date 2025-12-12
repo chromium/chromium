@@ -560,7 +560,8 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
 
   EXPECT_EQ(rule.dns_conditions.size(), 1u);
   EXPECT_EQ(rule.dns_conditions.at(0).host,
-            url::SchemeHostPort(GURL("corp.ads")));
+            url::SchemeHostPort(GURL("http://corp.ads")));
+  EXPECT_TRUE(rule.dns_conditions.at(0).host.IsValid());
   EXPECT_EQ(rule.dns_conditions.at(0).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 
@@ -634,12 +635,14 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
             net::PacResultElementToProxyChain("DIRECT"));
 
   EXPECT_EQ(rule_0.dns_conditions.size(), 2u);
+  EXPECT_TRUE(rule_0.dns_conditions.at(0).host.IsValid());
   EXPECT_EQ(rule_0.dns_conditions.at(0).host,
-            url::SchemeHostPort(GURL("corp.ads")));
+            url::SchemeHostPort(GURL("http://corp.ads")));
   EXPECT_EQ(rule_0.dns_conditions.at(0).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+  EXPECT_TRUE(rule_0.dns_conditions.at(1).host.IsValid());
   EXPECT_EQ(rule_0.dns_conditions.at(1).host,
-            url::SchemeHostPort(GURL("ads.corps")));
+            url::SchemeHostPort(GURL("http://ads.corp")));
   EXPECT_EQ(rule_0.dns_conditions.at(1).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound);
 
@@ -743,10 +746,118 @@ TEST_F(PrefProxyConfigOverrideRulesTest, URLAndPacProxyList) {
             net::PacResultElementToProxyChain("DIRECT"));
 
   EXPECT_EQ(rule.dns_conditions.size(), 1u);
+  EXPECT_TRUE(rule.dns_conditions.at(0).host.IsValid());
   EXPECT_EQ(rule.dns_conditions.at(0).host,
-            url::SchemeHostPort(GURL("corp.ads")));
+            url::SchemeHostPort(GURL("http://corp.ads")));
   EXPECT_EQ(rule.dns_conditions.at(0).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+}
+
+TEST_F(PrefProxyConfigOverrideRulesTest, DNSProbeHostValues) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+
+  SetOverrideRules(
+      R"([
+             {
+                 "DestinationMatchers": [
+                     "https://some.app.com",
+                 ],
+                 "ProxyList": [
+                     "https://other.app:344",
+                 ],
+                 "Conditions": [
+                     {
+                         "DnsProbe": {
+                             "Host": "https://google.com:448",
+                             "Result": "resolved",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "https://google.com",
+                             "Result": "not_found",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "http://google.com",
+                             "Result": "resolved",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "http://google.com:84",
+                             "Result": "not_found",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "google.com:88",
+                             "Result": "resolved",
+                         },
+                     },
+                     {
+                         "DnsProbe": {
+                             "Host": "google.com",
+                             "Result": "not_found",
+                         },
+                     }
+                 ]
+             }
+         ])");
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  const auto& rule = actual_config.value().proxy_override_rules().at(0);
+  EXPECT_EQ(rule.destination_matchers.rules().size(), 2u);
+  EXPECT_EQ(rule.destination_matchers.rules().at(0)->ToString(),
+            "https://some.app.com");
+  EXPECT_EQ(rule.destination_matchers.rules().at(1)->ToString(), "<-loopback>");
+
+  EXPECT_EQ(rule.exclude_destination_matchers.rules().size(), 1u);
+  EXPECT_EQ(rule.exclude_destination_matchers.rules().at(0)->ToString(),
+            "<-loopback>");
+
+  EXPECT_EQ(rule.proxy_list.size(), 1u);
+  EXPECT_EQ(rule.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("HTTPS other.app:344"));
+
+  EXPECT_EQ(rule.dns_conditions.size(), 6u);
+
+  EXPECT_TRUE(rule.dns_conditions.at(0).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(0).host,
+            url::SchemeHostPort(GURL("https://google.com:448")));
+  EXPECT_EQ(rule.dns_conditions.at(0).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+  EXPECT_TRUE(rule.dns_conditions.at(1).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(1).host,
+            url::SchemeHostPort(GURL("https://google.com:443")));
+  EXPECT_EQ(rule.dns_conditions.at(1).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound);
+  EXPECT_TRUE(rule.dns_conditions.at(2).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(2).host,
+            url::SchemeHostPort(GURL("http://google.com:80")));
+  EXPECT_EQ(rule.dns_conditions.at(2).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+  EXPECT_TRUE(rule.dns_conditions.at(3).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(3).host,
+            url::SchemeHostPort(GURL("http://google.com:84")));
+  EXPECT_EQ(rule.dns_conditions.at(3).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound);
+  EXPECT_TRUE(rule.dns_conditions.at(4).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(4).host,
+            url::SchemeHostPort(GURL("http://google.com:88")));
+  EXPECT_EQ(rule.dns_conditions.at(4).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
+  EXPECT_TRUE(rule.dns_conditions.at(5).host.IsValid());
+  EXPECT_EQ(rule.dns_conditions.at(5).host,
+            url::SchemeHostPort(GURL("http://google.com:80")));
+  EXPECT_EQ(rule.dns_conditions.at(5).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound);
 }
 
 TEST_F(PrefProxyConfigOverrideRulesTest, NonListValues) {
@@ -1048,8 +1159,9 @@ TEST_F(PrefProxyConfigOverrideRulesTest, InvalidDictsInList) {
             net::PacResultElementToProxyChain("DIRECT"));
 
   EXPECT_EQ(rule.dns_conditions.size(), 1u);
+  EXPECT_TRUE(rule.dns_conditions.at(0).host.IsValid());
   EXPECT_EQ(rule.dns_conditions.at(0).host,
-            url::SchemeHostPort(GURL("corp.ads")));
+            url::SchemeHostPort(GURL("http://corp.ads")));
   EXPECT_EQ(rule.dns_conditions.at(0).result,
             net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolved);
 }
