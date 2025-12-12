@@ -40,8 +40,8 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
     }
 
     @Override
-    public boolean hasObservers() {
-        return false;
+    public int getObserverCount() {
+        return 0;
     }
 
     /**

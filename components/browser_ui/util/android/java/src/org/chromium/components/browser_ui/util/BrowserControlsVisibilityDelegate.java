@@ -42,8 +42,8 @@ public class BrowserControlsVisibilityDelegate
     }
 
     @Override
-    public boolean hasObservers() {
-        return mDelegateSupplier.hasObservers();
+    public int getObserverCount() {
+        return mDelegateSupplier.getObserverCount();
     }
 
     @Override

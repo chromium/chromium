@@ -69,7 +69,12 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     }
 
     /** Returns whether there are any observers. */
-    boolean hasObservers();
+    default boolean hasObservers() {
+        return getObserverCount() != 0;
+    }
+
+    /** Returns the number of observers. */
+    int getObserverCount();
 
     /**
      * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.

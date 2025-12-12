@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.price_tracking;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -32,13 +34,14 @@ import org.chromium.url.GURL;
  * within the same page.
  */
 @NullMarked
-public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl<Boolean>
-        implements ObservableSupplier<Boolean> {
+public class CurrentTabPriceTrackingStateSupplier implements NonNullObservableSupplier<Boolean> {
 
     private CurrentTabObserver mCurrentTabObserver;
     private @Nullable CommerceSubscription mCurrentTabCommerceSubscription;
     private @Nullable ShoppingService mShoppingService;
 
+    private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mOnProfileUpdatedCallback = this::onProfileUpdated;
@@ -69,7 +72,6 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     public CurrentTabPriceTrackingStateSupplier(
             NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Profile> profileSupplier) {
-        super(false);
         mTabSupplier = tabSupplier;
         mProfileSupplier = profileSupplier;
 
@@ -96,7 +98,6 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     }
 
     @SuppressWarnings("NullAway")
-    @Override
     public void destroy() {
         mCurrentTabObserver.destroy();
         mCurrentTabObserver = null;
@@ -107,7 +108,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
             mShoppingService.removeSubscriptionsObserver(mSubscriptionObserver);
             mShoppingService = null;
         }
-        super.destroy();
+        mSupplier.destroy();
     }
 
     private void onProfileUpdated(Profile profile) {
@@ -167,11 +168,26 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     }
 
     private void updatePriceTrackingState(boolean isCurrentTabPriceTracked) {
-        super.set(isCurrentTabPriceTracked);
+        mSupplier.set(isCurrentTabPriceTracked);
     }
 
     @Override
-    public Boolean addObserver(Callback<Boolean> obs) {
-        return addSyncObserver(obs);
+    public Boolean get() {
+        return mSupplier.get();
+    }
+
+    @Override
+    public Boolean addObserver(Callback<Boolean> obs, int behavior) {
+        return mSupplier.addObserver(obs, behavior);
+    }
+
+    @Override
+    public void removeObserver(Callback<Boolean> obs) {
+        mSupplier.removeObserver(obs);
+    }
+
+    @Override
+    public int getObserverCount() {
+        return mSupplier.getObserverCount();
     }
 }

@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,7 +46,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final SnackbarManager mSnackbarManager;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
     private final BottomSheetController mBottomSheetController;
-    private final ObservableSupplier<Boolean> mPriceTrackingCurrentTabStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mPriceTrackingCurrentTabStateSupplier;
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -64,7 +65,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            ObservableSupplier<Boolean> priceTrackingCurrentTabStateSupplier) {
+            NonNullObservableSupplier<Boolean> priceTrackingCurrentTabStateSupplier) {
         super(
                 tabSupplier,
                 modalDialogManager,
@@ -111,7 +112,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
 
-        mPriceTrackingCurrentTabStateSupplier.addObserver(mPriceTrackingStateChangedCallback);
+        mPriceTrackingCurrentTabStateSupplier.addSyncObserver(mPriceTrackingStateChangedCallback);
     }
 
     private void updateButtonIcon(boolean isCurrentTabPriceTracked) {

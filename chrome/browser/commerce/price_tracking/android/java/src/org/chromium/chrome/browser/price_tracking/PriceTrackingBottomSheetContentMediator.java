@@ -19,7 +19,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -45,7 +45,7 @@ public class PriceTrackingBottomSheetContentMediator {
     private final Callback<Boolean> mUpdatePriceTrackingButtonModelCallback =
             this::updatePriceTrackingButtonModel;
 
-    private @Nullable ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private @Nullable NonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier;
     private @PriceBucket int mPriceBucket;
 
     public PriceTrackingBottomSheetContentMediator(
@@ -72,7 +72,7 @@ public class PriceTrackingBottomSheetContentMediator {
         }
 
         mPriceTrackingStateSupplier = mPriceInsightsDelegate.getPriceTrackingStateSupplier(tab);
-        mPriceTrackingStateSupplier.addObserver(mUpdatePriceTrackingButtonModelCallback);
+        mPriceTrackingStateSupplier.addSyncObserver(mUpdatePriceTrackingButtonModelCallback);
 
         shoppingService.getProductInfoForUrl(
                 tab.getUrl(),

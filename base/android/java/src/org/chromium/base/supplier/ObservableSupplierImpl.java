@@ -118,9 +118,8 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     /** Returns if there are any observers currently. */
     @Override
-    public boolean hasObservers() {
-        // ObserverList has its own ThreadChecker.
-        return !mObservers.isEmpty();
+    public int getObserverCount() {
+        return mObservers.size();
     }
 
     /** Returns whether the observer should be notified on being added. */

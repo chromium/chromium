@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.ALL_KEYS;
@@ -49,7 +48,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -90,7 +90,6 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private ShoppingService mMockShoppingService;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
-    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
@@ -124,6 +123,8 @@ public class PriceInsightsBottomSheetMediatorTest {
                     0,
                     true);
 
+    private final SettableNonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
@@ -138,8 +139,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
 
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
-        doReturn(mMockPriceTrackingStateSupplier)
+        doReturn(mPriceTrackingStateSupplier)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
 
@@ -182,7 +182,6 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndDisabled() {
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -206,7 +205,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndEnabled() {
-        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
+        mPriceTrackingStateSupplier.set(true);
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -230,7 +229,6 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingButtonOnClick_Failed() {
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -302,11 +300,9 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testPriceTrackingStateSupplier() {
-        mPriceInsightsMediator.requestShowContent();
-        verify(mMockPriceTrackingStateSupplier, times(1)).addObserver(any());
-
+        assertEquals(1, mPriceTrackingStateSupplier.getObserverCount());
         mPriceInsightsMediator.closeContent();
-        verify(mMockPriceTrackingStateSupplier, times(1)).removeObserver(any());
+        assertEquals(0, mPriceTrackingStateSupplier.getObserverCount());
     }
 
     private void setResultForPriceTrackingUpdate(boolean success) {
@@ -314,7 +310,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                         (InvocationOnMock invocation) -> {
                             if (success) {
                                 boolean newState = invocation.getArgument(1);
-                                doReturn(newState).when(mMockPriceTrackingStateSupplier).get();
+                                mPriceTrackingStateSupplier.set(newState);
                             }
                             ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
                             return null;

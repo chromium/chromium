@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.AppHooks;
@@ -25,16 +25,16 @@ import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
 
     private final Context mContext;
-    private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mPriceTrackingStateSupplier;
 
     public PriceInsightsDelegateImpl(
-            Context context, ObservableSupplier<Boolean> priceTrackingStateSupplier) {
+            Context context, NonNullObservableSupplier<Boolean> priceTrackingStateSupplier) {
         mContext = context;
         mPriceTrackingStateSupplier = priceTrackingStateSupplier;
     }
 
     @Override
-    public ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab) {
+    public NonNullObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab) {
         return mPriceTrackingStateSupplier;
     }
 

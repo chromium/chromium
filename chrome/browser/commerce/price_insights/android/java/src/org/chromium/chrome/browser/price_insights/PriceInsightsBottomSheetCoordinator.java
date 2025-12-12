@@ -13,7 +13,7 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,7 +44,7 @@ public class PriceInsightsBottomSheetCoordinator {
          * @param tab Tab whose current URL is checked against.
          * @return The supplier for price tracking state.
          */
-        ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
+        NonNullObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
 
         /**
          * Set price tracking state for a {@link Tab}.
