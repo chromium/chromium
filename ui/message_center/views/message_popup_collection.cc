@@ -132,6 +132,9 @@ void MessagePopupCollection::ResetBounds() {
     for (auto& item : popup_items_) {
       item.popup->SetPopupBounds(item.bounds);
       item.popup->SetOpacity(1.0);
+      if (CanUseTransformForBoundsAnimation()) {
+        item.popup->SetPopupTransform(gfx::Transform());
+      }
     }
   }
 

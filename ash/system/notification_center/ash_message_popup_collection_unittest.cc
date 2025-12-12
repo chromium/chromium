@@ -140,6 +140,17 @@ class AshMessagePopupCollectionTest : public AshTestBase {
     }
   }
 
+  void AnimateTo(double value) {
+    GetPrimaryPopupCollection()->animation()->SetCurrentValue(0.5);
+    GetPrimaryPopupCollection()->AnimationProgressed(
+        GetPrimaryPopupCollection()->animation());
+  }
+
+  bool IsAnimating() {
+    auto* animation = GetPrimaryPopupCollection()->animation();
+    return animation->is_animating();
+  }
+
  protected:
   enum Position { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, OUTSIDE };
 
@@ -1464,6 +1475,38 @@ TEST_F(AshMessagePopupCollectionTest, InlineReplyTextfield) {
 
   // Make sure that inline reply textfield can receive keyboard events.
   EXPECT_EQ(u"aa", textfield->GetText());
+}
+
+// Tests that if a popup animation is interrupted by a call to ResetBounds(),
+// the popup's transform is reset to the identity transform. This prevents a bug
+// where a notification could be visually stuck off-screen.
+TEST_F(AshMessagePopupCollectionTest,
+       InterruptedAnimationHasIdentityTransform) {
+  // Add a notification, which begins the slide-in animation.
+  std::string id = AddNotification();
+  EXPECT_TRUE(IsAnimating());
+  EXPECT_TRUE(GetLastPopUpAdded());
+
+  // Let the animation proceed halfway. The popup will have a non-identity
+  // transform, making it appear partially off-screen.
+  AnimateTo(0.5);
+  EXPECT_FALSE(GetLastPopUpAdded()
+                   ->GetWidget()
+                   ->GetLayer()
+                   ->GetTargetTransform()
+                   .IsIdentity());
+
+  // Interrupt the animation by updating the work area, which calls
+  // ResetBounds().
+  UpdateDisplay("801x600");
+
+  // The animation should have stopped, and the transform should be cleared.
+  EXPECT_FALSE(IsAnimating());
+  EXPECT_TRUE(GetLastPopUpAdded()
+                  ->GetWidget()
+                  ->GetLayer()
+                  ->GetTargetTransform()
+                  .IsIdentity());
 }
 
 class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {
