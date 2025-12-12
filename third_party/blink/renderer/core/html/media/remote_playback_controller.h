@@ -16,8 +16,12 @@ class RemotePlaybackObserver;
 // Interface exposing RemotePlayback to core/. It is meant to replace
 // WebRemotePlaybackClient in the long run when there will be no need to expose
 // this outside of Blink.
-class CORE_EXPORT RemotePlaybackController : public GarbageCollectedMixin {
+class CORE_EXPORT RemotePlaybackController
+    : public Supplement<HTMLMediaElement> {
  public:
+  static constexpr auto kSupplementIndex =
+      HTMLMediaElement::Supplements::kRemotePlaybackController;
+
   static RemotePlaybackController* From(HTMLMediaElement&);
 
   virtual void AddObserver(RemotePlaybackObserver*) = 0;
@@ -35,9 +39,6 @@ class CORE_EXPORT RemotePlaybackController : public GarbageCollectedMixin {
   // To be called by RemotePlayback implementation to register its
   // implementation.
   static void ProvideTo(HTMLMediaElement&, RemotePlaybackController*);
-
- private:
-  Member<HTMLMediaElement> html_media_element_;
 };
 
 }  // namespace blink

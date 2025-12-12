@@ -216,7 +216,7 @@ ScriptPromise<IDLUndefined> HTMLMediaElementAudioOutputDevice::setSinkId(
 void HTMLMediaElementAudioOutputDevice::SetSinkId(const String& sink_id) {
   // No need to call WebFrameClient::CheckIfAudioSinkExistsAndIsAuthorized as
   // this call is not coming from content and should already be allowed.
-  HTMLMediaElement* html_media_element = html_media_element_;
+  HTMLMediaElement* html_media_element = GetSupplementable();
   WebMediaPlayer* web_media_player = html_media_element->GetWebMediaPlayer();
   if (!web_media_player)
     return;

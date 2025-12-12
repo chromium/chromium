@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
@@ -60,6 +59,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote_set.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -75,7 +75,6 @@ enum class MediaContentType;
 
 namespace blink {
 
-class AudioOutputDeviceController;
 class AudioSourceProviderClient;
 class AudioTrack;
 class AudioTrackList;
@@ -86,7 +85,6 @@ class Event;
 class EventQueue;
 class ExceptionState;
 class HTMLMediaElementControlsList;
-class HTMLMediaElementEncryptedMedia;
 class HTMLSourceElement;
 class HTMLTrackElement;
 class MediaError;
@@ -95,20 +93,20 @@ class MediaSourceHandle;
 class MediaSourceTracer;
 class MediaStreamDescriptor;
 class RemotePlaybackClient;
-class RemotePlaybackController;
 class ScriptPromiseResolverBase;
 class ScriptState;
 class TextTrack;
 class TextTrackContainer;
 class TextTrackList;
 class TimeRanges;
-class V8CanPlayTypeResult;
-class V8TextTrackKind;
 class VideoTrack;
 class VideoTrackList;
+class V8CanPlayTypeResult;
+class V8TextTrackKind;
 
 class CORE_EXPORT HTMLMediaElement
     : public HTMLElement,
+      public Supplementable<HTMLMediaElement, 3>,
       public ActiveScriptWrappable<HTMLMediaElement>,
       public ExecutionContextLifecycleStateObserver,
       public media::mojom::blink::MediaPlayer,
@@ -118,6 +116,12 @@ class CORE_EXPORT HTMLMediaElement
   USING_PRE_FINALIZER(HTMLMediaElement, Dispose);
 
  public:
+  enum class Supplements {
+    kHTMLMediaElementEncryptedMedia = 0,
+    kAudioOutputDeviceController = 1,
+    kRemotePlaybackController = 2
+  };
+
   // Limits the range of media playback rate.
   static constexpr double kMinPlaybackRate = 0.0625;
   static constexpr double kMaxPlaybackRate = 16.0;
@@ -443,32 +447,6 @@ class CORE_EXPORT HTMLMediaElement
   // WebAudio audio destination node is connected. The HTMLMediaElement could
   // stop the sink at this time if it is still playing.
   void ConnectToDestinationReady();
-
-  AudioOutputDeviceController* GetAudioOutputDeviceController() const {
-    return audio_output_device_controller_;
-  }
-  void SetAudioOutputDeviceController(
-      AudioOutputDeviceController* audio_output_device_controller) {
-    audio_output_device_controller_ = audio_output_device_controller;
-  }
-
-  RemotePlaybackController* GetRemotePlaybackController() const {
-    return remote_playback_controller_;
-  }
-  void SetRemotePlaybackController(
-      RemotePlaybackController* remote_playback_controller) {
-    remote_playback_controller_ = remote_playback_controller;
-  }
-
-  ForwardDeclaredMember<HTMLMediaElementEncryptedMedia>
-  GetHTMLMediaElementEncryptedMedia() const {
-    return html_media_element_encrypted_media_;
-  }
-  void SetHTMLMediaElementEncryptedMedia(
-      ForwardDeclaredMember<HTMLMediaElementEncryptedMedia>
-          html_media_element_encrypted_media) {
-    html_media_element_encrypted_media_ = html_media_element_encrypted_media;
-  }
 
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
@@ -1077,11 +1055,6 @@ class CORE_EXPORT HTMLMediaElement
       HeapMojoAssociatedReceiverSet<media::mojom::blink::MediaPlayer,
                                     HTMLMediaElement>>>
       media_player_receiver_set_;
-
-  Member<AudioOutputDeviceController> audio_output_device_controller_;
-  Member<RemotePlaybackController> remote_playback_controller_;
-  ForwardDeclaredMember<HTMLMediaElementEncryptedMedia>
-      html_media_element_encrypted_media_;
 };
 
 template <>

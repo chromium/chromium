@@ -9,22 +9,23 @@ namespace blink {
 // static
 AudioOutputDeviceController* AudioOutputDeviceController::From(
     HTMLMediaElement& element) {
-  return element.GetAudioOutputDeviceController();
+  return Supplement<HTMLMediaElement>::From<AudioOutputDeviceController>(
+      element);
 }
 
 void AudioOutputDeviceController::Trace(Visitor* visitor) const {
-  visitor->Trace(html_media_element_);
+  Supplement<HTMLMediaElement>::Trace(visitor);
 }
 
 AudioOutputDeviceController::AudioOutputDeviceController(
     HTMLMediaElement& element)
-    : html_media_element_(element) {}
+    : Supplement<HTMLMediaElement>(element) {}
 
 // static
 void AudioOutputDeviceController::ProvideTo(
     HTMLMediaElement& element,
     AudioOutputDeviceController* controller) {
-  element.SetAudioOutputDeviceController(controller);
+  Supplement<HTMLMediaElement>::ProvideTo(element, controller);
 }
 
 }  // namespace blink

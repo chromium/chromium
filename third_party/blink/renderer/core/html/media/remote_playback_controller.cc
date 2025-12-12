@@ -9,20 +9,20 @@ namespace blink {
 // static
 RemotePlaybackController* RemotePlaybackController::From(
     HTMLMediaElement& element) {
-  return element.GetRemotePlaybackController();
+  return Supplement<HTMLMediaElement>::From<RemotePlaybackController>(element);
 }
 
 void RemotePlaybackController::Trace(Visitor* visitor) const {
-  visitor->Trace(html_media_element_);
+  Supplement<HTMLMediaElement>::Trace(visitor);
 }
 
 RemotePlaybackController::RemotePlaybackController(HTMLMediaElement& element)
-    : html_media_element_(element) {}
+    : Supplement<HTMLMediaElement>(element) {}
 
 // static
 void RemotePlaybackController::ProvideTo(HTMLMediaElement& element,
                                          RemotePlaybackController* controller) {
-  element.SetRemotePlaybackController(controller);
+  Supplement<HTMLMediaElement>::ProvideTo(element, controller);
 }
 
 }  // namespace blink
