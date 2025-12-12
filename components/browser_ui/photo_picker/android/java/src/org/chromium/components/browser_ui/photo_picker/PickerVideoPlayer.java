@@ -821,7 +821,7 @@ public class PickerVideoPlayer extends FrameLayout
                     mContext.getString(R.string.accessibility_mute_video));
         } else {
             mMediaPlayer.setVolume(0f, 0f);
-            mMuteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+            mMuteButton.setImageResource(R.drawable.ic_volume_off_fill_24dp);
             mMuteButton.setContentDescription(
                     mContext.getString(R.string.accessibility_unmute_video));
         }

@@ -591,7 +591,7 @@ public class ContentSettingsResources {
                                 R.string.website_settings_category_sound_allowed,
                                 R.string.website_settings_category_sound_blocked,
                                 R.string.website_settings_category_sound_a11y,
-                                R.drawable.volume_off_24px,
+                                R.drawable.ic_volume_off_fill_24dp,
                                 R.string.website_settings_sound_allow,
                                 R.string.website_settings_sound_block)
                         .setDisabledDescriptionText(

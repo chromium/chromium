@@ -101,7 +101,6 @@ android_resources("java_resources") {
     "res/drawable/tv_24px.xml",
     "res/drawable/tv_off_24px.xml",
     "res/drawable/usb_off_24px.xml",
-    "res/drawable/volume_off_24px.xml",
     "res/drawable/vr180_create2d_off_24px.xml",
     "res/layout-sw600dp/permission_dialog_vertical_buttons_permission_header.xml",
     "res/layout/bluetooth_scanning_permission_dialog.xml",
