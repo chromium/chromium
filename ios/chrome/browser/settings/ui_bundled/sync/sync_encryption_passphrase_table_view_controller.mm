@@ -538,11 +538,6 @@ const CGFloat kSpinnerButtonPadding = 18;
     SettingsNavigationController* settingsNavigationController =
         base::apple::ObjCCast<SettingsNavigationController>(
             self.navigationController);
-    // During the sign-in flow it is possible for the Sync state to
-    // change when the user is in the Advanced Settings (e.g., if the user
-    // confirms a Sync passphrase). Because these navigation controllers are
-    // not directly related to Settings, we check the type before dismissal.
-    // TODO(crbug.com/40158230): Revisit with Advanced Sync Settings changes.
     if (settingsNavigationController) {
       [settingsNavigationController
           popViewControllerOrCloseSettingsAnimated:YES];
