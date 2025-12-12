@@ -418,4 +418,26 @@ public class FuseboxViewBinderUnitTest {
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
     }
+
+    @Test
+    public void sendButtonA11y_setsContentDescription() {
+        var res = mActivityController.get().getResources();
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
+        assertEquals(
+                res.getString(R.string.acc_send_button_send_to_ai),
+                mViewHolder.navigateButton.getContentDescription());
+
+        mModel.set(
+                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(
+                res.getString(R.string.acc_send_button_create_image),
+                mViewHolder.navigateButton.getContentDescription());
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
+        assertEquals(
+                res.getString(R.string.acc_send_button_search_or_navigate),
+                mViewHolder.navigateButton.getContentDescription());
+    }
 }

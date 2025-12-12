@@ -19,6 +19,7 @@ import android.widget.Button;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.constraintlayout.widget.ConstraintSet;
 
@@ -53,6 +54,7 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
             updateButtonsVisibilityAndStyling(model, view);
+            updateButtonsA11yAnnouncements(model, view);
             updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
             updateButtonsVisibilityAndStyling(model, view);
@@ -203,6 +205,26 @@ class FuseboxViewBinder {
         views.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 imageGenStartDrawable, null, imageGenEndDrawable, null);
         reapplyColorFilter(views.popup.mCreateImageButton);
+    }
+
+    static void updateButtonsA11yAnnouncements(PropertyModel model, FuseboxViewHolder views) {
+        @StringRes
+        int navButtonAccessibilityStringRes =
+                switch (model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
+                    case AutocompleteRequestType.AI_MODE -> R.string.acc_send_button_send_to_ai;
+                    case AutocompleteRequestType.IMAGE_GENERATION ->
+                            R.string.acc_send_button_create_image;
+                    case AutocompleteRequestType.SEARCH ->
+                            R.string.acc_send_button_search_or_navigate;
+                    default -> {
+                        assert false
+                                : "Missing A11y announcement for the Send button in this context";
+                        yield R.string.acc_send_button_search_or_navigate;
+                    }
+                };
+
+        views.navigateButton.setContentDescription(
+                views.parentView.getResources().getText(navButtonAccessibilityStringRes));
     }
 
     static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {

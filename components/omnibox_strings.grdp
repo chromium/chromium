@@ -406,7 +406,15 @@
   <message name="IDS_AI_MODE_ENTRYPOINT_HINT" desc="Label for the Omnibox entrypoint that encourages the user to toggle AIMode on" formatter_data="android_java">
     Try AI Mode
   </message>
-
+  <message name="IDS_ACC_SEND_BUTTON_SEARCH_OR_NAVIGATE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the search/open URL context" formatter_data="android_java">
+    Navigate
+  </message>
+  <message name="IDS_ACC_SEND_BUTTON_SEND_TO_AI" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the AI Mode context" formatter_data="android_java">
+    Send to assistant
+  </message>
+  <message name="IDS_ACC_SEND_BUTTON_CREATE_IMAGE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the Create Image context" formatter_data="android_java">
+    Create image
+  </message>
 
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
