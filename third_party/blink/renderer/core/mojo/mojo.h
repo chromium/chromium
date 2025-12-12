@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -21,12 +21,14 @@ class MojoCreateSharedBufferResult;
 class MojoHandle;
 class ScriptState;
 class V8MojoScope;
-class MojoFileSystemAccess;
 
-class CORE_EXPORT Mojo final : public ScriptWrappable {
+class CORE_EXPORT Mojo final : public ScriptWrappable,
+                               public Supplementable<Mojo, 1> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Supplements { kMojoFileSystemAccess = 0 };
+
   Mojo() = default;
   Mojo(const Mojo&) = delete;
   Mojo& operator=(const Mojo&) = delete;
@@ -66,18 +68,10 @@ class CORE_EXPORT Mojo final : public ScriptWrappable {
                             const V8MojoScope& scope,
                             ExceptionState& exception_state);
 
-  void Trace(Visitor* visitor) const override;
-
-  ForwardDeclaredMember<MojoFileSystemAccess> GetMojoFileSystemAccess() const {
-    return mojo_file_system_access_;
+  void Trace(Visitor* visitor) const override {
+    ScriptWrappable::Trace(visitor);
+    Supplementable::Trace(visitor);
   }
-  void SetMojoFileSystemAccess(
-      ForwardDeclaredMember<MojoFileSystemAccess> mojo_file_system_access) {
-    mojo_file_system_access_ = mojo_file_system_access;
-  }
-
- private:
-  ForwardDeclaredMember<MojoFileSystemAccess> mojo_file_system_access_;
 };
 
 }  // namespace blink

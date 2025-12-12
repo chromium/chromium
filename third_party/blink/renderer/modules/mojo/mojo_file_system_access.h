@@ -17,8 +17,10 @@ class FileSystemFileHandle;
 
 class MojoFileSystemAccess final
     : public GarbageCollected<MojoFileSystemAccess>,
-      public GarbageCollectedMixin {
+      public Supplement<Mojo> {
  public:
+  static constexpr auto kSupplementIndex =
+      Mojo::Supplements::kMojoFileSystemAccess;
   explicit MojoFileSystemAccess(Mojo&);
   static MojoFileSystemAccess& From(Mojo&);
 
@@ -27,9 +29,6 @@ class MojoFileSystemAccess final
       FileSystemFileHandle* fs_handle);
 
   void Trace(Visitor* visitor) const override;
-
- private:
-  Member<Mojo> mojo_;
 };
 
 }  // namespace blink
