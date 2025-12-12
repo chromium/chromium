@@ -20622,6 +20622,27 @@
             ]
         }
     ],
+    "ReadAnythingMenuShuffleExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSeparation",
+                    "params": {
+                        "read_anything_menu_shuffle_group_name": "MenuShuffleSeparation"
+                    },
+                    "enable_features": [
+                        "ReadAnythingMenuShuffleExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingReadAloudPhraseHighlighting": [
         {
             "platforms": [
