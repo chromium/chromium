@@ -49,6 +49,7 @@
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_usage.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
@@ -789,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     auto* entry = ukm_entries.front().get();
     ukm_recorder().ExpectEntryMetric(
         entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
-        static_cast<int64_t>(
-            ExtensionContextMenuModel::ExtensionUsageAction::kContextMenuInit));
+        static_cast<int64_t>(ExtensionUsageAction::kContextMenuInit));
   }
 
   {
@@ -814,8 +814,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     auto* entry = ukm_entries.front().get();
     ukm_recorder().ExpectEntryMetric(
         entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
-        static_cast<int64_t>(
-            ExtensionContextMenuModel::ExtensionUsageAction::kUnpinned));
+        static_cast<int64_t>(ExtensionUsageAction::kUnpinned));
   }
 
   {
@@ -843,8 +842,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     auto* entry = ukm_entries.front().get();
     ukm_recorder().ExpectEntryMetric(
         entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
-        static_cast<int64_t>(
-            ExtensionContextMenuModel::ExtensionUsageAction::kPinned));
+        static_cast<int64_t>(ExtensionUsageAction::kPinned));
   }
 }
 

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_usage.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/origin.h"
 
@@ -99,15 +100,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // Location where the context menu is open from.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.extensions
   enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
-
-  // Actions tracked by Chrome Web Store team for monitoring extension usage.
-  // Do not re-order entries, as these are used in UKM.
-  // Exposed for testing purposes.
-  enum class ExtensionUsageAction {
-    kPinned,
-    kUnpinned,
-    kContextMenuInit,
-  };
 
   // Delegate to handle showing an ExtensionAction popup.
   class PopupDelegate {

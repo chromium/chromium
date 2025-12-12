@@ -3356,11 +3356,18 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Policy Violation"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionUsageAction) -->
+
 <enum name="ExtensionUsageAction">
   <int value="0" label="Extension Pinned"/>
   <int value="1" label="Extension Unpinned"/>
   <int value="2" label="Extension Context Menu Init"/>
+  <int value="3" label="Extension Action Clicked"/>
+  <int value="4" label="Extension Enabled"/>
+  <int value="5" label="Extension Disabled"/>
 </enum>
+
+<!-- LINT.ThenChange(/extensions/common/extension_usage.h:ExtensionUsageAction) -->
 
 <enum name="ExternalItemState">
   <int value="0" label="DEPRECATED_DISABLED"/>

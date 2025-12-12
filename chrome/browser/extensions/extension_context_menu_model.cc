@@ -55,6 +55,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_usage.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission.h"
