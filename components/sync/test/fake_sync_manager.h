@@ -116,7 +116,7 @@ class FakeSyncManager : public SyncManager {
 
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
-  base::ObserverList<SyncManager::Observer>::Unchecked observers_;
+  base::ObserverList<SyncManager::Observer> observers_;
 
   std::string cache_guid_;
   std::string birthday_;

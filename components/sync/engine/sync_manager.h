@@ -13,6 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
@@ -45,7 +46,7 @@ class SyncManager {
   // An interface the embedding application implements to receive notifications
   // from the SyncManager. Register an observer via SyncManager::AddObserver.
   // All methods are called only on the sync sequence.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // A round-trip sync-cycle took place and the syncer has resolved any
     // conflicts that may have arisen.
@@ -65,7 +66,7 @@ class SyncManager {
     virtual void OnSyncStatusChanged(const SyncStatus&) = 0;
 
    protected:
-    virtual ~Observer();
+    ~Observer() override;
   };
 
   // Arguments for initializing SyncManager.
