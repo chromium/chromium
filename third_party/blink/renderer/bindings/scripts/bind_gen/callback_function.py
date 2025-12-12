@@ -180,10 +180,11 @@ def make_callback_invocation_function(cg_context,
     decls = SequenceNode()
     defs = SequenceNode()
 
-    func_decl = CxxFuncDeclNode(name=function_name,
-                                arg_decls=arg_decls,
-                                return_type=maybe_return_type,
-                                nodiscard=True)
+    func_def = CxxFuncDefNode(name=function_name,
+                              arg_decls=arg_decls,
+                              return_type=maybe_return_type,
+                              class_name=cg_context.class_name)
+    func_decl = func_def.make_decl(nodiscard=True)
     if cg_context.callback_function:
         if is_construct_call:
             comment = T("""\
@@ -459,6 +460,54 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     return decls, defs
 
 
+def make_invoke_and_catch_function(cg_context, function_name,
+                                   invoke_function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert cg_context.callback_function
+
+    T = TextNode
+    F = FormatNode
+
+    func_like = cg_context.function_like
+    is_void = func_like.return_type.unwrap().is_undefined
+    result_type = ("void" if is_void else blink_type_info(
+        func_like.return_type).value_t)
+    return_type = "base::expected<{}, ScriptValue>".format(result_type)
+    arg_type_and_names = _make_arg_type_and_names(func_like)
+    arg_decls = ["bindings::V8ValueOrScriptWrappableAdapter arg0_receiver"] + [
+        "{} {}".format(arg_type, arg_name)
+        for arg_type, arg_name in arg_type_and_names
+    ]
+    arg_names = ["arg0_receiver"
+                 ] + [arg_name for arg_type, arg_name in arg_type_and_names]
+
+    decls = SequenceNode()
+    defs = SequenceNode()
+
+    func_def = CxxFuncDefNode(name=function_name,
+                              arg_decls=arg_decls,
+                              return_type=return_type,
+                              class_name=cg_context.class_name)
+    func_decl = func_def.make_decl(nodiscard=True)
+
+    body = func_def.body
+    body.extend([
+        T("v8::TryCatch try_catch(GetIsolate());"),
+        EmptyNode(),
+        F("auto result = {api_func_name}({arg_names});",
+          api_func_name=invoke_function_name,
+          arg_names=", ".join(arg_names)),
+        CxxLikelyIfNode(cond="result.IsJust()",
+                        attribute="[[likely]]",
+                        body=T("return base::ok({});".format(
+                            "" if is_void else "result.FromJust()"))),
+        T("return base::unexpected(ScriptValue(GetIsolate(), try_catch.Exception()));"
+          )
+    ])
+
+    return func_decl, func_def
+
+
 def make_is_runnable_or_throw_exception(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
@@ -585,6 +634,10 @@ def generate_callback_function(callback_function_identifier):
          cgc, name_style.func("InvokeAndReportException"),
          name_style.func("Invoke"))
 
+    (invoke_and_catch_decls,
+     invoke_and_catch_defs) = make_invoke_and_catch_function(
+         cgc, name_style.func("InvokeAndCatch"), name_style.func("Invoke"))
+
     event_handler_decls, event_handler_defs = None, None
     if callback_function.identifier == "EventHandlerNonNull":
         event_handler_decls = SequenceNode()
@@ -636,6 +689,7 @@ def generate_callback_function(callback_function_identifier):
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/callback_function_base.h",
         "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
+        "base/types/expected.h",
     ])
     source_node.accumulator.add_stdcpp_include_headers([
         "tuple",
@@ -695,6 +749,11 @@ def generate_callback_function(callback_function_identifier):
     class_def.public_section.append(invoke_and_report_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(invoke_and_report_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.public_section.append(invoke_and_catch_decls)
+    class_def.public_section.append(EmptyNode())
+    source_blink_ns.body.append(invoke_and_catch_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(event_handler_decls)
