@@ -181,7 +181,9 @@ public class LayoutManagerImpl
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final CompositorModelChangeProcessor.FrameRequestSupplier mFrameRequestSupplier;
+    private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
+            ObservableSuppliers.createNonNull(0L);
+    private final Runnable mRequestFrameRunnable = this::requestUpdate;
 
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
@@ -373,12 +375,9 @@ public class LayoutManagerImpl
         assert contentContainer != null;
         mContentContainer = contentContainer;
 
-        mAnimationHandler = new CompositorAnimationHandler(this::requestUpdate);
+        mAnimationHandler = new CompositorAnimationHandler(mRequestFrameRunnable);
 
         mOverlayPanelManager = new OverlayPanelManager();
-
-        mFrameRequestSupplier =
-                new CompositorModelChangeProcessor.FrameRequestSupplier(this::requestUpdate);
     }
 
     /**
@@ -660,6 +659,7 @@ public class LayoutManagerImpl
                         renderHost,
                         mHost,
                         mFrameRequestSupplier,
+                        mRequestFrameRunnable,
                         selector,
                         mTabContentManagerSupplier.get(),
                         mBrowserControlsStateProvider,
@@ -754,7 +754,7 @@ public class LayoutManagerImpl
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, @Nullable PropertyKey>
                     viewBinder) {
         return CompositorModelChangeProcessor.create(
-                model, view, viewBinder, mFrameRequestSupplier, true);
+                model, view, viewBinder, mFrameRequestSupplier, mRequestFrameRunnable, true);
     }
 
     @Override
@@ -766,7 +766,13 @@ public class LayoutManagerImpl
                             viewBinder,
                     Set<PropertyKey> exclusions) {
         return CompositorModelChangeProcessor.create(
-                model, view, viewBinder, mFrameRequestSupplier, true, exclusions);
+                model,
+                view,
+                viewBinder,
+                mFrameRequestSupplier,
+                mRequestFrameRunnable,
+                true,
+                exclusions);
     }
 
     /**

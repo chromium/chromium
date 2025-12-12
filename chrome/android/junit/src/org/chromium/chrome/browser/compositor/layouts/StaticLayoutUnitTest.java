@@ -41,6 +41,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
@@ -48,7 +50,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -95,8 +96,6 @@ public class StaticLayoutUnitTest {
     @Mock private LayoutManagerHost mViewHost;
     @Mock StaticTabSceneLayer mStaticTabSceneLayer;
 
-    private CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
-
     @Mock private TabContentManager mTabContentManager;
 
     @Mock private TabModelSelector mTabModelSelector;
@@ -118,6 +117,8 @@ public class StaticLayoutUnitTest {
     private Tab mTab2;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
+    private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
+            ObservableSuppliers.createNonNull(0L);
     private CompositorAnimationHandler mCompositorAnimationHandler;
 
     private StaticLayout mStaticLayout;
@@ -125,11 +126,6 @@ public class StaticLayoutUnitTest {
 
     @Before
     public void setUp() {
-
-        mRequestSupplier =
-                new CompositorModelChangeProcessor.FrameRequestSupplier(
-                        CallbackUtils.emptyRunnable());
-
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
@@ -169,7 +165,8 @@ public class StaticLayoutUnitTest {
                         mUpdateHost,
                         mRenderHost,
                         mViewHost,
-                        mRequestSupplier,
+                        mFrameRequestSupplier,
+                        CallbackUtils.emptyRunnable(),
                         mTabModelSelector,
                         mTabContentManager,
                         mBrowserControlsStateProvider,

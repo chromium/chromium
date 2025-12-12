@@ -12,6 +12,7 @@ import android.graphics.RectF;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -60,7 +61,8 @@ public class StaticLayout extends Layout {
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
-    private final CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
+    private final NonNullObservableSupplier<Long> mFrameRequestSupplier;
+    private final Runnable mRequestFrameRunnable;
 
     private final PropertyModel mModel;
     private CompositorModelChangeProcessor mMcp;
@@ -99,7 +101,8 @@ public class StaticLayout extends Layout {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
-            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
+            NonNullObservableSupplier<Long> frameRequestSupplier,
+            Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -110,7 +113,8 @@ public class StaticLayout extends Layout {
                 updateHost,
                 renderHost,
                 viewHost,
-                requestSupplier,
+                frameRequestSupplier,
+                requestFrameRunnable,
                 tabModelSelector,
                 tabContentManager,
                 browserControlsStateProvider,
@@ -126,7 +130,8 @@ public class StaticLayout extends Layout {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
-            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
+            NonNullObservableSupplier<Long> frameRequestSupplier,
+            Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -145,7 +150,8 @@ public class StaticLayout extends Layout {
         mNeedsOffsetTag = needsOffsetTag;
 
         mViewHost = viewHost;
-        mRequestSupplier = requestSupplier;
+        mFrameRequestSupplier = frameRequestSupplier;
+        mRequestFrameRunnable = requestFrameRunnable;
 
         setTabContentManager(tabContentManager);
         setTabModelSelector(tabModelSelector);
@@ -228,7 +234,11 @@ public class StaticLayout extends Layout {
 
         mMcp =
                 CompositorModelChangeProcessor.create(
-                        mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
+                        mModel,
+                        mSceneLayer,
+                        StaticTabSceneLayer::bind,
+                        mFrameRequestSupplier,
+                        mRequestFrameRunnable);
     }
 
     @Override
