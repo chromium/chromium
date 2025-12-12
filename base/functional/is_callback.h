@@ -9,10 +9,6 @@
 
 #include "base/functional/callback.h"
 
-// TODO(thestig): Do IWYU for code that needs callback_helpers.h, but
-// indirectly depends on this to provide it. Then remove this.
-#include "base/functional/callback_helpers.h"
-
 namespace base {
 
 namespace internal {
