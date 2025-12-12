@@ -64,4 +64,8 @@ VSyncCallbackMac::~VSyncCallbackMac() {
   std::move(unregister_callback_).Run(this);
 }
 
+base::WeakPtr<VSyncCallbackMac> VSyncCallbackMac::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace ui

@@ -42,10 +42,13 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   // extra CVDisplayLink VSync running before stopping CVDisplayLink.
   static constexpr int kMaxExtraVSyncs = 12;
 
+  base::WeakPtr<VSyncCallbackMac> GetWeakPtr();
+
  private:
   friend class CADisplayLinkMac;
-  friend struct ObjCState;
   friend class CVDisplayLinkMac;
+  friend class ExternalDisplayLinkMac;
+  friend struct ObjCState;
   friend class DisplayLinkMacSharedState;
   friend class gpu::ImageTransportSurfaceOverlayMacTest;
 
