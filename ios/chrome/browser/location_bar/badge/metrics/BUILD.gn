@@ -1,0 +1,17 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "location_bar_badge_metrics.h",
+    "location_bar_badge_metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/contextual_panel/utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}

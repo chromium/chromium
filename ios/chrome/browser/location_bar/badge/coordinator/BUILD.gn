@@ -29,6 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/metrics",
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/badge/ui",
     "//ios/chrome/browser/location_bar/badge/ui:constants",

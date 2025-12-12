@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
+#import "ios/chrome/browser/location_bar/badge/metrics/location_bar_badge_metrics.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
@@ -443,8 +444,9 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
       }
 
       contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
-      // IPH was shown, so fire loud display metrics here.
-      // TODO(crbug.com/454072799): Add metric log for chip showing.
+      // IPH was shown, so fire loud display metrics.
+      [LocationBarBadgeMetrics
+          logLoudDisplayContextualPanelEntrypointMetrics:metricsData];
       break;
     }
     case LocationBarBadgeType::kNone:
@@ -558,6 +560,18 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
       _prefService->SetTime(prefs::kLastGeminiContextualChipDisplayedTimestamp,
                             base::Time::Now());
       break;
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode: {
+      ContextualPanelTabHelper* contextualPanelTabHelper =
+          ContextualPanelTabHelper::FromWebState(
+              _webStateList->GetActiveWebState());
+      std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+          metricsData = contextualPanelTabHelper->GetMetricsData();
+      [LocationBarBadgeMetrics
+          logFirstDisplayContextualPanelEntrypointMetrics:metricsData];
+      break;
+    }
     default:
       break;
   }
@@ -579,6 +593,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         metricsData->largeEntrypointWasShown = true;
       }
       contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
+      [LocationBarBadgeMetrics
+          logLoudDisplayContextualPanelEntrypointMetrics:metricsData];
       break;
     }
     default:
