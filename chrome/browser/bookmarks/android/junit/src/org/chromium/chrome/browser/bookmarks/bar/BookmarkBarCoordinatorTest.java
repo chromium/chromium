@@ -545,7 +545,7 @@ public class BookmarkBarCoordinatorTest {
         // The expected colors in incognito.
         @ColorInt
         int expectedDarkHairline =
-                ContextCompat.getColor(mView.getContext(), R.color.divider_line_bg_color_light);
+                ContextCompat.getColor(mView.getContext(), R.color.divider_color_light);
 
         ColorStateList expectedLightTint =
                 ContextCompat.getColorStateList(

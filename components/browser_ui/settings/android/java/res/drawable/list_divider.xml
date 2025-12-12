@@ -10,7 +10,7 @@ found in the LICENSE file.
      that mirrors the Android one. -->
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:tint="@macro/divider_line_bg_color">
+    android:tint="@color/divider_color">
     <solid android:color="@android:color/black" />
     <size
         android:height="1dp"

@@ -71,7 +71,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="globalFilledTonalButtonTextColor">@color/default_text_color_on_accent1_container_list</item>
         <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
         <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
-        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalOutlinedButtonBorderColor">@color/divider_color</item>
         <item name="globalLinkTextColor">?attr/colorPrimary</item>
         <item name="globalClickableSpanColor">?attr/colorPrimary</item>
         {% endmacro %}

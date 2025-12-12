@@ -212,7 +212,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         final Resources resources = mContext.getResources();
         mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
         mIconColor = SemanticColorUtils.getDefaultIconColor(context);
-        mDragHandlebarColor = SemanticColorUtils.getDragHandlebarColor(context);
+        mDragHandlebarColor = SemanticColorUtils.getDragHandleColor(context);
         mProgressBarBackgroundColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mProgressBarColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mButtonPaddingDps =

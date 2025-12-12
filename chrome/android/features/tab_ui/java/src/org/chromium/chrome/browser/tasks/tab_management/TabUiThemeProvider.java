@@ -591,7 +591,7 @@ public class TabUiThemeProvider {
     public static @ColorInt int getPaneHairlineColor(Context context, boolean isIncognito) {
         return isIncognito
                 ? ContextCompat.getColor(
-                        context, org.chromium.chrome.tab_ui.R.color.divider_line_bg_color_light)
-                : SemanticColorUtils.getDividerLineBgColor(context);
+                        context, org.chromium.chrome.tab_ui.R.color.divider_color_light)
+                : SemanticColorUtils.getDividerColor(context);
     }
 }

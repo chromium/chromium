@@ -85,8 +85,8 @@ public class IncognitoColors {
     /** {@see SemanticColorUtils#getDividerLineBgColor} */
     public static @ColorInt int getDividerLineBgColor(Context context, boolean isIncognito) {
         return isIncognito
-                ? context.getColor(R.color.divider_line_bg_color_light)
-                : SemanticColorUtils.getDividerLineBgColor(context);
+                ? context.getColor(R.color.divider_color_light)
+                : SemanticColorUtils.getDividerColor(context);
     }
 
     /** {@see SemanticColorUtils#getColorOnPrimary} */

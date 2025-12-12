@@ -60,7 +60,7 @@ public class FindToolbarPhone extends FindToolbar {
         } else {
             queryTextColorId = R.color.default_text_color_list;
             queryHintTextColorId = R.color.find_in_page_query_default_hint_color;
-            mDivider.setBackgroundColor(SemanticColorUtils.getDividerLineBgColor(getContext()));
+            mDivider.setBackgroundColor(SemanticColorUtils.getDividerColor(getContext()));
         }
         mFindQuery.setTextColor(
                 AppCompatResources.getColorStateList(getContext(), queryTextColorId));

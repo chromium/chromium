@@ -183,7 +183,7 @@ public class StripLayoutTabTest {
         @ColorInt int expectedColor;
 
         // Normal.
-        expectedColor = SemanticColorUtils.getDividerLineBgColor(mContext);
+        expectedColor = SemanticColorUtils.getDividerColor(mContext);
         assertEquals(
                 "Night mode divider uses colorOutlineVariant.",
                 expectedColor,

@@ -87,8 +87,8 @@ found in the LICENSE file.
     <color name="hairline_stroke_color_light">@color/baseline_neutral_variant_60</color>
     <color name="hairline_stroke_color_dark">@color/baseline_neutral_variant_50</color>
     <!-- Same as ?attr/colorSurfaceVariant. -->
-    <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_90</color>
-    <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_30</color>
+    <color name="divider_color_dark">@color/baseline_neutral_variant_90</color>
+    <color name="divider_color_light">@color/baseline_neutral_variant_30</color>
     <color name="default_bg_color_blue_dark">@color/baseline_primary_40</color>
     <color name="default_bg_color_blue_light">@color/baseline_primary_80</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>

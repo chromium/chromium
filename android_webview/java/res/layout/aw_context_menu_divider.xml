@@ -6,4 +6,4 @@ found in the LICENSE file.
 <View xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="1dp"
-    android:background="@color/divider_line_bg_color_baseline" />
+    android:background="@color/divider_color_baseline" />

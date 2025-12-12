@@ -8,7 +8,7 @@ found in the LICENSE file.
 
 <resources>
     <style name="TabGridDialogTitleTheme">
-        <item name="colorControlNormal">@macro/divider_line_bg_color</item>
+        <item name="colorControlNormal">@color/divider_color</item>
         <item name="colorControlActivated">@color/filled_button_bg_color</item>
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>

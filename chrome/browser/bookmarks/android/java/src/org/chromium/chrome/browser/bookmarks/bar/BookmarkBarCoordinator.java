@@ -666,7 +666,7 @@ public class BookmarkBarCoordinator
         @ColorInt
         int hairlineColor =
                 isIncognito
-                        ? ContextCompat.getColor(mContext, R.color.divider_line_bg_color_light)
+                        ? ContextCompat.getColor(mContext, R.color.divider_color_light)
                         : ThemeUtils.getToolbarHairlineColor(mContext, color, false);
 
         mBookmarkBarSceneLayerModel.set(

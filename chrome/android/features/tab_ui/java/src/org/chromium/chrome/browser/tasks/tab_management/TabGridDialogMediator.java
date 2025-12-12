@@ -877,8 +877,8 @@ public class TabGridDialogMediator
         @ColorInt
         int hairlineColor =
                 isIncognito
-                        ? ContextCompat.getColor(context, R.color.divider_line_bg_color_light)
-                        : SemanticColorUtils.getDividerLineBgColor(context);
+                        ? ContextCompat.getColor(context, R.color.divider_color_light)
+                        : SemanticColorUtils.getDividerColor(context);
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, dialogBackgroundColor);
         mModel.set(TabGridDialogProperties.HAIRLINE_COLOR, hairlineColor);

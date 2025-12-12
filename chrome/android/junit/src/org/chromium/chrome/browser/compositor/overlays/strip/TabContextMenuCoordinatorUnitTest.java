@@ -801,9 +801,9 @@ public class TabContextMenuCoordinatorUnitTest {
         // List item 2
         assertEquals(DIVIDER, modelList.get(2).type);
         assertEquals(
-                "Expected divider to have COLOR_ID set to R.color.divider_line_bg_color_light in"
+                "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
                         + " incognito mode",
-                R.color.divider_line_bg_color_light,
+                R.color.divider_color_light,
                 modelList.get(2).model.get(COLOR_ID));
 
         // List item 3
@@ -853,9 +853,9 @@ public class TabContextMenuCoordinatorUnitTest {
         // List item 2
         assertEquals(DIVIDER, modelList.get(2).type);
         assertEquals(
-                "Expected divider to have COLOR_ID set to R.color.divider_line_bg_color_light in"
+                "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
                         + " incognito mode",
-                R.color.divider_line_bg_color_light,
+                R.color.divider_color_light,
                 modelList.get(2).model.get(COLOR_ID));
 
         // List item 3

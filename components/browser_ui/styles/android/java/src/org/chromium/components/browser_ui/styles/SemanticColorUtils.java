@@ -103,12 +103,18 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorOnSurfaceVariant, context);
     }
 
-    /** Returns the semantic color value that corresponds to divider_line_bg_color. */
-    public static @ColorInt int getDividerLineBgColor(Context context) {
+    /** Returns the semantic color value that corresponds to divider_color. */
+    public static @ColorInt int getDividerColor(Context context) {
         if (sDividerLineBgColorForTesting != null) {
             return sDividerLineBgColorForTesting;
         }
-        return ContextCompat.getColor(context, R.color.drag_handlebar_color_list);
+        return ContextCompat.getColor(context, R.color.divider_color);
+    }
+
+    // TODO(crbug.com/465898786): Remove this method once the downstream caller is updated.
+    /** Returns the semantic color value that corresponds to divider_line_bg_color. */
+    public static @ColorInt int getDividerLineBgColor(Context context) {
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
@@ -121,17 +127,17 @@ public class SemanticColorUtils {
         if (sBottomSystemNavDividerColorForTesting != null) {
             return sBottomSystemNavDividerColorForTesting;
         }
-        return getDividerLineBgColor(context);
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to overlay_panel_separator_line_color. */
     public static @ColorInt int getOverlayPanelSeparatorLineColor(Context context) {
-        return getDividerLineBgColor(context);
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to tab_grid_card_divider_tint_color. */
     public static @ColorInt int getTabGridCardDividerTintColor(Context context) {
-        return getDividerLineBgColor(context);
+        return getDividerColor(context);
     }
 
     /** Returns the semantic color value that corresponds to default_control_color_active. */
@@ -169,9 +175,9 @@ public class SemanticColorUtils {
         return getColorSurfaceContainer(context);
     }
 
-    /** Returns the semantic color value that corresponds to drag_handlebar_color. */
-    public static @ColorInt int getDragHandlebarColor(Context context) {
-        return ContextCompat.getColor(context, R.color.drag_handlebar_color_list);
+    /** Returns the semantic color value that corresponds to drag_handle_color. */
+    public static @ColorInt int getDragHandleColor(Context context) {
+        return ContextCompat.getColor(context, R.color.divider_color);
     }
 
     /** Returns the surface color value of the conceptual dialog_bg_color. */

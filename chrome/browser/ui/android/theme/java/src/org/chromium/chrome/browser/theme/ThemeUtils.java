@@ -258,8 +258,8 @@ public class ThemeUtils {
 
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
             return isIncognito
-                    ? ContextCompat.getColor(context, R.color.divider_line_bg_color_light)
-                    : SemanticColorUtils.getDividerLineBgColor(context);
+                    ? ContextCompat.getColor(context, R.color.divider_color_light)
+                    : SemanticColorUtils.getDividerColor(context);
         }
 
         @ColorInt int hairlineColor;

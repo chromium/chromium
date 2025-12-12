@@ -213,7 +213,7 @@ public class TabUiThemeUtil {
                     DIVIDER_FOLIO_LIGHT_OPACITY);
         }
 
-        return SemanticColorUtils.getDividerLineBgColor(context);
+        return SemanticColorUtils.getDividerColor(context);
     }
 
     /** {@return The {@link DrawableRes} for the keyboard focus ring for tabs} */

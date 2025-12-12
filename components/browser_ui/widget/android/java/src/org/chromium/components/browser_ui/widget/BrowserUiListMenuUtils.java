@@ -48,7 +48,7 @@ public class BrowserUiListMenuUtils {
                 data,
                 delegate,
                 /* backgroundTintColorRes= */ 0,
-                /* bottomHairlineColor= */ SemanticColorUtils.getDividerLineBgColor(context));
+                /* bottomHairlineColor= */ SemanticColorUtils.getDividerColor(context));
     }
 
     /**

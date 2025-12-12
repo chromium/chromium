@@ -901,11 +901,11 @@ public class ContextualSearchPanel extends OverlayPanel {
 
         scrimImage(
                 R.id.drag_handlebar,
-                SemanticColorUtils.getDragHandlebarColor(getContext()),
+                SemanticColorUtils.getDragHandleColor(getContext()),
                 scrimFraction);
         scrimImage(
                 R.id.toolbar_hairline,
-                SemanticColorUtils.getDividerLineBgColor(getContext()),
+                SemanticColorUtils.getDividerColor(getContext()),
                 scrimFraction);
     }
 

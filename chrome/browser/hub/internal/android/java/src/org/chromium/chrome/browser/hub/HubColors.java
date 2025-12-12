@@ -135,9 +135,9 @@ public final class HubColors {
     public static @ColorInt int getHairlineColor(Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDividerLineBgColor(context);
+                return SemanticColorUtils.getDividerColor(context);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.divider_line_bg_color_light);
+                return ContextCompat.getColor(context, R.color.divider_color_light);
             default:
                 assert false;
                 return Color.TRANSPARENT;

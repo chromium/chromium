@@ -540,7 +540,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mThumbnailFramePaint.setStyle(Paint.Style.STROKE);
         mThumbnailFramePaint.setStrokeWidth(
                 resources.getDimension(R.dimen.tab_list_mini_card_frame_size));
-        mThumbnailFramePaint.setColor(SemanticColorUtils.getDividerLineBgColor(context));
+        mThumbnailFramePaint.setColor(SemanticColorUtils.getDividerColor(context));
         mThumbnailFramePaint.setAntiAlias(true);
 
         // TODO(crbug.com/41477335): Use pre-defined styles to avoid style out of sync if any

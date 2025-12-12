@@ -58,8 +58,7 @@ public class BasicListMenu implements ListMenu {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS);
         if (isIncognito) {
-            builder.with(
-                    ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
+            builder.with(ListSectionDividerProperties.COLOR_ID, R.color.divider_color_light);
         }
         return new ListItem(ListItemType.DIVIDER, builder.build());
     }

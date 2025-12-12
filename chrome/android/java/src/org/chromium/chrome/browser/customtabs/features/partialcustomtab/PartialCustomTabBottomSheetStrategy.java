@@ -451,7 +451,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         ImageView handle = mActivity.findViewById(R.id.drag_handle);
         if (Color.alpha(scrimColor) != 0) {
-            @ColorInt int handleColor = SemanticColorUtils.getDragHandlebarColor(mActivity);
+            @ColorInt int handleColor = SemanticColorUtils.getDragHandleColor(mActivity);
             handle.setColorFilter(ColorUtils.overlayColor(handleColor, scrimColor));
         } else {
             handle.clearColorFilter();

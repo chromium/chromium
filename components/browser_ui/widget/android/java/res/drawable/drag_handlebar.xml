@@ -11,5 +11,5 @@ found in the LICENSE file.
       android:width="40dp"/>
   <corners
       android:radius="2dp" />
-  <solid android:color="@color/drag_handlebar_color_list" />
+  <solid android:color="@color/divider_color" />
 </shape>

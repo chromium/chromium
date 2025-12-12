@@ -510,7 +510,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
 
-        cctBackground.setStroke(width, SemanticColorUtils.getDividerLineBgColor(mActivity));
+        cctBackground.setStroke(width, SemanticColorUtils.getDividerColor(mActivity));
 
         // We need an inset to make the outline shadow visible.
         dragBar.setBackground(

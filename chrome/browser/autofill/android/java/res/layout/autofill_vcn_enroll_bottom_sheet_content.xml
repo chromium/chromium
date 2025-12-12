@@ -19,7 +19,7 @@ found in the LICENSE file.
         android:layout_marginVertical="@dimen/autofill_bottom_sheet_spacing_extra_small"
         android:layout_width="@dimen/autofill_bottom_sheet_drag_handlebar_width"
         android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handlebar_color" />
+        app:tint="@macro/drag_handle_color" />
 
     <ScrollView
         android:id="@+id/scroll_view"
