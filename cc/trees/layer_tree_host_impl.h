@@ -903,6 +903,14 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     is_handling_interaction_from_client_ = is_handling_interaction;
   }
 
+  // Returns a bitfield of debug information that indicates why HasDamage() is
+  // true.
+  uint32_t LastFrameHasDamageData() const {
+    return last_frame_has_damage_data_;
+  }
+
+  void AddDamageDataCrashKeys(uint32_t damage_data, bool is_viz);
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1091,6 +1099,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // expensiveness of this function.
   void MaybeFlashEnteredViewportScrollbars(ElementId element_id,
                                            const gfx::Vector2dF& scroll_delta);
+
+  uint32_t GetHasDamageData() const;
 
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
@@ -1417,6 +1427,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool dump_compositor_frame_ = false;
   uint32_t dump_compositor_frame_begin_ = 0;
   uint32_t dump_compositor_frame_end_ = 0;
+  uint32_t last_frame_has_damage_data_ = 0;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

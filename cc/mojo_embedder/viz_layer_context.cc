@@ -1344,6 +1344,9 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->max_page_scale_factor = tree.max_page_scale_factor();
   update->external_page_scale_factor = tree.external_page_scale_factor();
   update->frame_has_damage = frame_has_damage;
+  if (frame_has_damage) {
+    update->damage_reasons_bit_mask = host_impl_->LastFrameHasDamageData();
+  }
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
   update->painted_device_scale_factor = tree.painted_device_scale_factor();

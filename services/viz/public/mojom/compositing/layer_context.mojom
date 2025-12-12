@@ -218,6 +218,7 @@ struct LayerTreeUpdate {
   // calculations matches it. This is used to enforce checks in Viz to make
   // sure it is in sync with Renderer's behavior.
   bool frame_has_damage;
+  uint32 damage_reasons_bit_mask;
 
   // True if this compositor frame is related to an animated or precise scroll.
   // This includes during the touch interaction just prior to the initiation of
