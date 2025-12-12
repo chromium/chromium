@@ -37,9 +37,10 @@ DomActivityLoggersForIsolatedWorld() {
   return map;
 }
 
-void V8DOMActivityLogger::LogMethod(ScriptState* script_state,
-                                    const char* api_name,
-                                    v8::FunctionCallbackInfo<v8::Value> info) {
+void V8DOMActivityLogger::LogMethod(
+    ScriptState* script_state,
+    const char* api_name,
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::LocalVector<v8::Value> logger_args(info.GetIsolate());
   logger_args.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {
