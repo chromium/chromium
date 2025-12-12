@@ -159,9 +159,6 @@ class DbusAppmenu : public AvatarMenuObserver,
   // Has Initialize() been called?
   bool initialized_ = false;
 
-  // The DBus menu service.
-  std::unique_ptr<DbusMenu> menu_service_;
-
   // Menu models.  Menus don't own their children, so we must own them.
   // |toplevel_menus_| are children of |root_menu_|.
   // |recently_closed_window_menus_| are children of |history_menu_|.
@@ -172,6 +169,11 @@ class DbusAppmenu : public AvatarMenuObserver,
       recently_closed_window_menus_;
   raw_ptr<ui::SimpleMenuModel> history_menu_ = nullptr;
   raw_ptr<ui::SimpleMenuModel> profiles_menu_ = nullptr;
+
+  // The DBus menu service.
+  // Should be destroyed prior to ui::MenuModels because DBusMenu::MenuItem
+  // holds a raw_ptr to a ui::ModelModel.
+  std::unique_ptr<DbusMenu> menu_service_;
 
   // Tracks value of the kShowBookmarkBar preference.
   PrefChangeRegistrar pref_change_registrar_;
