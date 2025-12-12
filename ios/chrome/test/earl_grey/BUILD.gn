@@ -197,6 +197,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/popup_menu/ui_bundled",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled/overflow_menu:feature_flags",
+    "//ios/chrome/browser/qr_scanner/coordinator",
     "//ios/chrome/browser/qr_scanner/test:eg_app_support+eg2",
     "//ios/chrome/browser/reader_mode/test:eg_app_support+eg2",
     "//ios/chrome/browser/reading_list/ui_bundled:coordinator",

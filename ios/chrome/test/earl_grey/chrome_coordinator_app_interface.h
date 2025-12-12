@@ -47,6 +47,7 @@
 + (void)startNewTabPageCoordinator;
 + (void)startPopupMenuCoordinator;
 + (void)startOmniboxCoordinator;
++ (void)startQRScannerLegacyCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;
 + (void)startSnackbarCoordinator;
 + (void)startReadingListCoordinator;

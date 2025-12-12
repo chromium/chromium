@@ -102,6 +102,14 @@
 // Posts a fake VoiceOver end announcement.
 + (void)postScanEndVoiceoverAnnouncement;
 
+#pragma mark LoadQueryCommands assertions
+
+// Starts a LoadQuery handler that stores the last query loaded.
++ (void)startLoadQueryHandler;
+
+// Asserts that the loaded query matches `query` and `immediately`.
++ (NSError*)assertQueryLoaded:(NSString*)query immediately:(BOOL)immediately;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_QR_SCANNER_TEST_QR_SCANNER_APP_INTERFACE_H_

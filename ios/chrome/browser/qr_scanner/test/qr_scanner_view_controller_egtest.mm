@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
@@ -60,21 +62,17 @@ class ScopedQRScannerVoiceSearchOverride {
 
 namespace {
 
-char kTestURL[] = "/testurl";
-char kTestURLResponse[] = "Test URL page";
-char kTestURLEdited[] = "/testuredited";
-char kTestURLEditedResponse[] = "Test URL edited page";
+char kTestBaseURL[] = "https://example.org/";
+char kTestURL[] = "https://example.org/testurl";
+char kTestURLEdited[] = "https://example.org/testuredited";
+char kTestQueryURL[] = "https://example.org/search";
 
 char kTestQuery[] = "testquery";
-char kTestQueryURL[] = "/search";
 char kTestQueryURLParams[] = "?q={searchTerms}";
-char kTestQueryResponse[] = "Query: testquery";
-char kTestQueryEditedResponse[] = "Query: testqueredited";
 char kTestURLForbiddenCharacters[] = "test\u2028\u2029\u0085url";
 
 char kTestDataURL[] = "data:dataURL";
 char kTestSanitizedDataURL[] = "\"data:dataURL\"";
-char kTestDataURLResponse[] = "Query: \"data:dataURL\"";
 
 // The GREYCondition timeout used for calls to waitWithTimeout:pollInterval:.
 CFTimeInterval kGREYConditionTimeout = 5;
@@ -131,83 +129,12 @@ id<GREYMatcher> DialogCancelButton() {
 
 // Opens the QR Scanner view.
 void ShowQRScanner() {
-  if ([ChromeEarlGrey isCompactWidth]) {
-    // Long-press the New Tab button to show the options.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabButton()]
-        performAction:grey_longPress()];
-
-    // Tap the QR Code scanner option in the context menu.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_TOOLS_MENU_QR_SCANNER)]
-        performAction:grey_tap()];
-  } else {
-    // Tap the omnibox to get the keyboard accessory view to show up.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
-        performAction:grey_tap()];
-    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                        chrome_test_util::Omnibox()];
-
-    // Tap the QR Code scanner button in the keyboard accessory view.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(@"QR code search")]
-        performAction:grey_tap()];
-  }
+  [ChromeCoordinatorAppInterface dispatchSelector:@"showQRScanner"];
 }
 
 // Taps the `button`.
 void TapButton(id<GREYMatcher> button) {
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
-}
-
-// Appends the given `editText` to the `text` already in the omnibox and presses
-// the keyboard return key.
-void EditOmniboxTextAndTapKeyboardReturn(std::string text, NSString* editText) {
-  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
-  // replaceText can properly handle \n.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:editText flags:0];
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-}
-
-// Presses the keyboard return key.
-void TapKeyboardReturnKeyInOmniboxWithText(std::string text) {
-  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
-  // replaceText can properly handle \n.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-}
-
-// Provides responses for the test page URLs.
-std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-
-  std::string body_content;
-  if (base::StartsWith(request.relative_url, kTestURL,
-                       base::CompareCase::SENSITIVE)) {
-    body_content = kTestURLResponse;
-  } else if (base::StartsWith(request.relative_url, kTestURLEdited,
-                              base::CompareCase::SENSITIVE)) {
-    body_content = kTestURLEditedResponse;
-  } else if (base::StartsWith(request.relative_url, kTestQueryURL,
-                              base::CompareCase::SENSITIVE)) {
-    GURL url = request.GetURL();
-    std::string query;
-    bool found = net::GetValueForKeyInQuery(url, "q", &query);
-    if (found) {
-      body_content = "Query: " + query;
-    } else {
-      body_content = "No query";
-    }
-  } else {
-    return nullptr;
-  }
-
-  http_response->set_content(
-      base::StringPrintf("<html><body>%s</body></html>", body_content.c_str()));
-
-  return std::move(http_response);
 }
 
 }  // namespace
@@ -227,24 +154,27 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _camera_controller_swizzler;
 }
 
++ (BOOL)loadMinimalAppUI {
+  return YES;
+}
+
 - (void)setUp {
   [super setUp];
 
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-
-  _testURL = self.testServer->GetURL(kTestURL);
-  _testURLEdited = self.testServer->GetURL(kTestURLEdited);
-  _testQuery = self.testServer->GetURL(kTestQueryURL);
+  _testURL = GURL(kTestURL);
+  _testURLEdited = GURL(kTestURLEdited);
+  _testQuery = GURL(kTestQueryURL);
 
   NSString* templateURL =
       base::SysUTF8ToNSString(_testQuery.spec() + kTestQueryURLParams);
   [SettingsAppInterface overrideSearchEngineWithURL:templateURL];
+  [ChromeCoordinatorAppInterface startQRScannerLegacyCoordinator];
+  [QRScannerAppInterface startLoadQueryHandler];
 }
 
 - (void)tearDownHelper {
   [super tearDownHelper];
+  [ChromeCoordinatorAppInterface reset];
   [SettingsAppInterface resetSearchEngine];
   _camera_controller_swizzler.reset();
 }
@@ -335,12 +265,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   TapButton(QrScannerCloseButton());
   [self waitForModalOfClass:@"QRScannerViewController"
        toDisappearFromAbove:QRScannerAppInterface.currentBrowserViewController];
-}
-
-// Checks that the omnibox is visible and contains `text`.
-- (void)assertOmniboxIsVisibleWithText:(std::string)text {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
-      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helpers for Dialogs
@@ -683,13 +607,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // A helper function for testing that the view controller correctly passes the
 // received results to its delegate and that pages can be loaded. The result
 // received from the camera controller is in `result`, `response` is the
-// expected response on the loaded page, and `editString` is a nullable string
-// which can be appended to the response in the omnibox before the page is
-// loaded.
+// expected response on the loaded page.
 - (void)doTestReceivingResult:(std::string)result
-              sanitizedResult:(std::string)sanitizedResult
-                     response:(std::string)response
-                         edit:(NSString*)editString {
+              sanitizedResult:(std::string)sanitizedResult {
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
@@ -710,31 +630,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
        toDisappearFromAbove:QRScannerAppInterface.currentBrowserViewController];
   [cameraControllerMock verify];
 
-  // Optionally edit the text in the omnibox before pressing return.
-  [self assertOmniboxIsVisibleWithText:sanitizedResult];
-  if (editString != nil) {
-    EditOmniboxTextAndTapKeyboardReturn(sanitizedResult, editString);
-  } else {
-    TapKeyboardReturnKeyInOmniboxWithText(sanitizedResult);
-  }
-  [ChromeEarlGrey waitForWebStateContainingText:response];
-
-  // Press the back button to get back to the NTP.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
   NSError* error = [QRScannerAppInterface
+      assertQueryLoaded:base::SysUTF8ToNSString(sanitizedResult)
+            immediately:NO];
+  GREYAssertNil(error, error.localizedDescription);
+
+  error = [QRScannerAppInterface
       assertModalOfClass:@"QRScannerViewController"
         isNotPresentedBy:QRScannerAppInterface.currentBrowserViewController];
   GREYAssertNil(error, error.localizedDescription);
 }
 
-- (void)doTestReceivingResult:(std::string)result
-                     response:(std::string)response
-                         edit:(NSString*)editString {
-  [self doTestReceivingResult:result
-              sanitizedResult:result
-                     response:response
-                         edit:editString];
+- (void)doTestReceivingResult:(std::string)result {
+  [self doTestReceivingResult:result sanitizedResult:result];
 }
 
 // Test that the correct page is loaded if the scanner result is a URL which is
@@ -768,57 +676,35 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
        toDisappearFromAbove:QRScannerAppInterface.currentBrowserViewController];
   [cameraControllerMock verify];
 
-  // Optionally edit the text in the omnibox before pressing return.
-  [self assertOmniboxIsVisibleWithText:_testURL.GetContent()];
-  TapKeyboardReturnKeyInOmniboxWithText(_testURL.GetContent());
-  [ChromeEarlGrey waitForWebStateContainingText:kTestURLResponse];
+  NSError* error = [QRScannerAppInterface
+      assertQueryLoaded:base::SysUTF8ToNSString(_testURL.GetContent())
+            immediately:NO];
+  GREYAssertNil(error, error.localizedDescription);
 }
 
 // Test that the correct page is loaded if the scanner result is a URL.
 - (void)testReceivingQRScannerURLResult {
-  [self doTestReceivingResult:_testURL.GetContent()
-                     response:kTestURLResponse
-                         edit:nil];
+  [self doTestReceivingResult:_testURL.GetContent()];
 }
 
 // Test that the URL is sanitized and the correct page is loaded if the scanner
 // result is a URL with forbidden characters.
 - (void)testForbiddenCharactersRemoved {
-  [self doTestReceivingResult:self.testServer->base_url().GetContent() +
+  [self doTestReceivingResult:GURL(kTestBaseURL).GetContent() +
                               kTestURLForbiddenCharacters
-              sanitizedResult:_testURL.GetContent()
-                     response:kTestURLResponse
-                         edit:nil];
-}
-
-// Test that the correct page is loaded if the scanner result is a URL which is
-// then manually edited.
-- (void)testReceivingQRScannerURLResultAndEditingTheURL {
-  [self doTestReceivingResult:_testURL.GetContent()
-                     response:kTestURLEditedResponse
-                         edit:@"\bedited/"];
+              sanitizedResult:_testURL.GetContent()];
 }
 
 // Test that the correct page is loaded if the scanner result is a search query.
 - (void)testReceivingQRScannerSearchQueryResult {
-  [self doTestReceivingResult:kTestQuery response:kTestQueryResponse edit:nil];
-}
-
-// Test that the correct page is loaded if the scanner result is a search query
-// which is then manually edited.
-- (void)testReceivingQRScannerSearchQueryResultAndEditingTheQuery {
-  [self doTestReceivingResult:kTestQuery
-                     response:kTestQueryEditedResponse
-                         edit:@"\bedited"];
+  [self doTestReceivingResult:kTestQuery];
 }
 
 // Test that the correct page is loaded if the scanner result is a not supported
 // URL.
 - (void)testReceivingQRScannerLoadDataResult {
   [self doTestReceivingResult:kTestDataURL
-              sanitizedResult:kTestSanitizedDataURL
-                     response:kTestDataURLResponse
-                         edit:nil];
+              sanitizedResult:kTestSanitizedDataURL];
 }
 
 @end

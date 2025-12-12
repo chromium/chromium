@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -31,11 +33,30 @@
 
 using scanner::CameraState;
 
+// A stubbed handler of the `LoadQueryCommands` protocol, which stores a copy
+// of the last query.
+@interface StubLoadQueryHandler : NSObject <LoadQueryCommands>
+
+// Stores the last query.
+@property(nonatomic, copy) NSString* lastQuery;
+@property(nonatomic, assign) BOOL lastImmediately;
+
+@end
+
+@implementation StubLoadQueryHandler
+
+- (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
+  self.lastQuery = query;
+  self.lastImmediately = immediately;
+}
+
+@end
+
 @implementation QRScannerAppInterface
 
 + (UIViewController*)currentBrowserViewController {
   SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
-  return sceneState.browserProviderInterface.mainBrowserProvider.viewController;
+  return sceneState.window.rootViewController.presentedViewController;
 }
 
 + (NSString*)closeIconAccessibilityLabel {
@@ -194,6 +215,40 @@ using scanner::CameraState;
                     UIAccessibilityAnnouncementKeyStringValue :
                         scannedAnnouncement
                   }];
+}
+
+#pragma mark LoadQueryCommands assertions
+
+// Returns the handler of LoadQueryCommands.
++ (StubLoadQueryHandler*)loadQueryHandler {
+  static StubLoadQueryHandler* handler;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    handler = [[StubLoadQueryHandler alloc] init];
+  });
+  return handler;
+}
+
++ (void)startLoadQueryHandler {
+  [chrome_test_util::GetMainBrowser()->GetCommandDispatcher()
+      startDispatchingToTarget:[self loadQueryHandler]
+                   forProtocol:@protocol(LoadQueryCommands)];
+}
+
++ (NSError*)assertQueryLoaded:(NSString*)query immediately:(BOOL)immediately {
+  StubLoadQueryHandler* handler = [self loadQueryHandler];
+  BOOL condition = [query isEqualToString:handler.lastQuery] &&
+                   immediately == handler.lastImmediately;
+  if (!condition) {
+    NSString* errorString = [NSString
+        stringWithFormat:
+            @"A query was loaded (query=\"%@\", immediately=%@), "
+            @"that didn't match the expectation (query=\"%@\" immediately=%@)",
+            handler.lastQuery, handler.lastImmediately ? @"YES" : @"NO", query,
+            immediately ? @"YES" : @"NO"];
+    return testing::NSErrorWithLocalizedDescription(errorString);
+  }
+  return nil;
 }
 
 @end

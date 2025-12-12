@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 
@@ -54,11 +55,12 @@
   DCHECK(self.browser);
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<OmniboxCommands> handler = HandlerForProtocol(dispatcher, OmniboxCommands);
+  id<LoadQueryCommands> loadQueryHandler =
+      HandlerForProtocol(dispatcher, LoadQueryCommands);
   [handler cancelOmniboxEdit];
   self.viewController = [[QRScannerViewController alloc]
       initWithPresentationProvider:self
-                       queryLoader:static_cast<id<LoadQueryCommands>>(
-                                       self.browser->GetCommandDispatcher())];
+                       queryLoader:loadQueryHandler];
   self.viewController.modalPresentationStyle = UIModalPresentationFullScreen;
 
   SceneState* sceneState = self.browser->GetSceneState();
