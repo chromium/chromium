@@ -6,7 +6,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/prefs/pref_service.h"
@@ -134,11 +137,16 @@
 #pragma mark - PasswordImportItemFaviconDataSource
 
 - (BOOL)passwordImportItem:(PasswordImportItem*)item
-    loadFaviconAttributesWithUIHandler:(ProceduralBlock)UIHandler {
+    loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
+  // Make sure `handler` is run on the original sequence.
+  base::RepeatingClosure faviconLoadClosure =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindRepeating(handler));
+  ProceduralBlock faviconLoadCompletion =
+      base::CallbackToBlock(faviconLoadClosure);
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     item.faviconAttributes = attributes;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(UIHandler));
+    faviconLoadCompletion();
   };
   if (item.url) {
     _faviconLoader->FaviconForPageUrlOrHost(item.url.URL, gfx::kFaviconSize,
