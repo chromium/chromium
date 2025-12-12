@@ -219,6 +219,7 @@ class EntityInstance final {
 
   // These values are persisted to a database. Entries should not be renumbered
   // and numeric values should never be reused.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
   enum class RecordType {
     // The entity was created/saved locally, it exists only in the local
     // `EntityTable`.

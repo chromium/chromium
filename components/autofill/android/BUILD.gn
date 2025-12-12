@@ -266,6 +266,7 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
     "java/src/org/chromium/components/autofill/autofill_ai/AttributeInstance.java",
     "java/src/org/chromium/components/autofill/autofill_ai/AttributeType.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/EntityInstance.java",
     "java/src/org/chromium/components/autofill/autofill_ai/EntityType.java",
   ]
   srcjar_deps = [
@@ -290,6 +291,7 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
     "java/src/org/chromium/components/autofill/autofill_ai/AttributeInstance.java",
     "java/src/org/chromium/components/autofill/autofill_ai/AttributeType.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/EntityInstance.java",
     "java/src/org/chromium/components/autofill/autofill_ai/EntityType.java",
   ]
 }
