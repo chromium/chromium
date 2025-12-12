@@ -21,6 +21,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/global_routing_id.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -223,6 +224,12 @@ class PermissionRequest {
     return data_->id.global_render_frame_host_id();
   }
 
+  void set_ukm_source_id(ukm::SourceId ukm_source_id) {
+    ukm_source_id_ = ukm_source_id;
+  }
+
+  ukm::SourceId get_ukm_source_id() const { return ukm_source_id_; }
+
   // Permission name text fragment which can be used in permission prompts to
   // identify the permission being requested.
   virtual std::u16string GetPermissionNameTextFragment() const;
@@ -251,6 +258,8 @@ class PermissionRequest {
   base::OnceClosure request_finished_callback_;
 
   const bool uses_automatic_embargo_ = true;
+
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   base::WeakPtrFactory<PermissionRequest> weak_factory_{this};
 };

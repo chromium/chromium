@@ -303,6 +303,7 @@ if (!is_android) {
       "permission_manager_browsertest.cc",
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",
+      "permission_ukm_browsertest.cc",
     ]
 
     deps = [

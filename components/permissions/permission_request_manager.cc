@@ -319,6 +319,10 @@ void PermissionRequestManager::AddRequest(
 
   request->set_requesting_frame_id(source_frame->GetGlobalId());
 
+  // Snapshot the source_id so that if the request is implicitly ignored because
+  // the frame is navigated, we still record the correct source_id.
+  request->set_ukm_source_id(source_frame->GetPageUkmSourceId());
+
   QueueRequest(source_frame, std::move(request));
 
   if (!IsRequestInProgress()) {

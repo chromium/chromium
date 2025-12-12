@@ -346,6 +346,26 @@ TEST_F(PermissionRequestManagerTest, RequestsNotSupported) {
   EXPECT_TRUE(request2_state.cancelled);
 }
 
+TEST_F(PermissionRequestManagerTest, UkmSourceIdIsCorrectlyPopulated) {
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  std::unique_ptr<MockPermissionRequest> request = CreateRequest(request1_);
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  ASSERT_EQ(prompt_factory_->request_count(), 1);
+
+  const std::vector<std::unique_ptr<PermissionRequest>>& requests =
+      manager_->Requests();
+  ASSERT_EQ(requests.size(), 1u);
+  EXPECT_NE(requests[0]->get_ukm_source_id(), ukm::kInvalidSourceId);
+  EXPECT_EQ(requests[0]->get_ukm_source_id(),
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Requests grouping
 ////////////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/permission_result.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -1011,8 +1012,8 @@ class PermissionUmaUtil {
           permission_ai_relevance_model,
       std::optional<bool> prediction_decision_held_back,
       const PromptOptions& prompt_options,
-      std::optional<GeolocationAccuracy>
-          initial_geolocation_accuracy_selection);
+      std::optional<GeolocationAccuracy> initial_geolocation_accuracy_selection,
+      std::optional<ukm::SourceId> source_id);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.
