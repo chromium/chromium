@@ -195,6 +195,7 @@ public class LocationBarMediatorTest {
     @Mock private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private LocationBarEmbedder mLocationBarEmbedder;
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
@@ -317,7 +318,8 @@ public class LocationBarMediatorTest {
                         mAutocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
-                        mMultiInstanceManager);
+                        mMultiInstanceManager,
+                        mLocationBarEmbedder);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mMediator.setAddToHomescreenCoordinatorForTesting(mAddToHomescreenCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
@@ -356,10 +358,10 @@ public class LocationBarMediatorTest {
                         new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
-                        mMultiInstanceManager);
+                        mMultiInstanceManager,
+                        mLocationBarEmbedder);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
-        updateTabletWidthConsumers(tabletMediator);
         return tabletMediator;
     }
 
@@ -1171,7 +1173,8 @@ public class LocationBarMediatorTest {
                         new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
-                        mMultiInstanceManager);
+                        mMultiInstanceManager,
+                        mLocationBarEmbedder);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -1484,10 +1487,16 @@ public class LocationBarMediatorTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onFinishNativeInitialization();
         Mockito.reset(mLocationBarTablet);
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator
+                .getBookmarkButtonToolbarWidthConsumerForTesting()
+                .updateVisibility(buttonWidth);
         mTabletMediator.updateButtonVisibility();
 
         verify(mLocationBarTablet).setMicButtonVisibility(false);
-        verify(mLocationBarTablet).setBookmarkButtonVisibility(true);
+        verify(mLocationBarTablet, times(2)).setBookmarkButtonVisibility(true);
     }
 
     @Test
@@ -2046,17 +2055,20 @@ public class LocationBarMediatorTest {
 
     @Test
     @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_popupShowing() {
-        mMediator.onFinishNativeInitialization();
+        mTabletMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
-        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
         when(mPageZoomIndicatorCoordinator.isPopupWindowShowing()).thenReturn(true);
-        mMediator.updateZoomButtonVisibilityForTesting();
-        verify(mLocationBarLayout).setZoomButtonVisibility(true);
+        mTabletMediator.updateZoomButtonVisibilityForTesting();
+
+        verify(mLocationBarTablet, atLeastOnce()).setZoomButtonVisibility(true);
     }
 
     @Test
     @EnableFeatures(AccessibilityFeatureMap.ANDROID_ZOOM_INDICATOR)
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_hideButton() {
         mMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -2210,6 +2222,7 @@ public class LocationBarMediatorTest {
                         .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
         mTabletMediator.onFinishNativeInitialization();
         when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
+        when(mPageZoomIndicatorCoordinator.isPopupWindowShowing()).thenReturn(true);
         assertTrue(mTabletMediator.shouldShowZoomButton());
 
         ToolbarWidthConsumer zoomButtonConsumer =

@@ -318,7 +318,8 @@ public class LocationBarCoordinator
                         autocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
-                        multiInstanceManager);
+                        multiInstanceManager,
+                        locationBarEmbedder);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

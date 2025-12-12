@@ -19,4 +19,10 @@ public interface LocationBarEmbedder {
      * Request that the embedding view remain fixed at its current height or stop fixing its height.
      */
     default void setRequestFixedHeight(boolean requestFixedHeight) {}
+
+    /**
+     * Called when the visibility of a width consumer need to change. The embedder should handle the
+     * visibility changes.
+     */
+    default void onWidthConsumerVisibilityChanged() {}
 }
