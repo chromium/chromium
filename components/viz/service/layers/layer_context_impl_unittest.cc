@@ -997,6 +997,36 @@ TEST_F(LayerContextImplLayerLifecycleTest, UpdateMultipleLayerProperties) {
   EXPECT_EQ(layer2_impl->effect_tree_index(), cc::kRootPropertyNodeId);
 }
 
+TEST_F(LayerContextImplLayerLifecycleTest, UpdateIsDrawable) {
+  auto update = CreateDefaultUpdate();
+  int layer_id = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl);
+  // Default is false.
+  EXPECT_FALSE(layer_impl->draws_content());
+
+  // Set to true.
+  auto update_true = CreateDefaultUpdate();
+  auto layer_props_true = CreateManualLayer(layer_id);
+  layer_props_true->is_drawable = true;
+  update_true->layers.push_back(std::move(layer_props_true));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_true))
+                  .has_value());
+  EXPECT_TRUE(layer_impl->draws_content());
+
+  // Set back to false.
+  auto update_false = CreateDefaultUpdate();
+  auto layer_props_false = CreateManualLayer(layer_id);
+  layer_props_false->is_drawable = false;
+  update_false->layers.push_back(std::move(layer_props_false));
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(std::move(update_false))
+                  .has_value());
+  EXPECT_FALSE(layer_impl->draws_content());
+}
+
 TEST_F(LayerContextImplLayerLifecycleTest, ReorderLayers) {
   auto update = CreateDefaultUpdate();
   int layer_id1 = AddDefaultLayerToUpdate(update.get());
@@ -1061,6 +1091,46 @@ TEST_F(LayerContextImplLayerLifecycleTest, RemoveLayers) {
           .has_value());
   VerifyLayerExists(layer_id3, false);
   VerifyLayerOrder({1});
+}
+
+TEST_F(LayerContextImplLayerLifecycleTest,
+       LayerPropertyChangedFromPropertyTrees) {
+  auto update = CreateDefaultUpdate();
+  int layer_id = AddDefaultLayerToUpdate(update.get());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(layer_id);
+  ASSERT_NE(nullptr, layer_impl);
+
+  // Set to not from property trees.
+  auto update_not_from_trees = CreateDefaultUpdate();
+  auto layer_props_not_from_trees = CreateManualLayer(layer_id);
+  layer_props_not_from_trees->layer_property_changed_not_from_property_trees =
+      true;
+  update_not_from_trees->layers.push_back(
+      std::move(layer_props_not_from_trees));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_not_from_trees))
+          .has_value());
+  EXPECT_FALSE(layer_impl->LayerPropertyChangedFromPropertyTrees());
+  EXPECT_TRUE(layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+
+  // Reset the flag.
+  layer_impl->ResetChangeTracking();
+  EXPECT_FALSE(layer_impl->LayerPropertyChangedFromPropertyTrees());
+  EXPECT_FALSE(layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+
+  // Set layer_property_changed_from_property_trees.
+  auto update_from_trees = CreateDefaultUpdate();
+  auto layer_props_from_trees = CreateManualLayer(layer_id);
+  layer_props_from_trees->layer_property_changed_from_property_trees = true;
+  update_from_trees->layers.push_back(std::move(layer_props_from_trees));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update_from_trees))
+          .has_value());
+  EXPECT_TRUE(layer_impl->LayerPropertyChangedFromPropertyTrees());
+  EXPECT_FALSE(layer_impl->LayerPropertyChangedNotFromPropertyTrees());
 }
 
 TEST_F(LayerContextImplLayerLifecycleTest, LayerPropertyChangedFlags) {
@@ -1525,6 +1595,41 @@ TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
       layer_context_impl_->DoUpdateDisplayTree(std::move(update7)).has_value());
   EXPECT_FALSE(layer_impl->contents_opaque());
   EXPECT_EQ(layer_impl->safe_opaque_background_color(), SkColors::kTransparent);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateBackgroundColor) {
+  constexpr int kLayerId = 2;
+  const SkColor4f kColor1 = SkColors::kBlue;
+  const SkColor4f kColor2 = SkColors::kMagenta;
+
+  // Initial update: Create with default color.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kLayer,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->background_color(), SkColors::kTransparent);
+
+  // Second update: Update color.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId);
+  layer_props2->background_color = kColor1;
+  update2->layers.push_back(std::move(layer_props2));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(layer_impl->background_color(), kColor1);
+
+  // Third update: Update color again.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 = CreateManualLayer(kLayerId);
+  layer_props3->background_color = kColor2;
+  update3->layers.push_back(std::move(layer_props3));
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(layer_impl->background_color(), kColor2);
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest, UpdateRect) {
