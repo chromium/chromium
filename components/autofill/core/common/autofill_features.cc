@@ -980,6 +980,35 @@ BASE_FEATURE(kFieldClassificationModelCaching,
 // TODO(crbug.com/452607505): Clean up when launched.
 BASE_FEATURE(kGmailOtpRetrievalService, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a HaTS survey is shown after the user visited "Contact info"
+// settings page.
+BASE_FEATURE(kManageContactInfoPerceptionSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user visited "Identity docs"
+// settings page.
+BASE_FEATURE(kManageIdentityDocsPerceptionSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user visited Password Manager
+// management surface.
+BASE_FEATURE(kManagePasswordsPerceptionSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user visited "Payments"
+// settings page.
+BASE_FEATURE(kManagePaymentsPerceptionSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user visited "Travel"
+// settings page.
+BASE_FEATURE(kManageTravelPerceptionSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user visited "Your saved info"
+// settings page.
+BASE_FEATURE(kManageYourSavedInfoPerceptionSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.

@@ -62,6 +62,18 @@ constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
     "autofill-credit-card-users-perception";
 constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
     "autofill-password-users-perception";
+constexpr char kHatsSurveyTriggerManageYourSavedInfoPerception[] =
+    "autofill-manage-your-saved-info-perception";
+constexpr char kHatsSurveyTriggerManagePasswordsPerception[] =
+    "autofill-manage-passwords-perception";
+constexpr char kHatsSurveyTriggerManagePaymentsPerception[] =
+    "autofill-manage-payments-perception";
+constexpr char kHatsSurveyTriggerManageContactInfoPerception[] =
+    "autofill-manage-contact-info-perception";
+constexpr char kHatsSurveyTriggerManageIdentityDocsPerception[] =
+    "autofill-manage-identity-docs-perception";
+constexpr char kHatsSurveyTriggerManageTravelPerception[] =
+    "autofill-manage-travel-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
@@ -507,6 +519,33 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                               kHatsSurveyTriggerAutofillCard);
   survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
                               kHatsSurveyTriggerAutofillPassword);
+
+  std::vector<std::string> data_management_psd_bits_fields{
+      "Visit from Your saved info"};
+  survey_configs.emplace_back(
+      &::autofill::features::kManageYourSavedInfoPerceptionSurvey,
+      kHatsSurveyTriggerManageYourSavedInfoPerception, std::nullopt,
+      data_management_psd_bits_fields);
+  survey_configs.emplace_back(
+      &::autofill::features::kManagePasswordsPerceptionSurvey,
+      kHatsSurveyTriggerManagePasswordsPerception, std::nullopt,
+      data_management_psd_bits_fields);
+  survey_configs.emplace_back(
+      &::autofill::features::kManagePaymentsPerceptionSurvey,
+      kHatsSurveyTriggerManagePaymentsPerception, std::nullopt,
+      data_management_psd_bits_fields);
+  survey_configs.emplace_back(
+      &::autofill::features::kManageContactInfoPerceptionSurvey,
+      kHatsSurveyTriggerManageContactInfoPerception, std::nullopt,
+      data_management_psd_bits_fields);
+  survey_configs.emplace_back(
+      &::autofill::features::kManageIdentityDocsPerceptionSurvey,
+      kHatsSurveyTriggerManageIdentityDocsPerception, std::nullopt,
+      data_management_psd_bits_fields);
+  survey_configs.emplace_back(
+      &::autofill::features::kManageTravelPerceptionSurvey,
+      kHatsSurveyTriggerManageTravelPerception, std::nullopt,
+      data_management_psd_bits_fields);
 
   // Wallpaper Search survey.
   survey_configs.emplace_back(
