@@ -3062,12 +3062,19 @@ const FeatureEntry::FeatureParam
     kNewTabPageCustomizationV2_DailyRefreshThresholdMs[] = {
         {"daily_refresh_threshold_ms", "20000"}};
 
+const FeatureEntry::FeatureParam
+    kNewTabPageCustomizationV2_ShowLogoAndSearchBox[] = {
+        {"show_logo_and_search_box", "true"}};
+
 const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker,
      std::size(kNewTabPageCustomizationV2_ShowColorPicker), nullptr},
     {"Daily refresh after 20s",
      kNewTabPageCustomizationV2_DailyRefreshThresholdMs,
-     std::size(kNewTabPageCustomizationV2_DailyRefreshThresholdMs), nullptr}};
+     std::size(kNewTabPageCustomizationV2_DailyRefreshThresholdMs), nullptr},
+    {"Show logo and search box in the preview dialog",
+     kNewTabPageCustomizationV2_ShowLogoAndSearchBox,
+     std::size(kNewTabPageCustomizationV2_ShowLogoAndSearchBox), nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidComposeplate_V2Enabled[] = {
     {"v2_enabled", "true"}};
