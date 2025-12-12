@@ -238,6 +238,13 @@ source_set("webnn_test_support") {
     "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
   ]
+
+  if (is_win) {
+    deps += [
+      "//services/webnn/host",
+      "//ui/gfx/mojom",
+    ]
+  }
 }
 
 source_set("tests") {

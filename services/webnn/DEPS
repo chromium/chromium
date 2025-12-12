@@ -22,6 +22,7 @@ include_rules = [
   "+third_party/windows_app_sdk_headers",
   "+third_party/tflite",
   "+third_party/xnnpack",
+  "+ui/gfx/mojom/dxgi_info.mojom.h",
   "+ui/gfx/win/d3d_shared_fence.h",
   "+ui/gl/gl_switches.h",
 ]

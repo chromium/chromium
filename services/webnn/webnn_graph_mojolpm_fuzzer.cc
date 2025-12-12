@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/base_switches.h"
 #include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,6 +49,10 @@ struct InitGlobals {
     mojo::core::Init();
     bool success = base::CommandLine::Init(0, nullptr);
     CHECK(success);
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    scoped_feature_list_.InitFromCommandLine(
+        command_line->GetSwitchValueASCII(switches::kEnableFeatures),
+        command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 
     TestTimeouts::Initialize();
 
