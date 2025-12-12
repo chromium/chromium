@@ -366,23 +366,22 @@ void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
 
 void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (task_context->IsAdTask()) {
-    if (running_ad_async_tasks_ == 0) {
-      DCHECK(!bottom_most_async_ad_script_.has_value());
-      bottom_most_async_ad_script_ = task_context->ad_identifier();
-    }
-
-    running_ad_async_tasks_ += 1;
+  CHECK(task_context->IsAdTask());
+  if (running_ad_async_tasks_ == 0) {
+    DCHECK(!bottom_most_async_ad_script_.has_value());
+    bottom_most_async_ad_script_ = task_context->ad_identifier();
   }
+
+  running_ad_async_tasks_ += 1;
 }
 
 void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (task_context->IsAdTask()) {
-    DCHECK_GE(running_ad_async_tasks_, 1);
-    running_ad_async_tasks_ -= 1;
-    if (running_ad_async_tasks_ == 0)
-      bottom_most_async_ad_script_.reset();
+  CHECK(task_context->IsAdTask());
+  DCHECK_GE(running_ad_async_tasks_, 1);
+  running_ad_async_tasks_ -= 1;
+  if (running_ad_async_tasks_ == 0) {
+    bottom_most_async_ad_script_.reset();
   }
 }
 

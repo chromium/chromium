@@ -116,10 +116,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // the stack and annotate the task if so.
   void DidCreateAsyncTask(probe::AsyncTaskContext* task_context);
 
-  // Called when an async task is eventually run.
+  // Called when an ad-related async task is eventually run.
   void DidStartAsyncTask(probe::AsyncTaskContext* task_context);
 
-  // Called when the task has finished running.
+  // Called when the ad-related task has finished running.
   void DidFinishAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Returns true if any script in the pseudo call stack has previously been

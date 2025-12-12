@@ -27,14 +27,24 @@ class CORE_EXPORT AsyncTaskContext {
   AsyncTaskContext() = default;
   ~AsyncTaskContext();
 
+  enum class ScanForAds {
+    kFalse,
+    kTrue,
+  };
+
   // Not copyable or movable. The address of `AsyncTaskContext` is used
   // to identify this task and corresponding runs/invocations via `AsyncTask`.
   AsyncTaskContext(const AsyncTaskContext&) = delete;
   AsyncTaskContext& operator=(const AsyncTaskContext&) = delete;
 
   // Schedules this async task with the ThreadDebugger. `Schedule` can be called
-  // once and only once per AsyncTaskContext instance.
-  void Schedule(ExecutionContext* context, const StringView& name);
+  // once and only once per AsyncTaskContext instance. Set `scan_for_ads` to
+  // `kTrue` only in cases where blink runs an internal operation
+  // asynchronously, and we call `AdTracker::IsAdScriptInStack` on the other
+  // side while the async task is running. Generally should be `kFalse`.
+  void Schedule(ExecutionContext* context,
+                const StringView& name,
+                ScanForAds scan_for_ads = ScanForAds::kFalse);
 
   // Explicitly cancel this async task. No `AsyncTasks`s must be created with
   // this context after `Cancel` was called.

@@ -18,7 +18,8 @@ AsyncTaskContext::~AsyncTaskContext() {
 }
 
 void AsyncTaskContext::Schedule(ExecutionContext* context,
-                                const StringView& name) {
+                                const StringView& name,
+                                ScanForAds scan_for_ads) {
   // TODO(crbug.com/1275875): Verify that this context was not already
   // scheduled or has already been canceled. Currently we don't have enough
   // confidence that such a CHECK wouldn't break blink.
@@ -33,9 +34,12 @@ void AsyncTaskContext::Schedule(ExecutionContext* context,
   if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate()))
     debugger->AsyncTaskScheduled(name, Id(), true);
 
-  blink::AdTracker* ad_tracker = AdTracker::FromExecutionContext(context);
-  if (ad_tracker)
-    ad_tracker->DidCreateAsyncTask(this);
+  if (scan_for_ads == ScanForAds::kTrue) {
+    blink::AdTracker* ad_tracker = AdTracker::FromExecutionContext(context);
+    if (ad_tracker) {
+      ad_tracker->DidCreateAsyncTask(this);
+    }
+  }
 }
 
 void AsyncTaskContext::Cancel() {
