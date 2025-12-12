@@ -40,6 +40,10 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
+namespace gfx {
+class SizeF;
+}  // namespace gfx
+
 namespace blink {
 
 bool PLATFORM_EXPORT
@@ -62,12 +66,8 @@ inline viz::SharedImageFormat GetN32FormatForCanvas() {
   return viz::SharedImageFormat::N32Format();
 }
 
-bool NearlyIntegral(float value);
-
-InterpolationQuality ComputeInterpolationQuality(float src_width,
-                                                 float src_height,
-                                                 float dest_width,
-                                                 float dest_height,
+InterpolationQuality ComputeInterpolationQuality(const gfx::SizeF& src,
+                                                 const gfx::SizeF& dest,
                                                  bool is_data_complete = true);
 
 // Technically, this is driven by the CSS/Canvas2D specs and unrelated to Skia.

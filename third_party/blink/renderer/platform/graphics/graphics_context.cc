@@ -519,8 +519,7 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
   } else if (image.IsLazyDecoded()) {
     resampling = GetDefaultInterpolationQuality();
   } else {
-    resampling = ComputeInterpolationQuality(src.width(), src.height(),
-                                             dest.width(), dest.height(),
+    resampling = ComputeInterpolationQuality(src.size(), dest.size(),
                                              image.FirstFrameIsComplete());
 
     if (resampling == kInterpolationNone) {
