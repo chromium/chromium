@@ -1669,20 +1669,15 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
   model()->SetIsKeywordHint(false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
+  // Switching to another keyword should not notify observers.
+  EXPECT_CALL(observer, OnKeywordStateChanged(_)).Times(0);
+  model()->SetKeyword(u"keyword2");
+  model()->SetIsKeywordHint(false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
   // Leaving keyword mode should notify observers.
   EXPECT_CALL(observer, OnKeywordStateChanged(false));
   model()->SetKeyword(u"");
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // Setting hint state should notify if it changes keyword selected state.
-  model()->SetKeyword(u"keyword");
-  EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  model()->SetIsKeywordHint(true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  // Setting hint state should not notify if it doesn't change selected state.
-  EXPECT_CALL(observer, OnKeywordStateChanged(testing::_)).Times(0);
-  model()->SetIsKeywordHint(true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   model()->RemoveObserver(&observer);
