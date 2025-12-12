@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/test/gtest_util.h"
@@ -2174,18 +2175,18 @@ TEST(OptionalTest, DereferencingNoValueCrashes) {
 
   {
     const std::optional<C> const_optional;
-    EXPECT_DEATH_IF_SUPPORTED(const_optional.value(), "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = const_optional.value(), "");
     EXPECT_DEATH_IF_SUPPORTED(const_optional->Method(), "");
-    EXPECT_DEATH_IF_SUPPORTED(*const_optional, "");
-    EXPECT_DEATH_IF_SUPPORTED(*std::move(const_optional), "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = *const_optional, "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = *std::move(const_optional), "");
   }
 
   {
     std::optional<C> non_const_optional;
-    EXPECT_DEATH_IF_SUPPORTED(non_const_optional.value(), "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = non_const_optional.value(), "");
     EXPECT_DEATH_IF_SUPPORTED(non_const_optional->Method(), "");
-    EXPECT_DEATH_IF_SUPPORTED(*non_const_optional, "");
-    EXPECT_DEATH_IF_SUPPORTED(*std::move(non_const_optional), "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = *non_const_optional, "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = *std::move(non_const_optional), "");
   }
 }
 

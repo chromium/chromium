@@ -1210,7 +1210,7 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
               CountersMatch());
 
   RawPtrCountingImpl::ClearCounters();
-  set.count(&x);
+  std::ignore = set.count(&x);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
@@ -1224,7 +1224,7 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
               CountersMatch());
 
   RawPtrCountingImpl::ClearCounters();
-  set.count(ptr);
+  std::ignore = set.count(ptr);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,

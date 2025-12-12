@@ -138,15 +138,15 @@ std::string DebugString(const ClientState* client_state) {
 
   if (client_state->last_negative_event_ts.has_value()) {
     std::ostringstream stream;
-    stream << "last negative event timestamp: ",
-        client_state->last_negative_event_ts.value();
+    stream << "last negative event timestamp: "
+           << client_state->last_negative_event_ts.value();
     log += stream.str();
   }
 
   if (client_state->last_shown_ts.has_value()) {
     std::ostringstream stream;
-    stream << "last shown notification timestamp: ",
-        client_state->last_shown_ts.value();
+    stream << "last shown notification timestamp: "
+           << client_state->last_shown_ts.value();
     log += stream.str();
   }
 

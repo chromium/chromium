@@ -168,7 +168,7 @@ float FontMetrics::FloatAscentInternal(
       // in TrueType AAT.
       return float_ascent_ * 0.5f;
     case kHangingBaseline:
-      if (hanging_baseline_position_.has_value(), apply_baseline_table) {
+      if (hanging_baseline_position_.has_value() && apply_baseline_table) {
         return float_ascent_ - hanging_baseline_position_.value();
       }
       return float_ascent_ * 0.2f;
