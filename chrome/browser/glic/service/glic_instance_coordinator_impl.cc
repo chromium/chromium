@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -597,6 +598,11 @@ void GlicInstanceCoordinatorImpl::OnWillCreateFloaty() {
 
 void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
                                                tabs::TabInterface& new_tab) {
+  PrefService* pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !pref_service->GetBoolean(glic::prefs::kGlicDaisyChainNewTabsEnabled)) {
+    return;
+  }
   auto* tab_features = old_tab.GetTabFeatures();
   if (!tab_features) {
     return;
