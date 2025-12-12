@@ -43,7 +43,7 @@ CommitDeferringConditionRunner::Create(
     CommitDeferringCondition::NavigationType navigation_type,
     std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   // Initial WebUI navigations shouldn't run CommitDeferringConditions.
-  CHECK(!navigation_request.IsInitialWebUINavigation());
+  CHECK(!navigation_request.IsInitialWebUISyncNavigation());
   auto runner = base::WrapUnique(new CommitDeferringConditionRunner(
       navigation_request, navigation_type,
       candidate_prerender_frame_tree_node_id));
@@ -105,7 +105,9 @@ void CommitDeferringConditionRunner::ResumeProcessing() {
 void CommitDeferringConditionRunner::RegisterDeferringConditions(
     NavigationRequest& navigation_request) {
   // Initial WebUI navigations shouldn't run CommitDeferringConditions.
-  CHECK(!navigation_request.IsInitialWebUINavigation());
+  CHECK(!navigation_request.IsInitialWebUINavigation() ||
+        !base::FeatureList::IsEnabled(
+            features::kInitialWebUISyncNavStartToCommit));
   switch (navigation_type_) {
     case CommitDeferringCondition::NavigationType::kPrerenderedPageActivation:
       // For prerendered page activation, conditions should run before start

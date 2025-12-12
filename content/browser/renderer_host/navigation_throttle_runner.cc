@@ -165,9 +165,8 @@ void NavigationThrottleRunner::ProcessInternal() {
   int64_t local_navigation_id = navigation_id_;
 
   auto& throttles = registry_->GetThrottles();
-  if (registry_->GetNavigationHandle().IsInitialWebUINavigation()) {
+  if (registry_->GetNavigationHandle().IsInitialWebUISyncNavigation()) {
     // We've skipped adding throttles for navigations to the initial WebUI.
-    // TODO(crbug.com/457618572): Remove the cast to NavigationRequest.
     CHECK_EQ(throttles.size(), 0u);
   }
   for (size_t i = next_index_; i < throttles.size(); ++i) {

@@ -260,7 +260,7 @@ class MockNavigationHandle : public NavigationHandle {
               GetNavigationDiscardReason,
               ());
   MOCK_METHOD(bool, NeedsUrlLoader, ());
-  MOCK_METHOD(bool, IsInitialWebUINavigation, ());
+  MOCK_METHOD(bool, IsInitialWebUISyncNavigation, ());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,

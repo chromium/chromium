@@ -3225,7 +3225,7 @@ void NavigationRequest::StartNavigation() {
   // For initial WebUI navigations, CommitDeferringConditions and
   // ProcessSelectionDeferringConditions are not run, so that the navigation can
   // run synchronously from start to commit.
-  if (!IsPrerenderedPageActivation() && !IsInitialWebUINavigation()) {
+  if (!IsPrerenderedPageActivation() && !IsInitialWebUISyncNavigation()) {
     commit_deferrer_ = CommitDeferringConditionRunner::Create(
         *this, CommitDeferringCondition::NavigationType::kOther,
         /*candidate_prerender_frame_tree_node_id=*/std::nullopt);
@@ -6190,7 +6190,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
   // When this request is for prerender activation, `commit_deferrer_` has
   // already been processed. If it's an initial WebUI navigation, commit
   // deferring conditions are skipped.
-  if (IsPrerenderedPageActivation() || IsInitialWebUINavigation()) {
+  if (IsPrerenderedPageActivation() || IsInitialWebUISyncNavigation()) {
     DCHECK(!commit_deferrer_);
     CommitNavigation();
     // DO NOT ADD CODE after this. The previous call to CommitNavigation
@@ -12017,6 +12017,11 @@ bool NavigationRequest::IsInitialWebUINavigation() {
 #else
   return false;
 #endif
+}
+bool NavigationRequest::IsInitialWebUISyncNavigation() {
+  return IsInitialWebUINavigation() &&
+         base::FeatureList::IsEnabled(
+             features::kInitialWebUISyncNavStartToCommit);
 }
 
 }  // namespace content
