@@ -188,7 +188,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestBadgeUpdateRequest) {
   OCMExpect([mock_consumer_ showBadge]);
 
   LocationBarBadgeConfiguration* config =
-      CreateBadgeConfiguration(LocationBarBadgeType::kReaderMode);
+      CreateBadgeConfiguration(LocationBarBadgeType::kIncognito);
   [mediator_ updateBadgeConfig:config];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

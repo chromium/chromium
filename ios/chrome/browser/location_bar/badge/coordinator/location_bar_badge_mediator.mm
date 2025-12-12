@@ -174,6 +174,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _infobarBadgeObservation->Reset();
   }
 
+  [self resetTimersAndUIStateAnimated:NO];
+
   // Return early if no new webstates are active.
   if (!status.new_active_web_state) {
     if (_activeWebState) {
@@ -277,8 +279,13 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer showBadge];
   [self logBadgeShown:config.badgeType];
 
-  if (config.badgeText) {
-    [self startPromoTimer];
+  if ([self shouldShowIPH:config.badgeType]) {
+    [self startIPHTimer:config];
+    return;
+  }
+
+  if ([self shouldShowChip:config]) {
+    [self startPromoTimer:config];
   }
 }
 
@@ -341,20 +348,43 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 #pragma mark - Private
 
 // Starts the promo timer.
-- (void)startPromoTimer {
+- (void)startPromoTimer:(LocationBarBadgeConfiguration*)badgeConfig {
   __weak LocationBarBadgeMediator* weakSelf = self;
   _promoStartTimer = std::make_unique<base::OneShotTimer>();
   _promoStartTimer->Start(FROM_HERE,
                           base::Seconds(kStartExpandTransitionTimeInSeconds),
                           base::BindOnce(^{
-                            [weakSelf setupAndExpandChip];
+                            [weakSelf setupAndExpandChip:badgeConfig];
+                          }));
+}
+
+// Timer to end the promo.
+- (void)startEndPromoTimer {
+  __weak LocationBarBadgeMediator* weakSelf = self;
+  _promoStartTimer = std::make_unique<base::OneShotTimer>();
+  _promoStartTimer->Start(FROM_HERE,
+                          base::Seconds(kStartCollapseTransitionTimeInSeconds),
+                          base::BindOnce(^{
+                            [weakSelf cleanupAndTransitionToDefaultBadgeState];
+                          }));
+}
+
+// Starts the promo timer for an IPH.
+- (void)startIPHTimer:(LocationBarBadgeConfiguration*)badgeConfig {
+  __weak LocationBarBadgeMediator* weakSelf = self;
+  _promoStartTimer = std::make_unique<base::OneShotTimer>();
+  _promoStartTimer->Start(FROM_HERE,
+                          base::Seconds(kStartExpandTransitionTimeInSeconds),
+                          base::BindOnce(^{
+                            [weakSelf setupAndShowIPH:badgeConfig];
                           }));
 }
 
 // Transforms the badge into a chip and starts the timers to transition back to
 // the default badge state.
-- (void)setupAndExpandChip {
-  if (![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+- (void)setupAndExpandChip:(LocationBarBadgeConfiguration*)badgeConfig {
+  if (![self shouldShowChip:badgeConfig] ||
+      ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
     // Enable fullscreen in case it was disabled when trying to show the IPH.
     [self.delegate enableFullscreen];
     return;
@@ -364,15 +394,66 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer expandBadgeContainer];
 
   // TODO(crbug.com/454072799): Add metric log for chip showing.
+  [self startEndPromoTimer];
+}
 
-  __weak LocationBarBadgeMediator* weakSelf = self;
+// Shows the IPH related to the `badgeConfig`.
+- (void)setupAndShowIPH:(LocationBarBadgeConfiguration*)badgeConfig {
+  [self.delegate disableFullscreen];
+  [self showIPH:badgeConfig];
+}
 
-  _promoEndTimer = std::make_unique<base::OneShotTimer>();
-  _promoEndTimer->Start(FROM_HERE,
-                        base::Seconds(kStartCollapseTransitionTimeInSeconds),
-                        base::BindOnce(^{
-                          [weakSelf cleanupAndTransitionToDefaultBadgeState];
-                        }));
+// Shows a IPH with `badgeType`.
+- (void)showIPH:(LocationBarBadgeConfiguration*)badgeConfig {
+  LocationBarBadgeType badgeType = badgeConfig.badgeType;
+  switch (badgeType) {
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode: {
+      // Special case for first entrypoint appearances where an IPH is shown
+      // instead of the large entrypoint. If showing the IPH fails, will
+      // fallback to showing the large entrypoint.
+      if (![self shouldShowIPH:badgeConfig.badgeType]) {
+        [self setupAndExpandChip:badgeConfig];
+        return;
+      }
+
+      ContextualPanelTabHelper* contextualPanelTabHelper =
+          ContextualPanelTabHelper::FromWebState(
+              _webStateList->GetActiveWebState());
+      ContextualPanelItemConfiguration* config =
+          contextualPanelTabHelper->GetFirstCachedConfig().get();
+      NSString* text = base::SysUTF8ToNSString(config->entrypoint_message);
+
+      // Try to show the entrypoint's IPH and capture the result.
+      BOOL success = [self attemptShowingEntrypointIPHWithText:text
+                                                        config:config];
+
+      // Show the large entrypoint if showing the IPH was not successful.
+      if (!success) {
+        [self setupAndExpandChip:badgeConfig];
+        return;
+      }
+
+      [self.consumer highlightBadge:YES];
+
+      std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+          metricsData = contextualPanelTabHelper->GetMetricsData();
+      if (metricsData) {
+        metricsData->iphWasShown = true;
+      }
+
+      contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
+      // IPH was shown, so fire loud display metrics here.
+      // TODO(crbug.com/454072799): Add metric log for chip showing.
+      break;
+    }
+    case LocationBarBadgeType::kNone:
+      break;
+    default:
+      break;
+  }
+  [self startEndPromoTimer];
 }
 
 // Changes the UI to the default badge state.
@@ -418,8 +499,54 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         return YES;
       }
       return NO;
+    case LocationBarBadgeType::kNone:
+      return NO;
     default:
       return YES;
+  }
+}
+
+// Whether a chip with `badgeType` should show.
+- (BOOL)shouldShowChip:(LocationBarBadgeConfiguration*)badgeConfig {
+  if (!badgeConfig.badgeText) {
+    return NO;
+  }
+
+  LocationBarBadgeType badgeType = badgeConfig.badgeType;
+  switch (badgeType) {
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode: {
+      ContextualPanelTabHelper* contextualPanelTabHelper =
+          ContextualPanelTabHelper::FromWebState(
+              _webStateList->GetActiveWebState());
+      ContextualPanelItemConfiguration* config =
+          contextualPanelTabHelper->GetFirstCachedConfig().get();
+      return [self canShowLargeEntrypointWithConfig:config];
+    }
+    case LocationBarBadgeType::kNone:
+      return NO;
+    default:
+      return YES;
+  }
+}
+
+// Whether an IPH with `badgeType` should show.
+- (BOOL)shouldShowIPH:(LocationBarBadgeType)badgeType {
+  switch (badgeType) {
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode: {
+      ContextualPanelTabHelper* contextualPanelTabHelper =
+          ContextualPanelTabHelper::FromWebState(
+              _webStateList->GetActiveWebState());
+      ContextualPanelItemConfiguration* config =
+          contextualPanelTabHelper->GetFirstCachedConfig().get();
+      return [self canShowEntrypointIPHWithConfig:config];
+    }
+    default:
+      return NO;
+      ;
   }
 }
 
@@ -512,16 +639,6 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer
       transitionToContextualPanelOpenedState:
           contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()];
-
-  // Special case for first entrypoint appearances where an IPH is shown
-  // instead of the large entrypoint. If showing the IPH fails, will fallback to
-  // showing the large entrypoint.
-  if ([self canShowEntrypointIPHWithConfig:config]) {
-    // TODO(crbug.com/467510797): Implement IPH Timer.
-    return;
-  }
-
-  // TODO(crbug.com/467513869): Implement large entrypoint timer for contextual.
 }
 
 // Whether to show the Contextual Panel Entrypoint IPH given a `config`.
@@ -604,6 +721,32 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         base::SysUTF8ToNSString(config->accessibility_hint);
   }
   return badgeConfig;
+}
+
+// Tries to show the entrypoint's IPH with the config text, and returns whether
+// it was shown successfully. Also passes the current config's entrypoint FET
+// feature, which controls whether the IPH can be shown.
+- (BOOL)attemptShowingEntrypointIPHWithText:(NSString*)text
+                                     config:(ContextualPanelItemConfiguration*)
+                                                config {
+  BOOL isBottomOmnibox = [self.delegate isBottomOmniboxActive];
+
+  CGPoint anchorPoint =
+      [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
+
+  BOOL shown = [_entrypointHelpHandler
+      showContextualPanelEntrypointIPHWithConfig:config
+                                     anchorPoint:anchorPoint
+                                 isBottomOmnibox:isBottomOmnibox];
+
+  return shown;
+}
+
+// Whether a large contextual panel entrypoint moment can show.
+- (BOOL)canShowLargeEntrypointWithConfig:
+    (ContextualPanelItemConfiguration*)config {
+  return [self canShowLoudEntrypointMoment] && config &&
+         config->CanShowLargeEntrypoint();
 }
 
 @end
