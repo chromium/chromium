@@ -61,6 +61,7 @@ public class NtpCustomizationCoordinator {
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
     private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
     private ViewFlipper mViewFlipperView;
+    private boolean mHasMainBottomSheetShown;
 
     /**
      * New Tab Page Customization bottom sheet type.
@@ -133,6 +134,8 @@ public class NtpCustomizationCoordinator {
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
         mViewFlipperView = contentView.findViewById(R.id.ntp_customization_view_flipper);
+        mHasMainBottomSheetShown =
+                NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference();
 
         // This empty OnClickListener is added to the ViewFlipper to prevent TalkBack from
         // unexpectedly triggering the click listeners of its child list items.
@@ -208,7 +211,14 @@ public class NtpCustomizationCoordinator {
      */
     public void showBottomSheet() {
         switch (mBottomSheetType) {
-            case MAIN -> mMediator.showBottomSheet(MAIN);
+            case MAIN -> {
+                mMediator.showBottomSheet(MAIN);
+                if (!mHasMainBottomSheetShown) {
+                    NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
+                            /* hasShown= */ true);
+                    mHasMainBottomSheetShown = true;
+                }
+            }
             case NTP_CARDS -> showNtpCardsBottomSheet();
             case FEED -> showFeedBottomSheet();
             case THEME -> showThemeBottomSheet();

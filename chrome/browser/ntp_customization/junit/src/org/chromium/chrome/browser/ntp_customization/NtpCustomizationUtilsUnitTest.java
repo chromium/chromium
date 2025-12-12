@@ -1124,4 +1124,19 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(portraitMatrix, restoredMatrices.getPortraitMatrix());
         assertEquals(landscapeMatrix, restoredMatrices.getLandscapeMatrix());
     }
+
+    @Test
+    public void testSetAndGetNtpCustomizationBottomSheetShownFromSharedPreference() {
+        assertFalse(
+                NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
+
+        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
+                /* hasShown= */ true);
+        assertTrue(NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
+
+        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
+                /* hasShown= */ false);
+        assertFalse(
+                NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
+    }
 }

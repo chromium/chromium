@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_SHOWN;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
@@ -401,6 +402,22 @@ public class NtpCustomizationUtils {
     static void saveDailyRefreshBackgroundImageFile(@Nullable Bitmap backgroundImageBitmap) {
         File file = createDailyRefreshBackgroundImageFile();
         saveBitmapImageToFile(backgroundImageBitmap, file);
+    }
+
+    /**
+     * Sets whether the NTP customization bottom sheet has shown.
+     *
+     * @param hasShown Whether the bottom sheet has shown.
+     */
+    public static void setNtpCustomizationBottomSheetShownToSharedPreferences(boolean hasShown) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeBoolean(NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_SHOWN, hasShown);
+    }
+
+    /** Gets whether the NTP customization bottom sheet has shown. */
+    public static boolean getNtpCustomizationBottomSheetShownFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readBoolean(NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_SHOWN, false);
     }
 
     /**
@@ -1310,6 +1327,7 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_SHOWN);
     }
 
     public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {

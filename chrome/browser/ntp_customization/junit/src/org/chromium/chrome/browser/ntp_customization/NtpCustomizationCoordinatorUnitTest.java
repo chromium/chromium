@@ -71,6 +71,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                         .inflate(
                                 R.layout.ntp_customization_ntp_cards_bottom_sheet,
                                 /* root= */ null);
+        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
+                /* hasShown= */ false);
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(
                         mContext, mBottomSheetController, mock(Supplier.class), MAIN);
@@ -82,6 +84,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     public void testShowBottomSheet() {
         mNtpCustomizationCoordinator.showBottomSheet();
         verify(mMediator).showBottomSheet(eq(MAIN));
+        assertTrue(NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
     }
 
     @Test

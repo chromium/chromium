@@ -137,6 +137,8 @@ DEFINE_VARIATION_PARAM(kIPHMicToolbarFeature, "IPH_MicToolbar");
 DEFINE_VARIATION_PARAM(kIPHMenuAddToGroup, "IPH_MenuAddToGroup");
 DEFINE_VARIATION_PARAM(kIPHMostVisitedTilesCustomizationPinFeature,
                        "IPH_MostVisitedTilesCustomizationPin");
+DEFINE_VARIATION_PARAM(kIPHNewTabPageThemeCustomizationFeature,
+                       "IPH_NewTabPageThemeCustomization");
 DEFINE_VARIATION_PARAM(kIPHPageInfoFeature, "IPH_PageInfo");
 DEFINE_VARIATION_PARAM(kIPHPageInfoStoreInfoFeature, "IPH_PageInfoStoreInfo");
 DEFINE_VARIATION_PARAM(kIPHPageZoomFeature, "IPH_PageZoom");
@@ -675,6 +677,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHMicToolbarFeature),
         VARIATION_ENTRY(kIPHMenuAddToGroup),
         VARIATION_ENTRY(kIPHMostVisitedTilesCustomizationPinFeature),
+        VARIATION_ENTRY(kIPHNewTabPageThemeCustomizationFeature),
         VARIATION_ENTRY(kIPHPageInfoFeature),
         VARIATION_ENTRY(kIPHPageInfoStoreInfoFeature),
         VARIATION_ENTRY(kIPHPageZoomFeature),

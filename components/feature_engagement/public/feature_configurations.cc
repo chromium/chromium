@@ -1065,6 +1065,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 90, 360);
     return config;
   }
+
+  if (kIPHNewTabPageThemeCustomizationFeature.name == feature->name) {
+    // Allows an IPH for the theme customization entry point.
+    // * Only once in its lifetime.
+    // * Only as long as the user hasn't opened the NTP customization bottom
+    // sheet.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("ntp_theme_customization_iph_triggered",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("ntp_theme_customization_iph_used", Comparator(EQUAL, 0),
+                    k10YearsInDays, k10YearsInDays);
+    return config;
+  }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
     // A config that allows the web page summary menu item IPH to be shown:
     // * Once per day. 3 times max in 90 days

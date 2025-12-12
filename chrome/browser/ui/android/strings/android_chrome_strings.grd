@@ -3941,6 +3941,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage interested sites.">
         Manage content you follow and suggested topics and searches
       </message>
+      <message name="IDS_NEW_TAB_PAGE_THEME_CUSTOMIZATION_IPH" desc="In-product help that points at the app menu 3-dot icon in new tab page to make users aware of the ntp theme customization.">
+        Personalize the background of this page
+      </message>
       <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
         Following
       </message>
