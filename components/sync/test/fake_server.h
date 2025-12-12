@@ -16,6 +16,7 @@
 
 #include "base/location.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "components/sync/base/collaboration_id.h"
@@ -63,9 +64,9 @@ bool AreFullUpdateTypeDataProgressMarkersEquivalent(
 // to avoid debug logs upon test failure.
 class FakeServer : public syncer::LoopbackServer::ObserverForTests {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     // Called whenever a commit command is received by FakeServer. Note that
     // Commit command may fail and hence it's not guaranteed that OnCommit()
@@ -362,7 +363,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   sync_pb::ClientCommand client_command_;
 
   // FakeServer's observers.
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer, true> observers_;
 
   // The last received client to server messages.
   sync_pb::ClientToServerMessage last_commit_message_;

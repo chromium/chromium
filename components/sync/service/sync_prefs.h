@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -30,7 +31,7 @@ class TrustedVaultAutoUpgradeExperimentGroup;
 
 namespace syncer {
 
-class SyncPrefObserver {
+class SyncPrefObserver : public base::CheckedObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
   // Called when any of the prefs related to the user's selected data types has
@@ -38,7 +39,7 @@ class SyncPrefObserver {
   virtual void OnSelectedTypesPrefChange() = 0;
 
  protected:
-  virtual ~SyncPrefObserver();
+  ~SyncPrefObserver() override;
 };
 
 // SyncPrefs is a helper class that manages getting, setting, and persisting
@@ -304,7 +305,7 @@ class SyncPrefs {
   // Never null.
   const raw_ptr<PrefService> pref_service_;
 
-  base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
+  base::ObserverList<SyncPrefObserver> sync_pref_observers_;
 
   // The preference that controls whether sync is under control by
   // configuration management (aka policy).

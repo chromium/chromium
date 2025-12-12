@@ -212,8 +212,7 @@ class TestSyncService : public SyncService {
 
   SyncCycleSnapshot last_cycle_snapshot_;
 
-  base::ObserverList<SyncServiceObserver>::UncheckedAndDanglingUntriaged
-      observers_;
+  base::ObserverList<SyncServiceObserver> observers_;
 
   GURL sync_service_url_;
 

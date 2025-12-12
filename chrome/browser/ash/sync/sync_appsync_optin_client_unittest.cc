@@ -87,7 +87,7 @@ class FakeSyncService : public syncer::TestSyncService {
     }
   }
 
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<syncer::SyncServiceObserver> observers_;
 };
 
 }  // namespace

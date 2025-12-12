@@ -33,6 +33,7 @@
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/ukm_pref_names.h"
@@ -183,7 +184,7 @@ class MockSyncService : public syncer::TestSyncService {
   }
 
   // The list of observers of the SyncService state.
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<syncer::SyncServiceObserver> observers_;
 };
 
 struct IndependentAppMetricsTestParams {

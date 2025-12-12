@@ -497,11 +497,10 @@ class SyncServiceImpl : public SyncService,
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
   std::optional<base::ObserverList<SyncServiceObserver,
-                                   /*check_empty=*/true>::Unchecked>
+                                   /*check_empty=*/true>>
       observers_;
 
-  base::ObserverList<ProtocolEventObserver>::Unchecked
-      protocol_event_observers_;
+  base::ObserverList<ProtocolEventObserver> protocol_event_observers_;
 
   std::unique_ptr<BackendMigrator> migrator_;
 

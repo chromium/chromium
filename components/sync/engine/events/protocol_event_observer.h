@@ -5,14 +5,16 @@
 #ifndef COMPONENTS_SYNC_ENGINE_EVENTS_PROTOCOL_EVENT_OBSERVER_H_
 #define COMPONENTS_SYNC_ENGINE_EVENTS_PROTOCOL_EVENT_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 namespace syncer {
 
 class ProtocolEvent;
 
-class ProtocolEventObserver {
+class ProtocolEventObserver : public base::CheckedObserver {
  public:
   ProtocolEventObserver() = default;
-  virtual ~ProtocolEventObserver() = default;
+  ~ProtocolEventObserver() override = default;
 
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
 };

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_OBSERVER_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 namespace syncer {
 
 class SyncService;
@@ -15,7 +17,7 @@ class SyncService;
 // to a KeyedService itself, declare an appropriate DependsOn() relation and
 // remove the observer in your service's Shutdown(). Otherwise, implement
 // SyncServiceObserver::OnSyncShutdown() and remove the observer there.
-class SyncServiceObserver {
+class SyncServiceObserver : public base::CheckedObserver {
  public:
   // When one of the following events occurs, OnStateChanged() is called.
   // Observers should query the service to determine what happened.
@@ -38,7 +40,7 @@ class SyncServiceObserver {
 
  protected:
   SyncServiceObserver() = default;
-  virtual ~SyncServiceObserver() = default;
+  ~SyncServiceObserver() override = default;
 };
 
 }  // namespace syncer

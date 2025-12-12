@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_EVENT_LISTENER_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_EVENT_LISTENER_H_
 
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 
@@ -14,7 +15,7 @@ struct SyncProtocolError;
 struct SyncCycleEvent;
 class ProtocolEvent;
 
-class SyncEngineEventListener {
+class SyncEngineEventListener : public base::CheckedObserver {
  public:
   SyncEngineEventListener() = default;
 
@@ -43,7 +44,7 @@ class SyncEngineEventListener {
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
 
  protected:
-  virtual ~SyncEngineEventListener() = default;
+  ~SyncEngineEventListener() override = default;
 };
 
 }  // namespace syncer

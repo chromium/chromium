@@ -101,7 +101,7 @@ class MockSyncService : public syncer::TestSyncService {
   }
 
   // The list of observers of the SyncService state.
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<syncer::SyncServiceObserver> observers_;
 };
 
 class TestUkmConsentStateObserver : public UkmConsentStateObserver {
