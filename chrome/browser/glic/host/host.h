@@ -24,8 +24,9 @@
 
 namespace actor {
 class ActorTaskDelegate;
-}
+}  // namespace actor
 
+class SkRegion;
 class Profile;
 namespace content {
 class WebContents;
@@ -56,6 +57,7 @@ class Host : public GlicSharingManagerProvider {
     // Sets the areas of the view from which it should be draggable.
     virtual void SetDraggableAreas(
         const std::vector<gfx::Rect>& draggable_areas) = 0;
+    virtual void SetDraggableRegion(const SkRegion& draggable_region) = 0;
     // Allows the user to manually resize the widget by dragging. If the widget
     // hasn't been created yet, apply this setting when it is created. No effect
     // if the widget doesn't exist or the feature flag is disabled.
@@ -339,6 +341,8 @@ class Host : public GlicSharingManagerProvider {
   // Sets the areas of the view from which it should be draggable.
   void SetPanelDraggableAreas(GlicPageHandler* page_handler,
                               const std::vector<gfx::Rect>& draggable_areas);
+  void SetPanelDraggableRegion(const SkRegion& draggable_region);
+
   // Sets the minimum widget size that the widget will allow the user to resize
   // to.
   void SetMinimumWidgetSize(GlicPageHandler* page_handler,
@@ -466,6 +470,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
               base::OnceClosure callback) override;
   void SetDraggableAreas(
       const std::vector<gfx::Rect>& draggable_areas) override {}
+  void SetDraggableRegion(const SkRegion& region) override {}
   void EnableDragResize(bool enabled) override {}
   void Attach() override {}
   void Detach() override {}

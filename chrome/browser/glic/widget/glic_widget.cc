@@ -161,11 +161,7 @@ class GlicFrameViewChromeOS : public ash::FrameViewAsh {
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
 
 bool ShouldCreateNonClientView() {
-#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(features::kGlicUseNonClient);
-#else
-  return base::FeatureList::IsEnabled(features::kGlicWindowDragRegions);
-#endif
 }
 
 display::Display GetDisplayForOpeningDetached() {
