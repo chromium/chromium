@@ -78,6 +78,7 @@ class PersistedTabDataAndroid
   friend class SyncedTabDelegateAndroidTest;
   friend class PersistedTabDataAndroidBrowserTest;
   friend class PersistedTabDataAndroidHelper;
+  friend class LanguagePersistedTabDataAndroid;
   friend class SensitivityPersistedTabDataAndroid;
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
   friend class TabAndroidUserData<PersistedTabDataAndroid>;

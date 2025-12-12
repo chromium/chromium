@@ -21,6 +21,10 @@ void SensitivityPersistedTabDataAndroid::RegisterPCAService(
   if (page_content_annotations_service_ == page_content_annotations_service) {
     return;
   }
+  if (page_content_annotations_service_ != nullptr) {
+    page_content_annotations_service_->RemoveObserver(
+        page_content_annotations::AnnotationType::kContentVisibility, this);
+  }
 
   page_content_annotations_service_ = page_content_annotations_service;
   page_content_annotations_service_->AddObserver(
@@ -46,6 +50,10 @@ void SensitivityPersistedTabDataAndroid::From(
             tab_android);
       }),
       std::move(from_callback));
+}
+
+const void* SensitivityPersistedTabDataAndroid::UserDataKey() {
+  return &SensitivityPersistedTabDataAndroid::kUserDataKey;
 }
 
 std::unique_ptr<const std::vector<uint8_t>>

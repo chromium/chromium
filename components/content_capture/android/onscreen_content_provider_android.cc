@@ -241,6 +241,21 @@ void OnscreenContentProviderAndroid::DidUpdateSensitivityScore(
       static_cast<jfloat>(sensitivity_score));
 }
 
+void OnscreenContentProviderAndroid::DidUpdateLanguageDetails(
+    const GURL& url,
+    const std::string& detected_language,
+    float language_confidence) {
+  JNIEnv* env = AttachCurrentThread();
+  if (!java_ref_.obj()) {
+    return;
+  }
+
+  Java_OnscreenContentProvider_didUpdateLanguageDetails(
+      env, java_ref_, base::android::ConvertUTF8ToJavaString(env, url.spec()),
+      base::android::ConvertUTF8ToJavaString(env, detected_language),
+      static_cast<jfloat>(language_confidence));
+}
+
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
   JNIEnv* env = AttachCurrentThread();
   return Java_OnscreenContentProvider_shouldCapture(

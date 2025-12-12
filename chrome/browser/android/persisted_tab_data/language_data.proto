@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package language;
+
+option java_package = "org.chromium.chrome.browser.language";
+
+option optimize_for = LITE_RUNTIME;
+
+// Stores the detected language details for a tab.
+message LanguageData {
+  // ISO 639-1 language code of the detected language (e.g., "en", "fr").
+  optional string language_code = 1;
+
+  // Model's confidence score in the detected language (0.0 to 1.0).
+  optional float language_confidence = 2;
+}

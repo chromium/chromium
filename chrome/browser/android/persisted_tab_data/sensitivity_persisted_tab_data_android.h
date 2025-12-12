@@ -28,6 +28,12 @@ class SensitivityPersistedTabDataAndroid
   // Integrates with PersistedTabDataAndroid::From
   static void From(TabAndroid* tab_android, FromCallback from_callback);
 
+  // TODO (crbug.com/468347707) : Required for TabAndroidUserData, this provides
+  // a unique key for the PersistedTabDataAndroid subclass. Without this
+  // explicit definition, PersistedTabDataAndroid::UserDataKey() would be used,
+  // which would lead to key collisions for all subclasses.
+  static const void* UserDataKey();
+
   void set_sensitivity_score(float sensitivity_score) {
     // Setting the cutoff value to 0.5 for binary classification of data
     // sensitivity. This value ensures that we neither overclassify nor

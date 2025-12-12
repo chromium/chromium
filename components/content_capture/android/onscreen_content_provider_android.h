@@ -36,6 +36,9 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
   void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
   void DidUpdateSensitivityScore(const GURL& url,
                                  float sensitivity_score) override;
+  void DidUpdateLanguageDetails(const GURL& url,
+                                const std::string& detected_language,
+                                float language_confidence) override;
   bool ShouldCapture(const GURL& url) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
