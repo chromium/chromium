@@ -279,37 +279,51 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
-  // inline content back together. If only one of the siblings is such an
-  // anonymous blocks, check if the other sibling (and any of *its* siblings)
-  // are floating or out-of-flow positioned. In that case, they should be moved
-  // into the anonymous block.
-  LayoutObject* prev = old_child->PreviousSibling();
-  LayoutObject* next = old_child->NextSibling();
-  if (prev && next && !old_child->IsInline()) {
-    auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
-    auto* next_block_flow = DynamicTo<LayoutBlockFlow>(next);
-    if (prev_block_flow && next_block_flow &&
-        prev_block_flow->MergeSiblingContiguousAnonymousBlock(
-            next_block_flow)) {
-      next = nullptr;
-    } else if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
-      // The previous sibling is anonymous. Scan the next siblings and reparent
-      // any floating or out-of-flow positioned objects into the end of the
-      // previous anonymous block.
-      while (next && next->IsFloatingOrOutOfFlowPositioned()) {
-        LayoutObject* sibling = next->NextSibling();
-        MoveChildTo(prev_block_flow, next, nullptr, false);
-        next = sibling;
+  // inline content back together.
+  if (!old_child->IsInline()) {
+    auto* prev_block_flow =
+        DynamicTo<LayoutBlockFlow>(old_child->PreviousSibling());
+    auto* next_block_flow =
+        DynamicTo<LayoutBlockFlow>(old_child->NextSibling());
+    if (prev_block_flow && next_block_flow) {
+      prev_block_flow->MergeSiblingContiguousAnonymousBlock(next_block_flow);
+    }
+  }
+
+  // If the old_child is block-level we need to check if any adjacent siblings
+  // are floating or out-of-flow positioned, and if so reparent them into the
+  // inline-level anonymous block.
+  //
+  // This logic is the complement to these reparenting methods:
+  //  - ReparentPrecedingFloatingOrOutOfFlowSiblings
+  //  - ReparentSubsequentFloatingOrOutOfFlowSiblings
+  {
+    LayoutObject* prev = old_child->PreviousSibling();
+    LayoutObject* next = old_child->NextSibling();
+    if (prev && next && !old_child->IsInline()) {
+      auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
+      if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
+        // The previous sibling is an anonymous block-flow. Scan the next
+        // siblings and reparent any floating or out-of-flow positioned objects
+        // into the end of the previous anonymous block-flow.
+        while (next && next->IsFloatingOrOutOfFlowPositioned()) {
+          LayoutObject* sibling = next->NextSibling();
+          MoveChildTo(prev_block_flow, next, nullptr, false);
+          next = sibling;
+        }
       }
-    } else if (next_block_flow && IsMergeableAnonymousBlock(next_block_flow)) {
-      // The next sibling is anonymous. Scan the previous siblings and reparent
-      // any floating or out-of-flow positioned objects into the start of the
-      // next anonymous block.
-      while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
-        LayoutObject* sibling = prev->PreviousSibling();
-        MoveChildTo(next_block_flow, prev, next_block_flow->FirstChild(),
-                    false);
-        prev = sibling;
+
+      auto* next_block_flow = DynamicTo<LayoutBlockFlow>(prev->NextSibling());
+      if (next_block_flow && IsMergeableAnonymousBlock(next_block_flow)) {
+        // The next sibling is an anonymous block-flow. Scan the previous
+        // siblings and reparent any floating or out-of-flow positioned objects
+        // into the start of the next anonymous block-flow.
+        while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
+          LayoutObject* sibling = prev->PreviousSibling();
+          MoveChildTo(next_block_flow, prev, next_block_flow->FirstChild(),
+                      false);
+          prev = sibling;
+        }
       }
     }
   }
