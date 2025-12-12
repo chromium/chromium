@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
@@ -132,7 +133,6 @@ constexpr char kDropdownShownHistogram[] =
 
 // Fields for PasskeyCredentials.
 const std::vector<uint8_t> kPasskeyId = {1, 2, 3, 4};
-const std::string kPasskeyIdBase64 = base::Base64Encode(kPasskeyId);
 constexpr char kPasskeyNameUtf8[] = "nadeshiko@example.com";
 const std::u16string kPasskeyName = u"nadeshiko@example.com";
 
@@ -153,6 +153,12 @@ const autofill::TriggeringField kTriggeringField(
     /*show_webauthn_credentials=*/false,
     /*show_identity_credentials=*/false,
     gfx::RectF());
+
+const std::string& GetPasskeyIdBase64() {
+  static const base::NoDestructor<std::string> s(
+      base::Base64Encode(kPasskeyId));
+  return *s;
+}
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
@@ -1507,7 +1513,7 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
-            kPasskeyIdBase64);
+            GetPasskeyIdBase64());
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kPasskeyName);
@@ -1528,13 +1534,13 @@ TEST_F(PasswordAutofillManagerTest,
       PreviewSuggestion(kPasskeyName, /*password=*/std::u16string(u"")));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::SuggestionType::kWebauthnCredential, kPasskeyName,
-      autofill::Suggestion::Guid(kPasskeyIdBase64));
+      autofill::Suggestion::Guid(GetPasskeyIdBase64()));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              SelectPasskey(kPasskeyIdBase64, _));
+              SelectPasskey(GetPasskeyIdBase64(), _));
   EXPECT_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
       .WillOnce(Return(true));
   EXPECT_CALL(autofill_client,
@@ -1592,7 +1598,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
                   autofill::SuggestionType::kSeparator,
                   autofill::SuggestionType::kAllSavedPasswordsEntry));
   EXPECT_EQ(open_args.suggestions[0].GetPayload<Suggestion::Guid>().value(),
-            kPasskeyIdBase64);
+            GetPasskeyIdBase64());
   EXPECT_EQ(open_args.suggestions[0].type,
             autofill::SuggestionType::kWebauthnCredential);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kPasskeyName);
@@ -1613,13 +1619,13 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       PreviewSuggestion(kPasskeyName, /*password=*/std::u16string(u"")));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::SuggestionType::kWebauthnCredential, kPasskeyName,
-      autofill::Suggestion::Guid(kPasskeyIdBase64));
+      autofill::Suggestion::Guid(GetPasskeyIdBase64()));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that selecting the credential reports back to the client.
   EXPECT_CALL(*webauthn_credentials_delegate_,
-              SelectPasskey(kPasskeyIdBase64, _));
+              SelectPasskey(GetPasskeyIdBase64(), _));
   EXPECT_CALL(*webauthn_credentials_delegate_, HasPendingPasskeySelection)
       .WillOnce(Return(true));
   EXPECT_CALL(autofill_client,
