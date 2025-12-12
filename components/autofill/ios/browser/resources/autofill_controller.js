@@ -7,6 +7,7 @@ import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fi
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {unownedFormElementsAndFieldSetsToFormData, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements, getFormElementFromIdentifier, getFormElementFromRendererId, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -209,7 +210,7 @@ function fillSpecificFormField(data) {
   if (typeof fieldID === 'undefined') {
     return false;
   }
-  const field = __gCrWeb.fill.getElementByUniqueID(fieldID);
+  const field = getElementByUniqueID(fieldID);
   if (!field) {
     return false;
   }
@@ -255,7 +256,7 @@ function fillForm(data, forceFillFieldID) {
   let delay = 0;
 
   for (const [fieldId, fieldData] of Object.entries(data.fields)) {
-    const element = __gCrWeb.fill.getElementByUniqueID(Number(fieldId));
+    const element = getElementByUniqueID(Number(fieldId));
 
     if (!inferenceUtil.isAutofillableElement(element)) {
       continue;
@@ -337,7 +338,7 @@ function fillForm(data, forceFillFieldID) {
   };
 
   for (const id of modifiedForms) {
-    const form = __gCrWeb.fill.getElementByUniqueID(id);
+    const form = getElementByUniqueID(id);
     // This is safe to call even if `form` is null. `modifiedForms` may contain
     // 0 to indicate we filled fields outside of forms. `reportFormFill` handles
     // this case explicitly.

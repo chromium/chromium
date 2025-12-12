@@ -7,7 +7,8 @@ import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {findChildText, hasTagName, isFormControlElement, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources/renderer_id.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 export declare interface AutofillFormFieldData {
@@ -692,11 +693,10 @@ export function isVisibleNode(node: Node): boolean {
  * @return Unique stable ID converted to string..
  */
 export function getUniqueID(element: any): string {
-  // `setUniqueIDIfNeeded` is only available in the isolated content world.
-  // Check before invoking it as this script is injected into the page content
-  // world as well.
-  if (gCrWebLegacy.fill.setUniqueIDIfNeeded) {
-    gCrWebLegacy.fill.setUniqueIDIfNeeded(element);
+  // `setUniqueIDIfNeeded` is only available in the isolated content world,
+  // so we check for the autofill API to confirm the context before invoking.
+  if (gCrWeb.hasRegisteredApi('autofill')) {
+    setUniqueIDIfNeeded(element);
   }
 
   try {

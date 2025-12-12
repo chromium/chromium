@@ -29,6 +29,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
+#import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -825,11 +826,16 @@ class FormSubmittedHookTest : public FormActivityTabHelperTest {
   FormSubmittedHookTest() : FormActivityTabHelperTest() {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
+
+    renderer_id_feature_ =
+        autofill::test::CreateRendererIdTestJavaScriptFeature();
+
     web_client->SetJavaScriptFeatures({
         FormUtilJavaScriptFeature::GetInstance(),
         feature_container_.form_handlers_java_script_feature(),
         feature_container_.autofill_java_script_feature(),
         ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),
+        renderer_id_feature_.get(),
     });
   }
 
@@ -858,6 +864,8 @@ class FormSubmittedHookTest : public FormActivityTabHelperTest {
   //  the statically stored instances once Autofill in the isolated
   //  world is launched.
   TestAutofillJavaScriptFeatureContainer feature_container_;
+
+  std::unique_ptr<web::JavaScriptFeature> renderer_id_feature_;
 };
 
 // Validate that programmatic form submissions are detected and sent to
@@ -874,9 +882,11 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHook) {
   web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"var form = document.forms[0];"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(form);"
+       "__gCrWeb.getRegisteredApi('renderer_id_test').getFunction('"
+       "setUniqueIDIfNeeded')(form);"
        "var input = document.getElementById('text');"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(input);",
+       "__gCrWeb.getRegisteredApi('renderer_id_test').getFunction('"
+       "setUniqueIDIfNeeded')(input);",
       feature_container_.autofill_java_script_feature());
 
   ASSERT_FALSE(observer_->submit_document_info());

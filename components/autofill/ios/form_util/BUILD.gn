@@ -54,7 +54,6 @@ source_set("form_handler_feature") {
   ]
   deps = [
     ":autofill_form_features",
-    ":autofill_renderer_id_feature",
     ":child_frame_registration_lib_js",
     ":form_handlers_js",
     ":form_util",
@@ -67,6 +66,19 @@ source_set("form_handler_feature") {
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("renderer_id_test_util") {
+  testonly = true
+  sources = [
+    "renderer_id_test_util.h",
+    "renderer_id_test_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//ios/web/public/js_messaging",
+  ]
 }
 
 # For inclusion by other TS/JS files, so they can check feature state
@@ -147,6 +159,7 @@ compile_ts("fill_js_dependencies") {
 
   deps = [
     ":autofill_form_features_ts",
+    ":autofill_renderer_id_js",
     ":child_frame_registration_ts",
     ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
@@ -237,29 +250,16 @@ optimize_ts("register_remote_frame_token_js") {
   ]
 }
 
-source_set("autofill_renderer_id_feature") {
-  sources = [
-    "autofill_renderer_id_java_script_feature.h",
-    "autofill_renderer_id_java_script_feature.mm",
-  ]
-
-  deps = [
-    ":autofill_renderer_id_js",
-    "//base",
-    "//components/autofill/ios/common",
-    "//ios/web/public/js_messaging",
-    "//ios/web/public/js_messaging:content_world_header",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-optimize_ts("autofill_renderer_id_js") {
+compile_ts("autofill_renderer_id_js") {
   sources = [ "resources/renderer_id.ts" ]
 
-  deps = [
-    ":fill_js_namespace",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ ":fill_js_namespace" ]
+}
+
+optimize_ts("renderer_id_test") {
+  sources = [ "resources/renderer_id_test.ts" ]
+
+  deps = [ ":autofill_renderer_id_js" ]
 }
 
 source_set("programmatic_form_submission_handler_feature") {
@@ -372,7 +372,6 @@ source_set("unit_tests") {
   deps = [
     ":autofill_form_features",
     ":autofill_form_features_injector",
-    ":autofill_renderer_id_feature",
     ":child_frame_registrar",
     ":fill_js",
     ":fill_util_test_js",
@@ -382,6 +381,8 @@ source_set("unit_tests") {
     ":form_util_feature",
     ":form_util_test_js",
     ":programmatic_form_submission_handler_feature",
+    ":renderer_id_test",
+    ":renderer_id_test_util",
     ":test_support",
     "//base",
     "//base/test:test_support",

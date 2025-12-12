@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -76,7 +75,6 @@ class FillJsTest : public web::WebTestWithWebState {
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
     OverrideJavaScriptFeatures({FormUtilJavaScriptFeature::GetInstance(),
-                                renderer_id_java_script_feature(),
                                 GetDummyPageContentWorldFeature(),
                                 GetDummyIsolatedWorldFeature()});
   }
@@ -86,10 +84,6 @@ class FillJsTest : public web::WebTestWithWebState {
     // features in `feature_container_`.
     OverrideJavaScriptFeatures({});
     web::WebTestWithWebState::TearDown();
-  }
-
-  AutofillRendererIDJavaScriptFeature* renderer_id_java_script_feature() {
-    return feature_container_.autofill_renderer_id_java_script_feature();
   }
 
  protected:
@@ -155,7 +149,8 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 
     LoadHtml(html);
     id result = ExecuteJavaScriptInAutofillContentWorld(
-        @"__gCrWeb.getRegisteredApi('fill_test_api').getFunction('getCanonicalActionForForm')(document.body.children[0])");
+        @"__gCrWeb.getRegisteredApi('fill_test_api')."
+        @"getFunction('getCanonicalActionForForm')(document.body.children[0])");
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
     NSString* expected_action =
         [data.expected_action stringByReplacingOccurrencesOfString:@"baseurl/"
@@ -329,9 +324,11 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
   // Set IDs for form and input in the content world for Autofill features.
   ExecuteJavaScriptInAutofillContentWorld(
       @"var form = document.getElementById('form');"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(form);"
+       "__gCrWeb.getRegisteredApi('fill_test_api')."
+       "getFunction('setUniqueIDIfNeeded')(form);"
        "var input = document.getElementById('input');"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(input);");
+       "__gCrWeb.getRegisteredApi('fill_test_api')."
+       "getFunction('setUniqueIDIfNeeded')(input);");
 
   // Verify the ID retrieval in all content worlds.
   for (auto content_world : {web::ContentWorld::kIsolatedWorld,
@@ -360,7 +357,8 @@ TEST_F(FillJsTest, DISABLED_GetUniqueIDReturnsNotSetWhenInvalidIDInDOM) {
   // Set IDs for form and input in the content world for Autofill features.
   ExecuteJavaScriptInAutofillContentWorld(
       @"var form = document.getElementById('form');"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(form);");
+       "__gCrWeb.getRegisteredApi('fill_test_api')."
+       "getFunction('setUniqueIDIfNeeded');");
 
   std::vector<NSString*> invalid_ids = {@"''", @"'word'", @"null",
                                         @"undefined"};

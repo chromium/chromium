@@ -4,7 +4,8 @@
 
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {CrWebApi, gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -146,15 +147,17 @@ function onFocus(event: Event): void {
  */
 function detachListenersInternal(rendererIds: number[]): void {
   for (const rendererId of rendererIds) {
-    const element = gCrWebLegacy.fill.getElementByUniqueID(rendererId);
-    const index = observedElements_.indexOf(element);
-    if (index > -1) {
+    const element = getElementByUniqueID(rendererId);
+    if (element) {
+      const index = observedElements_.indexOf(element);
+      if (index > -1) {
         // Detach all possible handlers. If the listener wasn't attached, this
         // will be no op, no errors thrown.
         element.removeEventListener(
             'mousedown', onMouseDown as EventListener, true);
         element.removeEventListener('focus', onFocus, true);
-      observedElements_.splice(index, 1);
+        observedElements_.splice(index, 1);
+      }
     }
   }
 }
@@ -168,6 +171,7 @@ function detachListenersInternal(rendererIds: number[]): void {
  * @param useMousedownBlur Whether to do virtual blur from the 'mousedown' event
  *     instead of doing a brute force 'blur' on the element.
  */
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
 function attachListeners(
     rendererIds: number[], allowAutofocus: boolean,
     useMousedownBlur: boolean): void {
@@ -175,10 +179,10 @@ function attachListeners(
   let elementToBlur: HTMLElement|null = null;
   const elementsToObserve: Element[] = [];
   for (const renderer_id of rendererIds) {
-    const element = gCrWebLegacy.fill.getElementByUniqueID(renderer_id);
+    const element = getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
     // observing it.
-    if (element && isObservable(element) &&
+    if (element && (element instanceof HTMLElement) && isObservable(element) &&
         !observedElements_.find(elem => elem === element)) {
       const autofocused = document.activeElement === element;
       if (allowAutofocus || !autofocused) {
@@ -187,7 +191,8 @@ function attachListeners(
       }
       if (autofocused) {
         // Check if the field is empty (ignoring white spaces).
-        if (element.value.trim() !== '') {
+        if ((element instanceof HTMLInputElement) &&
+            element.value.trim() !== '') {
           // The user has already started filling the active field, so bail out
           // without attaching listeners.
           return;

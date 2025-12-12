@@ -17,7 +17,7 @@ declare global {
   // assumed to exist within the object.
   interface Document {
     [key: symbol]: number;
-
+    __gCrElementMap: Map<any, any>;
     __gCrWebURLNormalizer: HTMLAnchorElement;
   }
 }

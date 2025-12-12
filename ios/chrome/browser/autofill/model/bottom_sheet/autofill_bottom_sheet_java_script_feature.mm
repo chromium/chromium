@@ -8,7 +8,6 @@
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 
@@ -46,10 +45,7 @@ AutofillBottomSheetJavaScriptFeature::AutofillBottomSheetJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {
-              autofill::AutofillRendererIDJavaScriptFeature::GetInstance(),
-          }) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 AutofillBottomSheetJavaScriptFeature::~AutofillBottomSheetJavaScriptFeature() =
     default;
