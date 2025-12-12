@@ -1,0 +1,46 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package enterprise_reporting;
+
+import "google/protobuf/timestamp.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// This message is used to upload the report of aggregated metrics about SaaS
+// usage on the client side.
+message SaaSDomainReportEvent {
+
+  // Timestamp of when the report was generated on the client.
+  google.protobuf.Timestamp timestamp = 1;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_id = 2;
+
+  // Whether the profile is affiliated with the browser.
+  bool profile_affiliated = 3;
+
+  // Metrics for each SaaS domain visited by the user.
+  repeated SaaSDomainMetrics domain_metrics = 4;
+}
+
+message SaasDomainMetrics {
+  // The domain of the SaaS site.
+  string domain = 1;
+
+  // The number of times the domain was visited.
+  uint64 visit_count = 2;
+
+  // The number of content transfer events (uploads, downloads, pastes, prints)
+  // for the domain.
+  uint64 content_transfer_count = 3;
+
+  // The encryption protocols used to access the SaaS site.
+  repeated string encryption_protocols = 4;
+}
