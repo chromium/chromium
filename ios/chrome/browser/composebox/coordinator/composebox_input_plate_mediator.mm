@@ -1252,7 +1252,7 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL dseGoogle = [self isDSEGoogle];
   BOOL eligibleToAIM = [self isEligibleToAIM];
   BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
-  BOOL canSend = hasContent && !compactMode;
+  BOOL canSend = hasContent && !compactMode && allowsMultimodalActions;
   BOOL showShortcuts = !hasContent && !canSend;
   BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
   BOOL shouldPersistAIMButton =

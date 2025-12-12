@@ -67,7 +67,7 @@ const CGFloat kOmniboxMinHeight = 44.0;
 const CGFloat kInputPlateStackViewVerticalPadding = 0.0f;
 /// The top padding with the expanded input plate when there are attachments.
 const CGFloat kInputPlateStackViewExpandedWithAttachmentsTopPadding = 10.0f;
-/// The bottom padding with the expanded input plate.
+/// The bottom padding with the expanded input plate when AIM is available.
 const CGFloat kInputPlateStackViewExpandedBottomPadding = 10.0f;
 /// The horizontal padding for the input plate stack view.
 const CGFloat kInputPlateStackViewHorizontalPadding = 10.0f;
@@ -147,6 +147,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
+  /// The view containing containing the plusButton, mic, send, etc.. in
+  /// expanded mode.
+  UIView* _toolbarView;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   UIImageView* _aimButtonXIndicator;
@@ -166,6 +169,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIView* _trailingCarouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
+  /// Controls that should be visible.
+  ComposeboxInputPlateControls _visibleControls;
   /// Attach current tab action state.
   BOOL _attachCurrentTabActionHidden;
   /// Attach tabs actions state.
@@ -395,9 +400,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)controls {
+  _visibleControls = controls;
   _plusButton.hidden = !(controls & ComposeboxInputPlateControls::kPlus);
   _micButton.hidden = !(controls & ComposeboxInputPlateControls::kVoice);
   _lensButton.hidden = !(controls & ComposeboxInputPlateControls::kLens);
+
+  [self updateToolbarVisibility];
 
   [self animateButton:_aimButton
                hidden:!(controls & ComposeboxInputPlateControls::kAIM)];
@@ -418,17 +426,37 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                    completion:nil];
 }
 
+/// Whether `view` is visible in `self.view` hierarchy.
+- (BOOL)isVisibleInHierarchy:(UIView*)view {
+  UIView* controllingVisibility = view;
+  do {
+    if (controllingVisibility.hidden) {
+      return NO;
+    }
+    if (controllingVisibility == self.view) {
+      return YES;
+    }
+    controllingVisibility = controllingVisibility.superview;
+  } while (controllingVisibility);
+  return NO;
+}
+
 - (void)animateButton:(UIButton*)button hidden:(BOOL)hidden {
   BOOL alreadyHidden = button.hidden;
   button.hidden = hidden;
   // Only the appear sequence is animated.
   BOOL isAppearing = alreadyHidden && !hidden;
-  if (isAppearing) {
-    button.alpha = 0;
-    [self animateReveal:^{
-      button.alpha = 1;
-    }];
+  if (!isAppearing) {
+    return;
   }
+  // If hidden indirectly by a superview, early return without animation.
+  if (![self isVisibleInHierarchy:button]) {
+    return;
+  }
+  button.alpha = 0;
+  [self animateReveal:^{
+    button.alpha = 1;
+  }];
 }
 
 - (void)animateLeadingImageHidden:(BOOL)hidden {
@@ -1010,6 +1038,20 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return lensButton;
 }
 
+/// Updates the toolbar visiblity depending on state of the buttons that should
+/// be visible.
+- (void)updateToolbarVisibility {
+  using enum ComposeboxInputPlateControls;
+  ComposeboxInputPlateControls requiredControlsForVisibility =
+      (kPlus | kVoice | kLens | kSend);
+  _toolbarView.hidden = !(_visibleControls & requiredControlsForVisibility);
+
+  if (!self.compact) {
+    _bottomPaddingConstraint.constant =
+        _toolbarView.hidden ? 0 : -kInputPlateStackViewExpandedBottomPadding;
+  }
+}
+
 /// Creates and returns the toolbar view containing action buttons.
 - (UIView*)createToolbarView {
   [self updateAIMButtonAppearance];
@@ -1298,6 +1340,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [arrangedSubview removeFromSuperview];
     }
   }
+  _toolbarView = nil;
 
   if (self.compact) {
     [_inputPlateStackView insertArrangedSubview:_plusButton atIndex:0];
@@ -1312,14 +1355,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                  afterView:_micButton];
     _bottomPaddingConstraint.constant = -kInputPlateStackViewVerticalPadding;
   } else {
-    UIView* toolbarView = [self createToolbarView];
+    _toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
-    [_inputPlateStackView addArrangedSubview:toolbarView];
+    [_inputPlateStackView addArrangedSubview:_toolbarView];
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
-
-    _bottomPaddingConstraint.constant =
-        -kInputPlateStackViewExpandedBottomPadding;
+    // `_bottomPaddingConstraint` is updated in `updateToolbarVisibility`.
+    [self updateToolbarVisibility];
     _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
   }
   [self updateInputPlateStackViewTopConstraint];
