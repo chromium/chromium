@@ -53,7 +53,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicClosedCaptioningEnabled, false);
 
   // Boolean pref for the daisy chain new tabs setting.
-  registry->RegisterBooleanPref(prefs::kGlicDaisyChainNewTabsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled,
+                                false);
 
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,

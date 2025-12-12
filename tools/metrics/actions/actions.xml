@@ -14569,6 +14569,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user disables keeping the sidepanel open on new tabs in glic
+    settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.KeepSidepanelOpenOnNewTabs.Enabled">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user enables keeping the sidepanel open on new tabs in glic
+    settings.
+  </description>
+</action>
+
 <action name="Glic.Settings.Microphone.Disabled">
   <owner>tommasin@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

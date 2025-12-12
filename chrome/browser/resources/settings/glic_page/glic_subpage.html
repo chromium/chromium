@@ -128,6 +128,14 @@
           sub-label="$i18n{glicClosedCaptionsToggleSublabel}"
           on-settings-boolean-control-change="onClosedCaptionsToggleChange_">
       </settings-toggle-button>
+      <settings-toggle-button class="hr"
+          id="keepSidepanelOpenOnNewTabsToggle"
+          hidden="[[!showGlicKeepSidepanelOpenOnNewTabsSetting_]]"
+          pref="{{prefs.glic.keep_sidepanel_open_on_new_tabs_enabled}}"
+          label="$i18n{glicKeepSidepanelOpenOnNewTabsToggle}"
+          on-settings-boolean-control-change=
+              "onKeepSidepanelOpenOnNewTabsToggleChange_">
+      </settings-toggle-button>
     </template>
   </div>
   <div class="section">

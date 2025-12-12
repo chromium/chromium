@@ -600,7 +600,8 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
                                                tabs::TabInterface& new_tab) {
   PrefService* pref_service = profile_->GetPrefs();
   if (!pref_service ||
-      !pref_service->GetBoolean(glic::prefs::kGlicDaisyChainNewTabsEnabled)) {
+      !pref_service->GetBoolean(
+          glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled)) {
     return;
   }
   auto* tab_features = old_tab.GetTabFeatures();

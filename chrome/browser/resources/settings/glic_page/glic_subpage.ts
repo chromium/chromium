@@ -48,6 +48,8 @@ export enum SettingsGlicPageFeaturePrefName {
   USER_STATUS = 'glic.user_status',
   DEFAULT_TAB_CONTEXT_ENABLED = 'glic.default_tab_context_enabled',
   WEB_ACTUATION_ENABLED = 'glic.user_enabled_actuation_on_web',
+  KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED =
+      'glic.keep_sidepanel_open_on_new_tabs_enabled',
 }
 
 // browser_element_identifiers constants
@@ -135,6 +137,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       showGlicPersonalContextLink_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
+      },
+
+      showGlicKeepSidepanelOpenOnNewTabsSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'showGlicKeepSidepanelOpenOnNewTabsSetting'),
       },
 
       locationSubLabel_: {
@@ -275,6 +283,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
+  declare private showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
   declare private microphoneSubLabel_: string;
@@ -434,6 +443,14 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     const enabled = target.checked;
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.DefaultTabContext' +
+        (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onKeepSidepanelOpenOnNewTabsToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    const enabled = target.checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.KeepSidepanelOpenOnNewTabs' +
         (enabled ? '.Enabled' : '.Disabled'));
   }
 

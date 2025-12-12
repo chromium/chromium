@@ -844,6 +844,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"glicClosedCaptionsToggle", IDS_SETTINGS_GLIC_CLOSED_CAPTIONING},
       {"glicClosedCaptionsToggleSublabel",
        IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL},
+      {"glicKeepSidepanelOpenOnNewTabsToggle",
+       IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS},
       {"glicLocationToggle", IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE},
       {"glicLocationToggleSublabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL},
@@ -956,6 +958,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "showGlicDefaultTabContextSetting",
       base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting));
+  html_source->AddBoolean(
+      "showGlicKeepSidepanelOpenOnNewTabsSetting",
+      base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs));
   html_source->AddBoolean("glicWebActuationFeatureEnabled",
                           ShouldShowWebActuationToggle(profile));
   html_source->AddBoolean("isWebActuationDisabledForEnterprise",

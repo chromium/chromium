@@ -156,6 +156,9 @@
   <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" desc="Sublabel describing that this setting will enable closed captions for Gemini Live.">
     Show closed captions when using Gemini Live
   </message>
+  <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the daisy chain new tabs setting.">
+    Keep the Gemini sidebar open when you open a new tab
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" desc="Name of the location sharing setting.">
     Precise Location
   </message>

@@ -1318,6 +1318,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kNumber;
     (*s_allowlist)[glic::prefs::kGlicUserEnabledActuationOnWeb] =
         settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled] =
+        settings_api::PrefType::kBoolean;
   }
 #endif
 
