@@ -54,7 +54,7 @@ found in the LICENSE file.
 
     <View
         android:layout_width="@dimen/zoom_menu_item_divider_width"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/zoom_menu_item_divider_height"
         android:layout_marginStart="@dimen/zoom_menu_item_divider_margin"
         android:layout_marginEnd="@dimen/zoom_menu_item_divider_margin"
         android:background="@drawable/divider_line_bg" />
