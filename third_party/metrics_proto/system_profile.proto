@@ -259,7 +259,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 28
+  // Next tag: 29
   message Hardware {
     // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
     // armv7l, armv8l and aarch64.
@@ -307,6 +307,14 @@ message SystemProfileProto {
     // device specifications including OEM information, schematics, hardware
     // qualification reports, test device tags, etc.
     optional string full_hardware_class = 18;
+
+    // This field is only sent on ChromeOS. The updated hardware class is
+    // similar to the full hardware class, but it is updated over the lifecycle
+    // of the device, whereas the full hardware class is set once at hardware
+    // manufacturing time. The updated hardware class can reflect the device's
+    // current hardware components, which can change due to repairs or component
+    // replacements.
+    optional string updated_hardware_class = 28;
 
     // This field is only sent on Chrome OS devices with cellular support.
     // This represents the variant of cellular modem present on the device.

@@ -99,9 +99,10 @@ message OmniboxEventProto {
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
 
-    // chrome://newtab/.  For modern versions of Chrome, this is only reported
-    // when an extension is replacing the new tab page. Otherwise, new tab
-    // page interactions will be reported as NTP_REALBOX, or
+    // chrome://newtab/. For modern versions of Chrome, this is only reported
+    // when an extension is replacing the new tab page or when the user visits
+    // the new tab page while in Incognito mode. Otherwise, new tab page
+    // interactions will be reported as NTP_REALBOX, or
     // INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS.
     // For old versions of Chrome, this was reported for the default New Tab
     // Page.
