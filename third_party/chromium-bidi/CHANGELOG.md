@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.1...chromium-bidi-v12.0.0) (2025-12-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933))
+
+### Features
+
+* **chrome:** update the pinned browser version to 145.0.7563.0 ([#3933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3933)) ([dfd6104](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dfd6104b14ca47efce0e9f1f75e4c0445fa6a3d5))
+* emulation.setScreenSettingsOverride ([#3943](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3943)) ([c3ffde0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c3ffde028b11d26f535380a4df26b3b73d27d250))
+
+
+### Bug Fixes
+
+* ensure `network.beforeRequestSent` is emitted before `network.authRequired` ([#3941](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3941)) ([5072f49](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5072f49367bd94678aa12d744cf0df88818b03f0))
+* extra headers can have duplicates ([#3937](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3937)) ([aabd783](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aabd7831255a90b01afcc59c40992cc0c3e7cdbe))
+* round cookie expiry field ([#3938](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3938)) ([66c4695](https://github.com/GoogleChromeLabs/chromium-bidi/commit/66c46958fa9f8ebe15d119a42b7a8dc9427f18dd))
+
+
+### Reverts
+
+* "fix: extra headers can have duplicates" ([#3939](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3939)) ([4a9b011](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4a9b011956055a5e4d098912a361c1699d4c39d4))
+
 ## [11.0.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v11.0.0...chromium-bidi-v11.0.1) (2025-11-14)
 
 
