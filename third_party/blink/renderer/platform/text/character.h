@@ -50,6 +50,8 @@
 
 namespace blink {
 
+struct JustificationContext;
+
 class PLATFORM_EXPORT Character {
   STATIC_ONLY(Character);
 
@@ -117,11 +119,11 @@ class PLATFORM_EXPORT Character {
   static unsigned ExpansionOpportunityCount(TextJustify method,
                                             base::span<const LChar>,
                                             TextDirection,
-                                            bool& is_after_expansion);
+                                            JustificationContext&);
   static unsigned ExpansionOpportunityCount(TextJustify method,
                                             base::span<const UChar>,
                                             TextDirection,
-                                            bool& is_after_expansion);
+                                            JustificationContext&);
 
   static bool IsUprightInMixedVertical(UChar32 character);
 

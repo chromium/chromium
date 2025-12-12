@@ -38,15 +38,16 @@ ShapeResultSpacing::ExpansionSetup::ExpansionSetup(
     bool allows_trailing_expansion)
     : spacing_(spacing),
       allows_trailing_expansion_(allows_trailing_expansion),
-      is_after_expansion_(!allows_leading_expansion) {
+      justification_context_(!allows_leading_expansion) {
   DCHECK_GT(expansion, InlineLayoutUnit());
   spacing_->expansion_ = expansion;
   spacing_->expansion_opportunity_count_ = 0;
-  spacing_->is_after_expansion_ = !allows_leading_expansion;
+  spacing_->justification_context_ = justification_context_;
 }
 
 ShapeResultSpacing::ExpansionSetup::~ExpansionSetup() {
-  if (is_after_expansion_ && !allows_trailing_expansion_ &&
+  if (justification_context_.is_after_opportunity &&
+      !allows_trailing_expansion_ &&
       spacing_->expansion_opportunity_count_ > 0) {
     --spacing_->expansion_opportunity_count_;
   }
@@ -65,18 +66,18 @@ void ShapeResultSpacing::ExpansionSetup::CountOpportunities(
   if (text.Is8Bit()) {
     spacing_->expansion_opportunity_count_ +=
         Character::ExpansionOpportunityCount(method, text.Span8(), direction,
-                                             is_after_expansion_);
+                                             justification_context_);
   } else {
     spacing_->expansion_opportunity_count_ +=
         Character::ExpansionOpportunityCount(method, text.Span16(), direction,
-                                             is_after_expansion_);
+                                             justification_context_);
   }
 }
 
 void ShapeResultSpacing::ExpansionSetup::CountOpportunities(TextJustify method,
                                                             UChar ch) {
   spacing_->expansion_opportunity_count_ +=
-      CountJustificationOpportunity16(method, ch, is_after_expansion_);
+      CountJustificationOpportunity16(method, ch, justification_context_);
 }
 
 void ShapeResultSpacing::SetExpansion(TextJustify method,
@@ -102,7 +103,7 @@ TextRunLayoutUnit ShapeResultSpacing::NextExpansion() {
     NOTREACHED();
   }
 
-  is_after_expansion_ = true;
+  justification_context_.is_after_opportunity = true;
 
   if (!--expansion_opportunity_count_) [[unlikely]] {
     const TextRunLayoutUnit remaining = expansion_.To<TextRunLayoutUnit>();
@@ -163,12 +164,12 @@ ShapeResultSpacing::ComputeExpansion(TextJustify method,
   bool opportunity_after = false;
   if (text_.Is8Bit()) {
     auto pair = CheckJustificationOpportunity8(method, text_[index],
-                                               is_after_expansion_);
+                                               justification_context_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   } else {
     auto pair = CheckJustificationOpportunity16(
-        method, CodePointAt(text_.Span16(), index), is_after_expansion_);
+        method, CodePointAt(text_.Span16(), index), justification_context_);
     opportunity_before = pair.first;
     opportunity_after = pair.second;
   }
@@ -184,7 +185,7 @@ ShapeResultSpacing::ComputeExpansion(TextJustify method, UChar ch) {
   DCHECK(!normalize_space_);
   DCHECK(!allow_tabs_);
   auto [opportunity_before, opportunity_after] =
-      CheckJustificationOpportunity16(method, ch, is_after_expansion_);
+      CheckJustificationOpportunity16(method, ch, justification_context_);
   return FinalizeComputeExpansion(opportunity_before, opportunity_after);
 }
 

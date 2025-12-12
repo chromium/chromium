@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
+#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -748,20 +749,20 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
 }
 
 TEST(CharacterTest, ExpansionOpportunityEmoji) {
-  bool is_after_expansion = true;
+  JustificationContext context;
   // a, an emoji ZWJ sequence, z
   // We should count both side of the emoji sequence.
   StringView source(u"a\U0001F635\u200d\U0001f4ABz");
   EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
                     TextJustify::kAuto, source.Span16(), TextDirection::kLtr,
-                    is_after_expansion));
-  EXPECT_FALSE(is_after_expansion);
+                    context));
+  EXPECT_FALSE(context.is_after_opportunity);
 
-  is_after_expansion = true;
+  context.is_after_opportunity = true;
   EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
                     TextJustify::kAuto, source.Span16(), TextDirection::kRtl,
-                    is_after_expansion));
-  EXPECT_FALSE(is_after_expansion);
+                    context));
+  EXPECT_FALSE(context.is_after_opportunity);
 }
 
 static struct CanReceiveTextEmphasisTestData {

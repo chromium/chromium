@@ -13,6 +13,13 @@
 
 namespace blink {
 
+// Information carried between characters when calculating justification
+// opportunities.
+struct JustificationContext {
+  // Whether the previously processed character had the after-glyph opportunity.
+  bool is_after_opportunity = true;
+};
+
 // Returns a pair of flags;
 // - first: true if we should expand just before `ch`
 // - second: true if we should expand just after `ch`
@@ -26,28 +33,28 @@ namespace blink {
 std::pair<bool, bool> CheckJustificationOpportunity8(
     TextJustify method,
     LChar ch,
-    bool& is_after_opportunity);
+    JustificationContext& context);
 std::pair<bool, bool> CheckJustificationOpportunity16(
     TextJustify method,
     UChar32 ch,
-    bool& is_after_opportunity);
+    JustificationContext& context);
 
 // Returns the number of justification opportunities around `ch`.
 //
 // CountJustificationOpportunity8() is for a 8-bit string.
 // CountJustificationOpportunity16() is for a 16-bit string.
-inline wtf_size_t CountJustificationOpportunity8(TextJustify method,
-                                                 LChar ch,
-                                                 bool& is_after_opportunity) {
-  auto [before, after] =
-      CheckJustificationOpportunity8(method, ch, is_after_opportunity);
+inline wtf_size_t CountJustificationOpportunity8(
+    TextJustify method,
+    LChar ch,
+    JustificationContext& context) {
+  auto [before, after] = CheckJustificationOpportunity8(method, ch, context);
   return (before ? 1 : 0) + (after ? 1 : 0);
 }
-inline wtf_size_t CountJustificationOpportunity16(TextJustify method,
-                                                  UChar32 ch,
-                                                  bool& is_after_opportunity) {
-  auto [before, after] =
-      CheckJustificationOpportunity16(method, ch, is_after_opportunity);
+inline wtf_size_t CountJustificationOpportunity16(
+    TextJustify method,
+    UChar32 ch,
+    JustificationContext& context) {
+  auto [before, after] = CheckJustificationOpportunity16(method, ch, context);
   return (before ? 1 : 0) + (after ? 1 : 0);
 }
 

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
    private:
     ShapeResultSpacing* const spacing_;
     const bool allows_trailing_expansion_;
-    bool is_after_expansion_;
+    JustificationContext justification_context_;
   };
 
   // Compute spacings for the specified `index`.
@@ -111,8 +112,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
       UChar ch);
 
  private:
-  bool IsAfterExpansion() const { return is_after_expansion_; }
-
   // A helper for ComputeExpansion().
   std::pair<TextRunLayoutUnit, TextRunLayoutUnit> FinalizeComputeExpansion(
       bool opportunity_before,
@@ -125,12 +124,12 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   InlineLayoutUnit expansion_;
   TextRunLayoutUnit expansion_per_opportunity_;
   unsigned expansion_opportunity_count_ = 0;
+  JustificationContext justification_context_;
   bool has_spacing_ = false;
   bool is_letter_spacing_applied_ = false;
   bool is_word_spacing_applied_ = false;
   bool normalize_space_ = false;
   bool allow_tabs_ = false;
-  bool is_after_expansion_ = false;
   bool allow_word_spacing_anywhere_ = false;
 };
 
