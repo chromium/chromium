@@ -149,6 +149,7 @@ bool BackgroundLoaderOffliner::Cancel(CancelCallback callback) {
   // in RequestCoordinator this should not happen.
   if (!pending_request_)
     return false;
+  completion_callback_.Reset();
 
   // TODO(chili): We are not able to cancel a pending
   // OfflinePageModel::SaveSnapshot() operation. We will notify caller that
@@ -167,8 +168,9 @@ bool BackgroundLoaderOffliner::Cancel(CancelCallback callback) {
 }
 
 void BackgroundLoaderOffliner::TerminateLoadIfInProgress() {
-  if (!pending_request_)
+  if (!pending_request_ || !completion_callback_) {
     return;
+  }
 
   Cancel(base::BindOnce(HandleLoadTerminationCancel,
                         std::move(completion_callback_)));
@@ -216,9 +218,7 @@ void BackgroundLoaderOffliner::CanDownload(
   std::move(callback).Run(should_allow_downloads);
   SavePageRequest request(*pending_request_.get());
   std::move(completion_callback_).Run(request, final_status);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&BackgroundLoaderOffliner::ResetState,
-                                weak_ptr_factory_.GetWeakPtr()));
+  ResetState();
 }
 
 void BackgroundLoaderOffliner::MarkLoadStartTime() {
