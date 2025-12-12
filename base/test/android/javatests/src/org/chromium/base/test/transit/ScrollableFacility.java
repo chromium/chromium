@@ -276,7 +276,9 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
             List<ViewAndRoot> viewMatches =
                     ThreadUtils.runOnUiThreadBlocking(
-                            () -> ViewFinder.findViews(List.of(root), mViewSpec.getViewMatcher()));
+                            () ->
+                                    InternalViewFinder.findViews(
+                                            List.of(root), mViewSpec.getViewMatcher()));
             if (viewMatches.size() > 1) {
                 throw new IllegalStateException(
                         ViewConditions.writeMatchingViewsStatusMessage(viewMatches));

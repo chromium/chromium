@@ -127,9 +127,9 @@ public class ViewConditions {
                 }
             }
 
-            List<Root> roots = ViewFinder.findRoots(activity);
+            List<Root> roots = InternalViewFinder.findRoots(activity);
 
-            List<ViewAndRoot> viewMatches = ViewFinder.findViews(roots, mMatcher);
+            List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(roots, mMatcher);
 
             if (viewMatches.size() != 1) {
                 return notFulfilled(writeMatchingViewsStatusMessage(viewMatches)).withoutResult();
@@ -361,9 +361,9 @@ public class ViewConditions {
                         activity = activityElement.get();
                     }
                 }
-                rootsToSearch = ViewFinder.findRoots(activity);
+                rootsToSearch = InternalViewFinder.findRoots(activity);
             }
-            List<ViewAndRoot> viewMatches = ViewFinder.findViews(rootsToSearch, mMatcher);
+            List<ViewAndRoot> viewMatches = InternalViewFinder.findViews(rootsToSearch, mMatcher);
 
             if (viewMatches.isEmpty()) {
                 return fulfilled();

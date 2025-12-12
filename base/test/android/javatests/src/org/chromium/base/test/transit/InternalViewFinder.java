@@ -27,7 +27,7 @@ import java.util.List;
 
 @NullMarked
 /** Searches Android Windows for specific Views and root Views. */
-class ViewFinder {
+class InternalViewFinder {
     /**
      * Searches all Windows for root Views.
      *
