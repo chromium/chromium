@@ -5,6 +5,7 @@
 import './simple_action_menu.js';
 
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../content/read_anything_types.js';
@@ -46,26 +47,25 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase {
     highlightGranularity: 0,
   };
 
-  // TODO(crbug.com/467778823): Internationalize these strings once finalized.
   protected options_: Array<MenuStateItem<LineFocus>> = [
     {
-      title: 'Off',
+      title: loadTimeData.getString('lineFocusOffTitle'),
       data: {type: LineFocusType.NONE, lines: 0},
     },
     {
-      title: 'Highlight 1 line',
+      title: loadTimeData.getString('lineFocusOneLineTitle'),
       data: {type: LineFocusType.WINDOW, lines: 1},
     },
     {
-      title: 'Highlight 3 lines',
+      title: loadTimeData.getString('lineFocusThreeLineTitle'),
       data: {type: LineFocusType.WINDOW, lines: 3},
     },
     {
-      title: 'Highlight 5 lines',
+      title: loadTimeData.getString('lineFocusFiveLineTitle'),
       data: {type: LineFocusType.WINDOW, lines: 5},
     },
     {
-      title: 'Line',
+      title: loadTimeData.getString('lineFocusCursorLineTitle'),
       data: {type: LineFocusType.LINE, lines: 1},
     },
   ];
