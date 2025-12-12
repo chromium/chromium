@@ -297,7 +297,8 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
   if (!window_tracker) {
     return;
   }
-  window_tracker->InitializeBrowserInfoForTracking(browser);
+  window_tracker->InitializeBrowserInfoForTracking(
+      BrowserController::GetInstance()->GetDelegate(browser));
   for (auto* observer : observers) {
     window_tracker->AddObserver(observer);
   }

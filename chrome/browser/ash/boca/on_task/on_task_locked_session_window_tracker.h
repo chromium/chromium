@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
@@ -29,12 +30,13 @@
 class Browser;
 class BrowserWindowInterface;
 
+namespace ash {
+class BrowserDelegate;
+class OnTaskPodController;
+}  // namespace ash
+
 namespace ash::boca {
 class BocaWindowObserver;
-}
-
-namespace ash {
-class OnTaskPodController;
 }
 
 // This class is used to track the windows and tabs that are opened in the
@@ -48,12 +50,10 @@ class OnTaskPodController;
 // are. All of these calls should be called from the main thread.
 class LockedSessionWindowTracker : public KeyedService,
                                    public TabStripModelObserver,
-                                   public BrowserListObserver,
+                                   public ash::BrowserController::Observer,
                                    public ImmersiveModeController::Observer,
                                    public content::WebContentsObserver {
  public:
-  static Browser* GetBrowserWithTab(content::WebContents* tab);
-
   LockedSessionWindowTracker(std::unique_ptr<OnTaskBlocklist> on_task_blocklist,
                              content::BrowserContext* context);
   LockedSessionWindowTracker(const LockedSessionWindowTracker&) = delete;
@@ -65,7 +65,7 @@ class LockedSessionWindowTracker : public KeyedService,
   void RemoveObserver(ash::boca::BocaWindowObserver* observer);
 
   // Starts tracking the `browser` for navigation changes.
-  void InitializeBrowserInfoForTracking(Browser* browser);
+  void InitializeBrowserInfoForTracking(ash::BrowserDelegate* browser);
 
   // Displays a toast that indicates the URL was blocked.
   void ShowURLBlockedToast();
@@ -121,9 +121,10 @@ class LockedSessionWindowTracker : public KeyedService,
   void OnTabWillBeRemoved(content::WebContents* contents, int index) override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
-  // BrowserListObserver Implementation
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // ash::BrowserController::Observer:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserActivated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // content::WebContentsObserver Impl
   void DidFinishNavigation(
@@ -137,7 +138,8 @@ class LockedSessionWindowTracker : public KeyedService,
   void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   void MaybeCloseWebContents(base::WeakPtr<content::WebContents> weak_tab_ptr);
-  void MaybeCloseBrowser(base::WeakPtr<Browser> weak_browser_ptr);
+  void MaybeCloseBrowser(ash::BrowserDelegate* browser);
+  void EnsureMaybeCloseBrowserTaskPosted(ash::BrowserDelegate* browser);
 
   void CleanupWindowTracker();
 
@@ -148,17 +150,16 @@ class LockedSessionWindowTracker : public KeyedService,
   const bool is_consumer_profile_;
   std::unique_ptr<ash::boca::OnTaskNotificationsManager> notifications_manager_;
   std::unique_ptr<ash::OnTaskPodController> on_task_pod_controller_;
-  raw_ptr<Browser> browser_ = nullptr;
-
+  raw_ptr<ash::BrowserDelegate> browser_ = nullptr;
   base::ScopedObservation<ImmersiveModeController, LockedSessionWindowTracker>
       immersive_mode_controller_observation_{this};
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_controller_observation_{this};
+  absl::flat_hash_map<ash::BrowserDelegate*,
+                      std::unique_ptr<base::CancelableOnceClosure>>
+      pending_close_tasks_;
   base::ObserverList<ash::boca::BocaWindowObserver> observers_;
-
-  // Map to track browser close callback subscriptions.
-  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
-                      base::CallbackListSubscription>
-      browser_close_subscriptions_;
-
   base::WeakPtrFactory<LockedSessionWindowTracker> weak_pointer_factory_{this};
 };
 

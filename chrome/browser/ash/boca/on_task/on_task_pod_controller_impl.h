@@ -11,25 +11,29 @@
 #include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
-class Browser;
 class ImmersiveRevealedLock;
 
 namespace ash {
+
+class BrowserDelegate;
 
 // OnTask pod controller implementation for the `OnTaskPodView`. This controller
 // implementation also owns the widget that hosts the pod component view.
 class OnTaskPodControllerImpl : public OnTaskPodController,
                                 public aura::WindowObserver,
-                                public WindowStateObserver {
+                                public WindowStateObserver,
+                                public BrowserController::Observer {
  public:
-  explicit OnTaskPodControllerImpl(Browser* browser);
+  explicit OnTaskPodControllerImpl(ash::BrowserDelegate* browser);
   OnTaskPodControllerImpl(const OnTaskPodControllerImpl&) = delete;
   OnTaskPodControllerImpl& operator=(const OnTaskPodControllerImpl) = delete;
   ~OnTaskPodControllerImpl() override;
@@ -57,6 +61,9 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
 
+  // BrowserController::Observer:
+  void OnBrowserClosed(BrowserDelegate* delegate) override;
+
   // Component accessors used for testing purposes.
   views::Widget* GetPodWidgetForTesting();
   ImmersiveRevealedLock* GetTabStripRevealLockForTesting();
@@ -67,8 +74,8 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   // the parent window frame header height.
   const gfx::Rect CalculateWidgetBounds();
 
-  // Weak pointer for the Boca app instance that is being interacted with.
-  const base::WeakPtr<Browser> browser_;
+  // Pointer to the Boca app instance that is being interacted with.
+  raw_ptr<BrowserDelegate> browser_ = nullptr;
 
   // Pod widget that contains the `OnTaskPodView`.
   std::unique_ptr<views::Widget> pod_widget_;
@@ -82,6 +89,10 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
 
   // Snap location for the OnTask pod. Top left by default.
   OnTaskPodSnapLocation pod_snap_location_ = OnTaskPodSnapLocation::kTopLeft;
+
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_controller_observation_{this};
 };
 
 }  // namespace ash

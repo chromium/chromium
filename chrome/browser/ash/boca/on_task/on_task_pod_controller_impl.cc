@@ -13,9 +13,12 @@
 #include "ash/style/icon_button.h"
 #include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
@@ -54,9 +57,9 @@ std::unique_ptr<views::Widget> CreateChildWidget(
 }
 }  // namespace
 
-OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
-    : browser_(browser->AsWeakPtr()) {
-  aura::Window* const browser_window = browser_->window()->GetNativeWindow();
+OnTaskPodControllerImpl::OnTaskPodControllerImpl(ash::BrowserDelegate* browser)
+    : browser_(browser) {
+  aura::Window* const browser_window = browser_->GetNativeWindow();
   auto on_task_pod_view = std::make_unique<OnTaskPodView>(this);
   pod_widget_ = CreateChildWidget(browser_window->GetToplevelWindow(),
                                   kOnTaskPodWidgetInternalName,
@@ -69,16 +72,17 @@ OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
   pod_widget_->SetBounds(CalculateWidgetBounds());
   OnPageNavigationContextChanged();
   pod_widget_->SetFocusTraversableParentView(
-      BrowserView::GetBrowserViewForBrowser(browser_.get()));
+      BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser()));
   pod_widget_->Show();
 
+  browser_controller_observation_.Observe(BrowserController::GetInstance());
   browser_window->AddObserver(this);
   WindowState::Get(browser_window)->AddObserver(this);
 }
 
 OnTaskPodControllerImpl::~OnTaskPodControllerImpl() {
   if (browser_) {
-    aura::Window* const browser_window = browser_->window()->GetNativeWindow();
+    aura::Window* const browser_window = browser_->GetNativeWindow();
     WindowState::Get(browser_window)->RemoveObserver(this);
     browser_window->RemoveObserver(this);
   }
@@ -89,7 +93,7 @@ void OnTaskPodControllerImpl::MaybeNavigateToPreviousPage() {
     return;
   }
   boca::RecordOnTaskPodNavigateBackClicked();
-  chrome::GoBack(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoBack(&browser_->GetBrowser(), WindowOpenDisposition::CURRENT_TAB);
 }
 
 void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
@@ -97,7 +101,8 @@ void OnTaskPodControllerImpl::MaybeNavigateToNextPage() {
     return;
   }
   boca::RecordOnTaskPodNavigateForwardClicked();
-  chrome::GoForward(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::GoForward(&browser_->GetBrowser(),
+                    WindowOpenDisposition::CURRENT_TAB);
 }
 
 void OnTaskPodControllerImpl::ReloadCurrentPage() {
@@ -105,7 +110,7 @@ void OnTaskPodControllerImpl::ReloadCurrentPage() {
     return;
   }
   boca::RecordOnTaskPodReloadPageClicked();
-  chrome::Reload(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(&browser_->GetBrowser(), WindowOpenDisposition::CURRENT_TAB);
 }
 
 void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
@@ -122,7 +127,7 @@ void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
 
   // Acquire lock to reveal the tab strip.
   tab_strip_reveal_lock_ =
-      ImmersiveModeController::From(browser_.get())
+      ImmersiveModeController::From(&browser_->GetBrowser())
           ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
 }
 
@@ -175,10 +180,16 @@ void OnTaskPodControllerImpl::OnWindowVisibilityChanged(aura::Window* window,
   DCHECK(pod_widget_);
   // We need to check browser window visibility directly; `visible` param is for
   // webcontents visibility, which changes when we switch tabs.
-  if (browser_->window()->IsVisible()) {
+  if (browser_->IsVisible()) {
     pod_widget_->Show();
   } else {
     pod_widget_->Hide();
+  }
+}
+
+void OnTaskPodControllerImpl::OnBrowserClosed(BrowserDelegate* browser) {
+  if (browser == browser_) {
+    browser_ = nullptr;
   }
 }
 
@@ -210,19 +221,20 @@ bool OnTaskPodControllerImpl::CanNavigateToPreviousPage() {
   if (!browser_) {
     return false;
   }
-  return chrome::CanGoBack(browser_.get());
+  return chrome::CanGoBack(&browser_->GetBrowser());
 }
 
 bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
   if (!browser_) {
     return false;
   }
-  return chrome::CanGoForward(browser_.get());
+  return chrome::CanGoForward(&browser_->GetBrowser());
 }
 
 bool OnTaskPodControllerImpl::CanToggleTabStripVisibility() {
-  return browser_ && platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
-         ImmersiveModeController::From(browser_.get())->IsEnabled();
+  return browser_ &&
+         platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser()) &&
+         ImmersiveModeController::From(&browser_->GetBrowser())->IsEnabled();
 }
 
 const gfx::Rect OnTaskPodControllerImpl::CalculateWidgetBounds() {

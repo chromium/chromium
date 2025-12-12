@@ -879,6 +879,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
           profile());
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
   popup_browser->window()->Close();
+  content::RunAllTasksUntilIdle();
   EXPECT_TRUE(window_tracker->CanOpenNewPopup());
 }
 
@@ -944,7 +945,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   EXPECT_EQ(window_tracker->browser(), boca_app_browser);
 
   // Override the window tracker to track a different browser instance.
-  window_tracker->InitializeBrowserInfoForTracking(browser());
+  window_tracker->InitializeBrowserInfoForTracking(
+      ash::BrowserController::GetInstance()->GetDelegate(browser()));
   EXPECT_EQ(window_tracker->browser(), browser());
 }
 

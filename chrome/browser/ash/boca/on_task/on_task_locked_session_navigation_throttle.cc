@@ -9,6 +9,8 @@
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -118,12 +120,14 @@ void OnTaskLockedSessionNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(handle.GetWebContents());
+  BrowserDelegate* const content_browser =
+      BrowserController::GetInstance()->GetBrowserForTab(
+          handle.GetWebContents());
 
   // Ensure we only apply the nav throttle on OnTask SWA navigations.
-  if (content_browser && (content_browser != window_tracker->browser() &&
-                          !content_browser->is_type_app_popup())) {
+  if (content_browser &&
+      (&content_browser->GetBrowser() != window_tracker->browser() &&
+       content_browser->GetType() != BrowserType::kAppPopup)) {
     return;
   }
   window_tracker->ObserveWebContents(handle.GetWebContents());
@@ -197,8 +201,8 @@ bool OnTaskLockedSessionNavigationThrottle::
 bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {
   // TODO(b/377347487): Add test for Navigations that happen outside the OnTask
   // SWA but attach the tab to the OnTask SWA subsequently.
-  Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(
+  BrowserDelegate* const content_browser =
+      BrowserController::GetInstance()->GetBrowserForTab(
           navigation_handle()->GetWebContents());
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
@@ -206,8 +210,9 @@ bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {
   // Handle the case where the creation of the tab is in the OnTask app
   // context, but is moved to a different browser right after (such as open link
   // in chrome window context menu).
-  if (!content_browser || (content_browser != window_tracker->browser() &&
-                           !content_browser->is_type_app_popup())) {
+  if (!content_browser ||
+      (&content_browser->GetBrowser() != window_tracker->browser() &&
+       content_browser->GetType() != BrowserType::kAppPopup)) {
     return true;
   }
   return false;
@@ -224,8 +229,8 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
-  Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(
+  BrowserDelegate* const content_browser =
+      BrowserController::GetInstance()->GetBrowserForTab(
           navigation_handle()->GetWebContents());
 
   if (IsOutsideOnTaskAppNavigation()) {
@@ -280,7 +285,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // OAuth navigation, still give it a chance to finish. If by the end
   //  of the navigation we haven't determined that it is an OAuth login flow,
   //  the window_tracker will close the popup.
-  if (content_browser && content_browser->is_type_app_popup() &&
+  if (content_browser && content_browser->GetType() == BrowserType::kAppPopup &&
       !window_tracker->CanOpenNewPopup()) {
     return PROCEED;
   }
@@ -443,13 +448,13 @@ OnTaskLockedSessionNavigationThrottle::WillProcessResponse() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::WillRedirectRequest() {
-  Browser* const content_browser =
-      LockedSessionWindowTracker::GetBrowserWithTab(
+  BrowserDelegate* const content_browser =
+      BrowserController::GetInstance()->GetBrowserForTab(
           navigation_handle()->GetWebContents());
   LockedSessionWindowTracker* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
-  if (content_browser && content_browser->is_type_app_popup()) {
+  if (content_browser && content_browser->GetType() == BrowserType::kAppPopup) {
     // After the Oauth flow is completed, we let the `OnBrowserClosing`
     // observer from the `window_tracker` to set `oauth_in_progress` to be false
     // since a request may have returned with the auth code and marked as

@@ -9,13 +9,9 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_command_controller.h",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
 ]
 
 specific_include_rules = {
@@ -23,7 +19,9 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test\\.cc": [
+    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_navigator_params.h",
+    "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/test/test_browser_closed_waiter.h",
     "+chrome/test/base/interactive_test_utils.h",
     "+chrome/test/base/ui_test_utils.h",
@@ -31,6 +29,8 @@ specific_include_rules = {
   "on_task_locked_session_window_tracker_browsertest\\.cc": [
     "+chrome/app/chrome_command_ids.h",
     "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser_list.h",
     "+chrome/common/chrome_paths.h",
     "+chrome/common/webui_url_constants.h",
     "+chrome/test/base/ui_test_utils.h"
