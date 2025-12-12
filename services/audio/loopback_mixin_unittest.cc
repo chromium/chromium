@@ -73,7 +73,7 @@ class LoopbackMixinTest : public testing::Test {
   void VerifyAudioBus(const media::AudioBus* bus, float expected_value) {
     ASSERT_TRUE(bus);
     for (int i = 0; i < bus->channels(); ++i) {
-      auto channel_data(bus->channel_span(i));
+      auto channel_data(bus->channel(i));
       for (float sample : channel_data) {
         EXPECT_FLOAT_EQ(sample, expected_value);
       }

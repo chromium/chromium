@@ -232,9 +232,8 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     node_->Render(output_time, bus.get());
 
     for (int ch = 0; ch < bus->channels(); ++ch) {
-      EXPECT_FALSE(
-          std::ranges::any_of(bus->channel_span(ch),
-                              [](float x) { return x == kInvalidAudioSample; }))
+      EXPECT_FALSE(std::ranges::any_of(
+          bus->channel(ch), [](float x) { return x == kInvalidAudioSample; }))
           << " at output_time=" << output_time << ", ch=" << ch;
     }
     consumer_->Consume(*bus);

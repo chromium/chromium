@@ -29,7 +29,7 @@ bool BusIsLoud(base::span<const float> bus) {
 }
 
 void FillBusWithGuardValue(media::AudioBus* bus) {
-  std::ranges::fill(bus->channel_span(0), kGuardValue);
+  std::ranges::fill(bus->channel(0), kGuardValue);
 }
 
 TEST(DelayBufferTest, RecordsAMaximumNumberOfFrames) {
@@ -38,7 +38,7 @@ TEST(DelayBufferTest, RecordsAMaximumNumberOfFrames) {
 
   constexpr int frames_per_bus = kMaxFrames / 4;
   const auto bus = media::AudioBus::Create(kChannels, frames_per_bus);
-  std::ranges::fill(bus->channel_span(0), kLoudValue);
+  std::ranges::fill(bus->channel(0), kLoudValue);
 
   // Fill the buffer.
   DelayBuffer::FrameTicks position = 0;
@@ -73,11 +73,11 @@ TEST(DelayBufferTest, ReadsSilenceIfNothingWasRecorded) {
 
   for (int i = 0; i < 10; ++i) {
     // Set data in the bus to confirm it is all going to be overwritten.
-    std::ranges::fill(bus->channel_span(0), kLoudValue);
+    std::ranges::fill(bus->channel(0), kLoudValue);
 
     buffer.Read(position, frames_per_bus, bus.get());
     EXPECT_EQ(buffer.GetBeginPosition(), buffer.GetEndPosition());
-    EXPECT_TRUE(BusIsSilent(bus->channel_span(0)));
+    EXPECT_TRUE(BusIsSilent(bus->channel(0)));
 
     position += frames_per_bus;
   }
@@ -89,7 +89,7 @@ TEST(DelayBufferTest, ReadsSilenceIfOutsideRecordedRange) {
 
   constexpr size_t frames_per_bus = kMaxFrames / 4;
   const auto bus = media::AudioBus::Create(kChannels, frames_per_bus);
-  std::ranges::fill(bus->channel_span(0), kLoudValue);
+  std::ranges::fill(bus->channel(0), kLoudValue);
 
   // Fill the buffer.
   DelayBuffer::FrameTicks position = 0;
@@ -103,26 +103,26 @@ TEST(DelayBufferTest, ReadsSilenceIfOutsideRecordedRange) {
   // Read before the begin position and expect to get silence.
   FillBusWithGuardValue(bus.get());
   buffer.Read(-kMaxFrames, frames_per_bus, bus.get());
-  EXPECT_TRUE(BusIsSilent(bus->channel_span(0)));
+  EXPECT_TRUE(BusIsSilent(bus->channel(0)));
 
   // Read at a position one before the begin position. Expect the first sample
   // to be 0.0, and the rest 1.0.
   FillBusWithGuardValue(bus.get());
   buffer.Read(buffer.GetBeginPosition() - 1, frames_per_bus, bus.get());
-  EXPECT_EQ(0.0, bus->channel_span(0)[0]);
-  EXPECT_TRUE(BusIsLoud(bus->channel_span(0).subspan(1u)));
+  EXPECT_EQ(0.0, bus->channel(0)[0]);
+  EXPECT_TRUE(BusIsLoud(bus->channel(0).subspan(1u)));
 
   // Read at a position where the last sample should be 0.0 and the rest 1.0.
   FillBusWithGuardValue(bus.get());
   buffer.Read(buffer.GetEndPosition() - frames_per_bus + 1, frames_per_bus,
               bus.get());
-  EXPECT_TRUE(BusIsLoud(bus->channel_span(0).first(frames_per_bus - 1)));
-  EXPECT_EQ(0.0, bus->channel_span(0)[frames_per_bus - 1]);
+  EXPECT_TRUE(BusIsLoud(bus->channel(0).first(frames_per_bus - 1)));
+  EXPECT_EQ(0.0, bus->channel(0)[frames_per_bus - 1]);
 
   // Read after the end position and expect to get silence.
   FillBusWithGuardValue(bus.get());
   buffer.Read(kMaxFrames, frames_per_bus, bus.get());
-  EXPECT_TRUE(BusIsSilent(bus->channel_span(0)));
+  EXPECT_TRUE(BusIsSilent(bus->channel(0)));
 }
 
 TEST(DelayBufferTest, ReadsGapsInRecording) {
@@ -131,7 +131,7 @@ TEST(DelayBufferTest, ReadsGapsInRecording) {
 
   constexpr int frames_per_bus = kMaxFrames / 4;
   const auto bus = media::AudioBus::Create(kChannels, frames_per_bus);
-  std::ranges::fill(bus->channel_span(0), kLoudValue);
+  std::ranges::fill(bus->channel(0), kLoudValue);
 
   // Fill the buffer, but with a gap in the third quarter of it.
   DelayBuffer::FrameTicks record_position = 0;
@@ -150,27 +150,27 @@ TEST(DelayBufferTest, ReadsGapsInRecording) {
   FillBusWithGuardValue(bus.get());
   buffer.Read(read_position, frames_per_bus, bus.get());
   read_position += frames_per_bus;
-  EXPECT_EQ(0.0, bus->channel_span(0)[0]);
-  EXPECT_TRUE(BusIsLoud(bus->channel_span(0).subspan(1u)));
+  EXPECT_EQ(0.0, bus->channel(0)[0]);
+  EXPECT_TRUE(BusIsLoud(bus->channel(0).subspan(1u)));
 
   FillBusWithGuardValue(bus.get());
   buffer.Read(read_position, frames_per_bus, bus.get());
   read_position += frames_per_bus;
-  EXPECT_TRUE(BusIsLoud(bus->channel_span(0)));
+  EXPECT_TRUE(BusIsLoud(bus->channel(0)));
 
   FillBusWithGuardValue(bus.get());
   buffer.Read(read_position, frames_per_bus, bus.get());
   read_position += frames_per_bus;
-  EXPECT_EQ(1.0, bus->channel_span(0)[0]);
+  EXPECT_EQ(1.0, bus->channel(0)[0]);
   // The gap begins.
-  EXPECT_TRUE(BusIsSilent(bus->channel_span(0).subspan(1u)));
+  EXPECT_TRUE(BusIsSilent(bus->channel(0).subspan(1u)));
 
   FillBusWithGuardValue(bus.get());
   buffer.Read(read_position, frames_per_bus, bus.get());
   read_position += frames_per_bus;
-  EXPECT_EQ(0.0, bus->channel_span(0)[0]);
+  EXPECT_EQ(0.0, bus->channel(0)[0]);
   // The gap ends.
-  EXPECT_TRUE(BusIsLoud(bus->channel_span(0).subspan(1u)));
+  EXPECT_TRUE(BusIsLoud(bus->channel(0).subspan(1u)));
 }
 
 }  // namespace

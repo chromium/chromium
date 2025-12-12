@@ -221,7 +221,7 @@ class MockAudioOutputStream : public AudioOutputStream,
                  const media::AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override {
     int res = callback_->OnMoreData(delay, delay_timestamp, glitch_info, dest);
-    EXPECT_EQ(dest->channel_span(0)[0], kBufferNonZeroData);
+    EXPECT_EQ(dest->channel(0)[0], kBufferNonZeroData);
     return res;
   }
 
@@ -253,7 +253,7 @@ class MockSnooper : public Snoopable::Snooper {
               base::TimeTicks reference_time,
               double volume) final {
     // Is the AudioBus populated?
-    EXPECT_EQ(kBufferNonZeroData, audio_bus.channel_span(0)[0]);
+    EXPECT_EQ(kBufferNonZeroData, audio_bus.channel(0)[0]);
 
     // Are reference timestamps monotonically increasing?
     if (!last_reference_time_.is_null()) {
@@ -331,7 +331,7 @@ ACTION(PopulateBuffer) {
   arg0->Zero();
   // Note: To confirm the buffer will be populated in these tests, it's
   // sufficient that only the first float in channel 0 is set to the value.
-  arg0->channel_span(0)[0] = kBufferNonZeroData;
+  arg0->channel(0)[0] = kBufferNonZeroData;
   return true;
 }
 
@@ -379,7 +379,7 @@ class OutputControllerTest : public ::testing::Test {
     EXPECT_CALL(mock_sync_reader_, Read(_, false))
         .WillOnce([barrier](AudioBus* data, bool /*is_mixing*/) {
           data->Zero();
-          data->channel_span(0)[0] = kBufferNonZeroData;
+          data->channel(0)[0] = kBufferNonZeroData;
           barrier.Run();
           return true;
         })

@@ -42,7 +42,7 @@ void FakeConsumer::Clear() {
 void FakeConsumer::Consume(const media::AudioBus& bus) {
   CHECK_EQ(static_cast<int>(recorded_channel_data_.size()), bus.channels());
   for (size_t ch = 0; ch < recorded_channel_data_.size(); ++ch) {
-    base::span<const float> src_ch = bus.channel_span(ch);
+    base::span<const float> src_ch = bus.channel(ch);
     std::vector<float>& samples = recorded_channel_data_[ch];
     samples.insert(samples.end(), src_ch.begin(), src_ch.end());
   }
@@ -143,7 +143,7 @@ void FakeConsumer::SaveToFile(const base::FilePath& path) const {
   for (int i = 0; i < params.channels(); ++i) {
     CHECK_EQ(recorded_channel_data_[i].size(), number_of_samples);
     const std::vector<float>& channel_data = recorded_channel_data_[i];
-    bus->channel_span(i).copy_from_nonoverlapping(base::span(channel_data));
+    bus->channel(i).copy_from_nonoverlapping(base::span(channel_data));
   }
   writer->Write(*bus);
 }

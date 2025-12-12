@@ -35,7 +35,7 @@ class MixingGraphInputTest : public ::testing::Test {
     for (int i = 0; i < num_runs; i++) {
       mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                                 dest_.get());
-      for (auto sample : dest_->channel_span(0)) {
+      for (auto sample : dest_->channel(0)) {
         EXPECT_NEAR(sample, expected_data, epsilon);
         expected_data += expected_sample_increment;
       }
@@ -64,7 +64,7 @@ class SampleCounter : public media::AudioOutputStream::AudioSourceCallback {
                  media::AudioBus* dest) final {
     // Fill the audio bus with a simple, predictable pattern.
     for (int channel = 0; channel < dest->channels(); ++channel) {
-      auto data = dest->channel_span(channel);
+      auto data = dest->channel(channel);
       for (int frame = 0; frame < dest->frames(); frame++) {
         data[frame] = counter_ + increment_ * frame + increment_ * channel;
       }
@@ -285,7 +285,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   // Get the last sample of the first output.
   mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
-  float last_sample = dest_->channel_span(0).back();
+  float last_sample = dest_->channel(0).back();
 
   // Stop and restart.
   input->Stop();
@@ -294,7 +294,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   // Get the first sample of the second output.
   mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
-  float first_sample = dest_->channel_span(0).front();
+  float first_sample = dest_->channel(0).front();
 
   // If the first sample of the second output is equal to the last sample of
   // the first output left-over data has been consumed.

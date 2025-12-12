@@ -164,7 +164,7 @@ class LoopbackReferenceManagerTest : public ::testing::Test {
 
 // Simple matcher for verifying AudioBus data.
 MATCHER_P(FirstSampleEquals, sample_value, "") {
-  return arg.channel_span(0)[0] == sample_value;
+  return arg.channel(0)[0] == sample_value;
 }
 
 // There is no equality operator for AudioParameters, so we need to create a
@@ -247,7 +247,7 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   EXPECT_CALL(mock_listener_1,
               OnPlayoutData(FirstSampleEquals(111),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 111;
+  audio_bus->channel(0)[0] = 111;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Add another listener. This shouldn't create a new stream.
@@ -262,7 +262,7 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   EXPECT_CALL(mock_listener_2,
               OnPlayoutData(FirstSampleEquals(222),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 222;
+  audio_bus->channel(0)[0] = 222;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the first listener, which should not stop the loopback stream.
@@ -272,7 +272,7 @@ TEST_F(LoopbackReferenceManagerTest, DistributesAudioToListenersSameProvider) {
   EXPECT_CALL(mock_listener_2,
               OnPlayoutData(FirstSampleEquals(333),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 333;
+  audio_bus->channel(0)[0] = 333;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the second listener, this will stop the loopback stream.
@@ -313,7 +313,7 @@ TEST_F(LoopbackReferenceManagerTest,
   EXPECT_CALL(mock_listener_1,
               OnPlayoutData(FirstSampleEquals(111),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 111;
+  audio_bus->channel(0)[0] = 111;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Add a listener to the second provider. This shouldn't create a new stream.
@@ -328,7 +328,7 @@ TEST_F(LoopbackReferenceManagerTest,
   EXPECT_CALL(mock_listener_2,
               OnPlayoutData(FirstSampleEquals(222),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 222;
+  audio_bus->channel(0)[0] = 222;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener from the first provider. The stream should not stop.
@@ -339,7 +339,7 @@ TEST_F(LoopbackReferenceManagerTest,
   EXPECT_CALL(mock_listener_2,
               OnPlayoutData(FirstSampleEquals(333),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 333;
+  audio_bus->channel(0)[0] = 333;
   audio_callback->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener from the second provider. This should stop the loopback
@@ -368,7 +368,7 @@ TEST_F(LoopbackReferenceManagerTest,
   EXPECT_CALL(mock_listener,
               OnPlayoutData(FirstSampleEquals(111),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 111;
+  audio_bus->channel(0)[0] = 111;
   audio_callback_1->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener, which closes the new stream.
@@ -387,7 +387,7 @@ TEST_F(LoopbackReferenceManagerTest,
   EXPECT_CALL(mock_listener,
               OnPlayoutData(FirstSampleEquals(222),
                             loopback_params_.sample_rate(), base::TimeDelta()));
-  audio_bus->channel_span(0)[0] = 222;
+  audio_bus->channel(0)[0] = 222;
   audio_callback_2->OnData(audio_bus.get(), base::TimeTicks::Now(), 0, {});
 
   // Remove the listener again, which closes the new stream.
@@ -656,7 +656,7 @@ TEST_F(LoopbackReferenceManagerTest, DeliversAudioOnAudioThread) {
   CHECK(mock_input_stream->captured_callback_);
   AudioInputCallback* audio_callback = *(mock_input_stream->captured_callback_);
 
-  audio_bus->channel_span(0)[0] = 111;
+  audio_bus->channel(0)[0] = 111;
   EXPECT_CALL(
       threaded_listener,
       MockOnPlayoutData(FirstSampleEquals(111), loopback_params_.sample_rate(),
