@@ -16,8 +16,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
+import {LineFocusController, type LineFocusListener} from '../content/line_focus_controller.js';
 import {NodeStore} from '../content/node_store.js';
-import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {type LineFocus, LineFocusType, type SettingsPrefs} from '../content/read_anything_types.js';
 import {SelectionController} from '../content/selection_controller.js';
 import type {LanguageToastElement} from '../read_aloud/language_toast.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
@@ -40,15 +41,18 @@ export interface AppElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
+    containerParent: HTMLElement,
     container: HTMLElement,
     languageToast: LanguageToastElement,
     containerScroller: HTMLElement,
+    lineFocus: HTMLElement,
   };
 }
 
 export class AppElement extends AppElementBase implements SpeechListener,
                                                           VoiceLanguageListener,
-                                                          ContentListener {
+                                                          ContentListener,
+                                                          LineFocusListener {
   static get is() {
     return 'read-anything-app';
   }
@@ -123,6 +127,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       ContentController.getInstance();
   private selectionController_: SelectionController =
       SelectionController.getInstance();
+  private lineFocusController_: LineFocusController =
+      LineFocusController.getInstance();
   protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
@@ -168,7 +174,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // to take place.
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     this.styleUpdater_.setMaxLineWidth();
-
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.$.containerParent.addEventListener('mousemove', mouseEvent => {
+        this.lineFocusController_.onMouseMove(mouseEvent.clientY);
+      });
+      this.lineFocusController_.addListener(this);
+    }
     this.contentController_.addListener(this);
     if (this.isReadAloudEnabled_) {
       this.speechController_.addListener(this);
@@ -319,6 +330,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
           getWordCount(newRoot.textContent) :
           0;
       chrome.readingMode.onDistilled(wordCount);
+      requestAnimationFrame(() => {
+        this.onTextLocationsChange_();
+      });
     }
   }
 
@@ -369,6 +383,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onPlayPauseClick_() {
     this.speechController_.onPlayPauseToggle(this.$.container);
+  }
+
+  onLineFocusMove(): void {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    this.styleUpdater_.setLineFocusPos(
+        this.lineFocusController_.getTop(),
+        this.lineFocusController_.getHeight(), this.$.containerParent);
   }
 
   onContentStateChange(): void {
@@ -460,6 +484,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       highlightGranularity: chrome.readingMode.highlightGranularity,
     };
     this.styleUpdater_.setAllTextStyles();
+    this.onTextLocationsChange_();
     // TODO: crbug.com/40927698 - Remove this call. Using this.settingsPrefs_
     // should replace this direct call to the toolbar.
     this.$.toolbar.restoreSettingsFromPrefs();
@@ -467,18 +492,27 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected onLineSpacingChange_() {
     this.styleUpdater_.setLineSpacing();
+    this.onTextLocationsChange_();
   }
 
   protected onLetterSpacingChange_() {
     this.styleUpdater_.setLetterSpacing();
+    this.onTextLocationsChange_();
   }
 
   protected onFontChange_() {
     this.styleUpdater_.setFont();
+    this.onTextLocationsChange_();
   }
 
   protected onFontSizeChange_() {
     this.styleUpdater_.setFontSize();
+    this.onTextLocationsChange_();
+    if (chrome.readingMode.isLineFocusEnabled &&
+        this.lineFocusController_.getCurrentLineFocusType() ===
+            LineFocusType.LINE) {
+      this.styleUpdater_.setLineFocusHeight();
+    }
   }
 
   protected onThemeChange_() {
@@ -499,6 +533,25 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.speechController_.onHighlightGranularityChange(event.detail.data);
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
+  }
+
+  protected onLineFocusChange_(event: CustomEvent<{data: LineFocus}>) {
+    this.setLineFocus_(event.detail.data);
+  }
+
+  private setLineFocus_(lineFocus: LineFocus) {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.styleUpdater_.setLineFocusStyle(lineFocus.type);
+      this.lineFocusController_.onLineFocusChange(
+          lineFocus, this.$.container, this.$.containerParent.clientHeight);
+    }
+  }
+
+  private onTextLocationsChange_() {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.onTextLocationsChange(
+          this.$.container, this.$.containerParent.clientHeight);
+    }
   }
 
   languageChanged() {

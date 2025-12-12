@@ -278,6 +278,12 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ReadAloudHighlight) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
+                       LineFocusController) {
+  RunSidePanelTest("side_panel/read_anything/line_focus_controller_test.js",
+                   "mocha.run()");
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ReadAnythingMochaParameterized,
     ReadAnythingMochaParameterizedTest,

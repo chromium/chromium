@@ -27,6 +27,7 @@ build_webui_tests("build") {
     "language_menu_test.ts",
     "language_toast_test.ts",
     "letter_spacing_test.ts",
+    "line_focus_controller_test.ts",
     "line_focus_menu_test.ts",
     "line_spacing_test.ts",
     "movement_test.ts",
