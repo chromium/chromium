@@ -61,7 +61,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="bullet_eight"
         android:summary="@string/safe_browsing_enhanced_protection_bullet_eight"
-        android:icon="@drawable/ic_speed"
+        android:icon="@drawable/ic_speed_24dp"
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
     <org.chromium.components.browser_ui.settings.TextMessagePreference
