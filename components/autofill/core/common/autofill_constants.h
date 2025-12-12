@@ -92,6 +92,11 @@ inline constexpr base::TimeDelta kLimitBeforeAutomaticRefill = base::Seconds(1);
 inline constexpr base::TimeDelta kLimitBeforeProgrammaticRefill =
     base::Seconds(5);
 
+// The time the renderer waits for a response from the browser to a
+// RequestRefill() message.
+inline constexpr base::TimeDelta kRequestRefillTimeout =
+    base::Milliseconds(500);
+
 // Constants for the soft/hard deletion of Autofill data.
 inline constexpr base::TimeDelta kDisusedDataModelTimeDelta = base::Days(180);
 inline constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta =

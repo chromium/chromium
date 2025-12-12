@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <set>
@@ -157,6 +158,16 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojom::AutofillDriver* unsafe_autofill_driver();
 
   CallTimerState GetCallTimerState(CallTimerState::CallSite call_site) const;
+
+  // Requests a refill of the initial fill `fill_id`. The callback is called
+  // when the first of the following happens:
+  // - the refill happens;
+  // - the timeout is reached (`kRequestRefillTimeout`);
+  // - the `pending_refills_` list is destroyed.
+  // In the first event, the callback's argument is `true`; in the other two
+  // cases, it is `false`.
+  void RequestRefill(const FillId& fill_id,
+                     base::OnceCallback<void(bool)> callback);
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override;
@@ -449,6 +460,42 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // For deferring messages to the browser process while prerendering.
   std::unique_ptr<DeferringAutofillDriver> deferring_autofill_driver_;
+
+  // A list of pending refill operations and their associated callbacks created
+  // by RequestRefill(). Automatically calls the callbacks when the refill is
+  // fulfilled or rejected.
+  //
+  // A refill is *fulfilled* if there's an ApplyFormAction() reply to the
+  // outgoing RequestRefill().
+  //
+  // A refill is *rejected* if ApplyFormAction() is not called within a timeout
+  // (`kRequestRefillTimeout`).
+  //
+  // A refill is *pending* if it is neither fulfilled nor rejected.
+  class PendingRefillList {
+   public:
+    PendingRefillList();
+    PendingRefillList(const PendingRefillList&) = delete;
+    PendingRefillList& operator=(const PendingRefillList&) = delete;
+    ~PendingRefillList();
+
+    void Add(const FillId& fill_id, base::OnceCallback<void(bool)> callback);
+
+    void Fulfill(const FillId& fill_id) {
+      RunAndRemove(fill_id, /*fulfilled=*/true);
+    }
+
+    void Reject(const FillId& fill_id) {
+      RunAndRemove(fill_id, /*fulfilled=*/false);
+    }
+
+   private:
+    struct Refill;
+
+    void RunAndRemove(const FillId& fill_id, bool fulfilled);
+
+    std::list<Refill> list_;
+  } pending_refills_;
 
   bool was_last_action_fill_ = false;
 
