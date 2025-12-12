@@ -382,27 +382,16 @@ void GlicInstanceImpl::CloseInstanceAndShutdown() {
 void GlicInstanceImpl::RegisterConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::RegisterConversationCallback callback) {
-  if (!info) {
-    // This point shouldn't be hit, because empty info triggers switching to a
-    // new conversation and the glic api enforces non-empty conversation info
-    // for `registerConversation`.
-    LOG(ERROR) << "RegisterConversation called with null info.";
-    std::move(callback).Run(
-        mojom::RegisterConversationErrorReason::kDefaultValue);
-    return;
-  }
-
   instance_metrics_.OnRegisterConversation(info->conversation_id);
 
-  if (conversation_info_ &&
+  if (!conversation_info_->conversation_id.empty() &&
       conversation_info_->conversation_id != info->conversation_id) {
     std::move(callback).Run(mojom::RegisterConversationErrorReason::
                                 kInstanceAlreadyHasConversationId);
     return;
   }
 
-  conversation_info_ =
-      ConversationInfo{info->conversation_id, info->conversation_title};
+  conversation_info_ = std::move(info);
   std::move(callback).Run(std::nullopt);
 }
 
@@ -654,19 +643,14 @@ void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
 }
 
 std::optional<std::string> GlicInstanceImpl::conversation_id() const {
-  if (conversation_info_) {
+  if (!conversation_info_->conversation_id.empty()) {
     return conversation_info_->conversation_id;
   }
   return std::nullopt;
 }
 
 glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
-  if (conversation_info_) {
-    return glic::mojom::ConversationInfo::New(
-        conversation_info_->conversation_id,
-        conversation_info_->conversation_title);
-  }
-  return nullptr;
+  return conversation_info_->Clone();
 }
 
 // Automatic activation should be suppressed if a floating embedder is active.

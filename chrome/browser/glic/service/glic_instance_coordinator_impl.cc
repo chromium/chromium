@@ -531,7 +531,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   mutable_options.reinitialize_if_already_active = true;
 
   GlicInstanceImpl* target_instance = nullptr;
-  if (info) {
+  if (!info->conversation_id.empty()) {
     for (const auto& [id, instance] : instances_) {
       if (instance->conversation_id().has_value() &&
           instance->conversation_id().value() == info->conversation_id) {
@@ -552,13 +552,12 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   CHECK(target_instance);
 
   metrics_.RecordSwitchConversationTarget(
-      info ? std::optional<std::string>(info->conversation_id) : std::nullopt,
+      !info->conversation_id.empty()
+          ? std::optional<std::string>(info->conversation_id)
+          : std::nullopt,
       target_instance->conversation_id(), active_instance_);
 
-  if (info) {
-    target_instance->RegisterConversation(std::move(info), base::DoNothing());
-  }
-
+  target_instance->RegisterConversation(std::move(info), base::DoNothing());
   target_instance->Show(mutable_options);
   target_instance->metrics()->OnSwitchToConversation(mutable_options);
   std::move(callback).Run(std::nullopt);

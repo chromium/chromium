@@ -757,9 +757,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   async switchConversation(info?: ConversationInfo): Promise<void> {
-    if (info && !info.conversationId) {
-      throw new Error('conversationId cannot be empty.');
-    }
     await this.sender.requestWithResponse(
         'glicBrowserSwitchConversation', {info});
   }

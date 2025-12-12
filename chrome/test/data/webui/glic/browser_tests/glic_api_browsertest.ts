@@ -2417,6 +2417,31 @@ class ApiTests extends ApiTestFixtureBase {
     await actOnWebCapabilitySequence.waitForValue(false);
   }
 
+  async testRegisterConversationWithEmptyId() {
+    assertDefined(this.host.registerConversation);
+    // Register an initial conversation with a valid ID.
+    await this.host.registerConversation(
+        {conversationId: '', conversationTitle: 'Empty Conversation'});
+  }
+
+  async testSwitchConversationWithEmptyId() {
+    assertDefined(this.host.registerConversation);
+    assertDefined(this.host.switchConversation);
+
+    // Register an initial conversation with a valid ID.
+    await this.host.registerConversation(
+        {conversationId: 'initial_id', conversationTitle: 'Initial Title'});
+
+    // Attempt to switch to a conversation with an empty ID.
+    // Wrap in a sleep to allow the current test's ExecuteJsTest() to complete
+    // before the instance is potentially deleted during switchConversation.
+    sleep(100).then(() => {
+      assertDefined(this.host.switchConversation);
+      this.host.switchConversation(
+          {conversationId: '', conversationTitle: 'Empty Switched Title'});
+    });
+  }
+
   async testPanelWillOpenBeforeClientReady() {
     const openData = await observeSequence(this.client.panelOpenData).next();
     assertEquals('test_conversation_id', openData.conversationId);

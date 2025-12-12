@@ -1332,6 +1332,33 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testSwitchConversationWithEmptyId) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Multi-instance only";
+  }
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester->GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kStartNewConversation) == 1;
+  }));
+
+  // Verify that the active instance now has no conversation ID (std::nullopt)
+  // because it switched to a new conversation with an empty ID.
+  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
+
+  // Verify that GetConversationInfo() returns the info for the new
+  // conversation.
+  mojom::ConversationInfoPtr retrieved_info =
+      GetGlicInstanceImpl()->GetConversationInfo();
+  EXPECT_EQ("", retrieved_info->conversation_id);
+  EXPECT_EQ("Empty Switched Title", retrieved_info->conversation_title);
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testTabSwitchDoesNotLogActivationMetric) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "This test requires multi-instance mode.";
@@ -3103,6 +3130,30 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionCalledTwice) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !region_capture_controller().IsCaptureRegionInProgressForTesting();
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP() << "Only supported in multi-instance mode.";
+  }
+  // Open glic window.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  // Verify that there is no conversation ID initially.
+  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
+
+  ExecuteJsTest();
+
+  // Verify that the conversation_id() still returns std::nullopt.
+  ASSERT_FALSE(GetGlicInstanceImpl()->conversation_id());
+
+  // Verify that GetConversationInfo() returns a non-null info with correct
+  // title and empty ID.
+  mojom::ConversationInfoPtr retrieved_info =
+      GetGlicInstanceImpl()->GetConversationInfo();
+  EXPECT_EQ("", retrieved_info->conversation_id);
+  EXPECT_EQ("Empty Conversation", retrieved_info->conversation_title);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {

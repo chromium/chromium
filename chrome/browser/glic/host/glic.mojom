@@ -975,12 +975,10 @@ interface WebClientHandler {
       => (bool success);
 
   // Switches the active conversation in the web client.
-  // `conversation_id` must be non-empty to be considered valid.
-  SwitchConversation(ConversationInfo? info)
+  SwitchConversation(ConversationInfo info)
       => (SwitchConversationErrorReason? error_reason);
 
   // Registers a conversation in the web client.
-  // `conversation_id` must be non-empty to be considered valid.
   RegisterConversation(ConversationInfo info)
       => (RegisterConversationErrorReason? error_reason);
 };

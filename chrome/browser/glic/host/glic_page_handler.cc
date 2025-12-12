@@ -598,18 +598,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // glic::mojom::WebClientHandler implementation.
   void SwitchConversation(glic::mojom::ConversationInfoPtr info,
                           SwitchConversationCallback callback) override {
-    if (info && info->conversation_id.empty()) {
-      receiver_.ReportBadMessage("conversation_id cannot be empty.");
-    }
     page_handler_->host().SwitchConversation(std::move(info),
                                              std::move(callback));
   }
 
   void RegisterConversation(glic::mojom::ConversationInfoPtr info,
                             RegisterConversationCallback callback) override {
-    if (info->conversation_id.empty()) {
-      receiver_.ReportBadMessage("conversation_id cannot be empty.");
-    }
     page_handler_->host().RegisterConversation(std::move(info),
                                                std::move(callback));
   }

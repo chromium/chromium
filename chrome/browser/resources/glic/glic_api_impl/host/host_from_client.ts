@@ -201,8 +201,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserSwitchConversation(request: {info?: ConversationInfo}):
       Promise<{}> {
-    const {errorReason} =
-        await this.handler.switchConversation(request.info ?? null);
+    const {errorReason} = await this.handler.switchConversation(
+        request.info ?? {conversationId: '', conversationTitle: ''});
     if (errorReason !== null) {
       throw new ErrorWithReasonImpl(
           'switchConversation', errorReason.valueOf());
