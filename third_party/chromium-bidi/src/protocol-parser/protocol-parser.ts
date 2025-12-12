@@ -384,6 +384,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetScreenOrientationOverrideParametersSchema,
     ) as Protocol.Emulation.SetScreenOrientationOverrideParameters;
   }
+  export function parseSetScreenSettingsOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetScreenSettingsOverrideParametersSchema,
+    ) as Protocol.Emulation.SetScreenSettingsOverrideParameters;
+  }
   export function parseSetScriptingEnabledParams(params: unknown) {
     return parseObject(
       params,

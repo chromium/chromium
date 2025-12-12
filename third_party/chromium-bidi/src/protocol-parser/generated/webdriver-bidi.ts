@@ -1307,6 +1307,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetLocaleOverrideSchema,
     Emulation.SetNetworkConditionsSchema,
     Emulation.SetScreenOrientationOverrideSchema,
+    Emulation.SetScreenSettingsOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetTimezoneOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,

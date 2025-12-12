@@ -588,11 +588,13 @@ export class CdpTarget {
     viewport: BrowsingContext.Viewport | null,
     devicePixelRatio: number | null,
     screenOrientation: Emulation.ScreenOrientation | null,
+    screenArea: Emulation.ScreenArea | null,
   ) {
     if (
       viewport === null &&
       devicePixelRatio === null &&
-      screenOrientation === null
+      screenOrientation === null &&
+      screenArea === null
     ) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
       return;
@@ -606,6 +608,8 @@ export class CdpTarget {
         screenOrientation:
           this.#toCdpScreenOrientationAngle(screenOrientation) ?? undefined,
         mobile: false,
+        screenWidth: screenArea?.width,
+        screenHeight: screenArea?.height,
       };
 
     await this.cdpClient.sendCommand(
@@ -637,13 +641,15 @@ export class CdpTarget {
     if (
       config.viewport !== undefined ||
       config.devicePixelRatio !== undefined ||
-      config.screenOrientation !== undefined
+      config.screenOrientation !== undefined ||
+      config.screenArea !== undefined
     ) {
       promises.push(
         this.setDeviceMetricsOverride(
           config.viewport ?? null,
           config.devicePixelRatio ?? null,
           config.screenOrientation ?? null,
+          config.screenArea ?? null,
         ).catch(() => {
           // Ignore CDP errors, as the command is not supported by iframe targets. Generic
           // catch, as the error can vary between CdpClient implementations: Tab vs

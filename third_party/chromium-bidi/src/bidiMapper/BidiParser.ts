@@ -137,6 +137,9 @@ export interface BidiCommandParameterParser {
   parseSetScreenOrientationOverrideParams(
     params: unknown,
   ): Emulation.SetScreenOrientationOverrideParameters;
+  parseSetScreenSettingsOverrideParams(
+    params: unknown,
+  ): Emulation.SetScreenSettingsOverrideParameters;
   parseSetScriptingEnabledParams(
     params: unknown,
   ): Emulation.SetScriptingEnabledParameters;

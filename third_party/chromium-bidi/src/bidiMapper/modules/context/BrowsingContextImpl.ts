@@ -1134,10 +1134,15 @@ export class BrowsingContextImpl {
     screenOrientation: Emulation.ScreenOrientation | null,
   ) {
     // Set the target's viewport.
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
     await this.cdpTarget.setDeviceMetricsOverride(
       viewport,
       devicePixelRatio,
       screenOrientation,
+      config.screenArea ?? null,
     );
   }
 

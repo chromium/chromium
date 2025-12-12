@@ -247,6 +247,47 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setScreenSettingsOverride(
+    params: Emulation.SetScreenSettingsOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          screenArea: params.screenArea,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        screenArea: params.screenArea,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setViewport(
+          config.viewport ?? null,
+          config.devicePixelRatio ?? null,
+          config.screenOrientation ?? null,
+        );
+      }),
+    );
+    return {};
+  }
+
   /**
    * Returns a list of top-level browsing contexts.
    */

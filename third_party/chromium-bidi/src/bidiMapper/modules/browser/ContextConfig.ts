@@ -44,6 +44,7 @@ export class ContextConfig {
     | null;
   locale?: string | null;
   prerenderingDisabled?: boolean;
+  screenArea?: Emulation.ScreenArea | null;
   screenOrientation?: Emulation.ScreenOrientation | null;
   scriptingEnabled?: false | null;
   // Timezone is kept in CDP format with GMT prefix for offset values.

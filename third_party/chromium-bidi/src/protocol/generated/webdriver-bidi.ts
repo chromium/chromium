@@ -1052,6 +1052,7 @@ export type EmulationCommand =
   | Emulation.SetLocaleOverride
   | Emulation.SetNetworkConditions
   | Emulation.SetScreenOrientationOverride
+  | Emulation.SetScreenSettingsOverride
   | Emulation.SetScriptingEnabled
   | Emulation.SetTimezoneOverride
   | Emulation.SetUserAgentOverride;
