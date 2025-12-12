@@ -363,7 +363,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enablePrivacyNotice",
       lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-          !DidUserGrantLensOverlayNeededPermissions(profile->GetPrefs()));
+          !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
+              profile->GetPrefs()));
 }
 
 void LensOverlayUntrustedUI::BindInterface(

@@ -37,6 +37,14 @@ bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service);
 // permissions vary depending on if the contextual searchbox is enabled.
 void GrantLensOverlayNeededPermissions(PrefService* pref_service);
 
+// If the non-blocking privacy notice is enabled and an impression cap is set,
+// will call GrantLensOverlayNeededPermissions() after the impression cap has
+// been reached and return true. Otherwise, will return the value of calling
+// DidUserGrantLensOverlayNeededPermissions(). Should not be called if the
+// non-blocking privacy notice is not enabled.
+bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
+    PrefService* pref_service);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_SEARCH_FEATURE_FLAG_UTILS_
