@@ -271,7 +271,7 @@ public class SettingsSearchCoordinator {
                 mActivity, mIndexData, providerMap, processedFragments);
 
         for (SearchIndexProvider provider : providers) {
-            provider.initPreferenceXml(mActivity, mIndexData);
+            provider.initPreferenceXml(mActivity, mIndexData, providerMap);
         }
 
         // Allow providers to make runtime modifications (e.g., hide preferences). Sometimes we also

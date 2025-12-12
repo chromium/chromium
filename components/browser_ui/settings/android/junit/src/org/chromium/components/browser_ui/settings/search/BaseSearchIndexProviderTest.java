@@ -99,7 +99,7 @@ public class BaseSearchIndexProviderTest {
 
     @Test
     public void testInitPreferenceXml_addsEntriesFromXml() {
-        mChildProvider.initPreferenceXml(mContext, mIndexData);
+        mChildProvider.initPreferenceXml(mContext, mIndexData, new HashMap<>());
 
         Map<String, SettingsIndexData.Entry> entries = mIndexData.getEntriesForTesting();
         assertFalse("Index should not be empty after indexing.", entries.isEmpty());
@@ -122,7 +122,7 @@ public class BaseSearchIndexProviderTest {
         Map<String, SearchIndexProvider> providerMap = new HashMap<>();
         Set<String> processedFragments = new HashSet<>();
 
-        providerWithNoXml.initPreferenceXml(mContext, mIndexData);
+        providerWithNoXml.initPreferenceXml(mContext, mIndexData, new HashMap<>());
         assertTrue(
                 "Provider with no XML should not add any entries.",
                 mIndexData.getEntriesForTesting().isEmpty());

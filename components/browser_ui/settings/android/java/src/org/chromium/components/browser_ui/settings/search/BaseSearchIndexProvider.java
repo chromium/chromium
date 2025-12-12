@@ -75,9 +75,13 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
     }
 
     @Override
-    public void initPreferenceXml(Context context, SettingsIndexData indexData) {
+    public void initPreferenceXml(
+            Context context,
+            SettingsIndexData indexData,
+            Map<String, SearchIndexProvider> providerMap) {
         if (mXmlRes != 0) {
-            PreferenceParser.parseAndPopulate(context, mXmlRes, indexData, mPrefFragment);
+            PreferenceParser.parseAndPopulate(
+                    context, mXmlRes, indexData, mPrefFragment, getExtras(), providerMap);
         }
     }
 }

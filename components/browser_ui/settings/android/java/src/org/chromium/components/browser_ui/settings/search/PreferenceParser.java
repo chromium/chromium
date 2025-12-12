@@ -115,9 +115,17 @@ public class PreferenceParser {
      * @param xmlRes The XML resource to parse.
      * @param indexData The SettingsIndexData object to populate.
      * @param prefFragment The class name of the fragment this XML belongs to.
+     * @param extras The bundle arguments needed for this pref.
+     * @param providerMap Map of all registered providers, keyed by Fragment Class Name. Used to
+     *     look up default extras for child fragments.
      */
     public static void parseAndPopulate(
-            Context context, int xmlRes, SettingsIndexData indexData, String prefFragment) {
+            Context context,
+            int xmlRes,
+            SettingsIndexData indexData,
+            String prefFragment,
+            Bundle extras,
+            Map<String, SearchIndexProvider> providerMap) {
         List<Bundle> metadata;
 
         try {
@@ -132,14 +140,25 @@ public class PreferenceParser {
             String title = bundle.getString(METADATA_TITLE);
             if (TextUtils.isEmpty(key)) continue;
 
-            String uniqueId = createUniqueId(prefFragment, key);
+            Bundle finalExtras = new Bundle();
+            String childFragmentClass = bundle.getString(METADATA_FRAGMENT);
+            if (childFragmentClass != null && providerMap.containsKey(childFragmentClass)) {
+                Bundle childDefaults = providerMap.get(childFragmentClass).getExtras();
+                if (childDefaults != null) {
+                    finalExtras.putAll(childDefaults);
+                }
+            }
 
+            finalExtras.putAll(extras);
+
+            String uniqueId = createUniqueId(prefFragment, key);
             indexData.addEntry(
                     uniqueId,
                     new SettingsIndexData.Entry.Builder(uniqueId, key, title, prefFragment)
                             .setHeader(bundle.getString(METADATA_HEADER))
                             .setSummary(bundle.getString(METADATA_SUMMARY))
                             .setFragment(bundle.getString(METADATA_FRAGMENT))
+                            .setArguments(finalExtras)
                             .build());
         }
     }

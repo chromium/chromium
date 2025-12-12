@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -178,5 +180,15 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences);
+                    AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
+                @Override
+                public Bundle getExtras() {
+                    return createRequiredArgs(AutofillOptionsReferrer.SETTINGS);
+                }
+
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_TOGGLE_HINT));
+                }
+            };
 }
