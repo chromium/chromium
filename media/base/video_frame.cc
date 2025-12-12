@@ -96,16 +96,12 @@ std::string VideoFrame::StorageTypeToString(
 
 // static
 bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
-  return
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      // This is not strictly needed but makes explicit that, at VideoFrame
-      // level, DmaBufs are not mappable from userspace.
-      storage_type != VideoFrame::STORAGE_DMABUFS &&
-#endif
-      // GpuMemoryBuffer is not mappable at VideoFrame level.
-      (storage_type == VideoFrame::STORAGE_UNOWNED_MEMORY ||
-       storage_type == VideoFrame::STORAGE_OWNED_MEMORY ||
-       storage_type == VideoFrame::STORAGE_SHMEM);
+  // CPU memory is the only kind of storage that is mappable at the level of
+  // VideoFrame itself (other types of storage such as DMA bufs and
+  // MappableSharedImage can be mapped, but not at the level of VideoFrame).
+  return storage_type == VideoFrame::STORAGE_UNOWNED_MEMORY ||
+         storage_type == VideoFrame::STORAGE_OWNED_MEMORY ||
+         storage_type == VideoFrame::STORAGE_SHMEM;
 }
 
 // static
