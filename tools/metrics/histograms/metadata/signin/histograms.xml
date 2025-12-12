@@ -1406,6 +1406,23 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError"
+    enum="DeviceBoundSessionError" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records errors returned by the network process while creating
+    device bound sessions with the server-provided session(s) data from
+    OAuthMultilogin. It is recorded for every single session. A batch operation
+    result is recorded in
+    `Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult`. Only
+    recorded for Chrome instances that support DBSC standard and OAuthMultilogin
+    cookies binding.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
     expires_after="never">
 <!-- expires-never: used to monitor OAuth outages in Dice.  -->

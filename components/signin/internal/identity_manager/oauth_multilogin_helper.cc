@@ -121,7 +121,7 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
                        registration_payload.allowed_refresh_initiators);
 }
 
-void RecordCreateBoundSessionResult(
+void RecordCreateBoundSessionsResult(
     OAuthMultiloginHelper::DeviceBoundSessionCreateSessionsResult result) {
   base::UmaHistogramEnumeration(
       "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult",
@@ -452,7 +452,7 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
             *device_bound_session->register_session_payload));
   }
   if (sessions_params.empty()) {
-    RecordCreateBoundSessionResult(
+    RecordCreateBoundSessionsResult(
         DeviceBoundSessionCreateSessionsResult::kFallbackNoBoundSessions);
     return false;
   }
@@ -465,7 +465,7 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
     }
   }
   if (wrapped_key.empty()) {
-    RecordCreateBoundSessionResult(
+    RecordCreateBoundSessionsResult(
         DeviceBoundSessionCreateSessionsResult::kFallbackNoBindingKey);
     return false;
   }
@@ -487,12 +487,15 @@ void OAuthMultiloginHelper::OnBoundSessionsCreated(
     std::vector<net::CookieInclusionStatus> cookie_results) {
   bool all_success = true;
   for (const auto& error : session_results) {
+    base::UmaHistogramEnumeration(
+        "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
+        error);
     all_success &=
         (error ==
          net::device_bound_sessions::SessionError::ErrorType::kSuccess);
   }
 
-  RecordCreateBoundSessionResult(
+  RecordCreateBoundSessionsResult(
       all_success ? DeviceBoundSessionCreateSessionsResult::kSuccess
                   : DeviceBoundSessionCreateSessionsResult::kFailure);
 
