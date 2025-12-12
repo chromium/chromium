@@ -37,7 +37,7 @@ source_set("updater_executable") {
   ]
 
   public_configs = [ "//build/config/win:windowed" ]
-  public_deps = [ "//chrome/updater:updater_exe_manifest" ]
+  public_deps = [ "//build/win:default_exe_manifest" ]
 
   data_deps = [ ":uninstall.cmd" ]
 }

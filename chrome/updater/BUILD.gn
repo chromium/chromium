@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//build/config/win/manifest.gni")
 import("//build/util/process_version.gni")
 import("//chrome/enterprise_companion/branding.gni")
 import("//chrome/updater/apply_updater_branding.gni")
@@ -58,17 +57,6 @@ group("all") {
       deps += [ "win/installer:msi_custom_action" ]
     }
   }
-}
-
-# Windows manifest for updater executables. This is
-# //build/win:default_exe_manifest plus the segment heap.
-windows_manifest("updater_exe_manifest") {
-  sources = [
-    as_invoker_manifest,
-    common_controls_manifest,
-    default_compatibility_manifest,
-    segment_heap_manifest,
-  ]
 }
 
 if (is_win || is_mac || is_linux) {
@@ -1357,10 +1345,10 @@ if (is_win || is_mac || is_linux) {
     deps = [
       ":base",
       ":unit_test_util_sources",
-      ":updater_exe_manifest",
       ":updater_test_sources",
       "//base",
       "//base/test:test_support",
+      "//build/win:default_exe_manifest",
       "//chrome/common:constants",
       "//testing/gtest",
       "//url",
