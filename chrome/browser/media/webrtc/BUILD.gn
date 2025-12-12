@@ -176,6 +176,8 @@ source_set("webrtc") {
 
   if (enable_extensions_core) {
     sources += [
+      "desktop_capture_access_handler.cc",
+      "desktop_capture_access_handler.h",
       "tab_capture_access_handler.cc",
       "tab_capture_access_handler.h",
     ]
@@ -185,8 +187,6 @@ source_set("webrtc") {
     sources += [
       "current_tab_desktop_media_list.cc",
       "current_tab_desktop_media_list.h",
-      "desktop_capture_access_handler.cc",
-      "desktop_capture_access_handler.h",
       "desktop_media_picker_utils.cc",
       "desktop_media_picker_utils.h",
       "media_stream_focus_delegate.cc",

@@ -25,9 +25,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -57,6 +54,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
@@ -200,6 +203,9 @@ MediaStreamRequestResult CheckIfRequestApproved(
           ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
           : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
       application_name);
+  // TODO(crbug.com/405218400): Show a message box on desktop Android.
+  // chrome::ShowQuestionMessageBoxSync() is a stub on Android that always
+  // returns no.
   const chrome::MessageBoxResult mb_result = chrome::ShowQuestionMessageBoxSync(
       parent_window,
       l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE,
@@ -270,14 +276,17 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     return;
   }
 
-  const MediaStreamRequestResult request_result =
-      CheckIfRequestApproved(web_contents, pending_request->request, extension,
-                             pending_request->is_allowlisted_extension);
-  if (request_result != MediaStreamRequestResult::OK) {
-    std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(), request_result,
-             /*ui=*/nullptr);
-    return;
+  if (!request_approved_for_test_) {
+    // May spawn a modal dialog synchronously.
+    const MediaStreamRequestResult request_result = CheckIfRequestApproved(
+        web_contents, pending_request->request, extension,
+        pending_request->is_allowlisted_extension);
+    if (request_result != MediaStreamRequestResult::OK) {
+      std::move(pending_request->callback)
+          .Run(blink::mojom::StreamDevicesSet(), request_result,
+               /*ui=*/nullptr);
+      return;
+    }
   }
 
   if (!content::WebContents::FromRenderFrameHost(
@@ -791,3 +800,7 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
                 capture_audio);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void DesktopCaptureAccessHandler::SetRequestApprovedForTest(bool approved) {
+  request_approved_for_test_ = approved;
+}

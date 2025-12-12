@@ -54,13 +54,13 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
 #include "chrome/browser/media/extension_media_access_handler.h"
-#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -87,10 +87,6 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       std::make_unique<DisplayMediaAccessHandler>());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  media_access_handlers_.push_back(std::make_unique<TabCaptureAccessHandler>());
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
   media_access_handlers_.push_back(
@@ -98,8 +94,17 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
 #endif
   media_access_handlers_.push_back(
       std::make_unique<ExtensionMediaAccessHandler>());
-  media_access_handlers_.push_back(
-      std::make_unique<DesktopCaptureAccessHandler>());
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  auto desktop_handler = std::make_unique<DesktopCaptureAccessHandler>();
+  desktop_capture_access_handler_for_test_ = desktop_handler.get();
+  media_access_handlers_.push_back(std::move(desktop_handler));
+
+  media_access_handlers_.push_back(std::make_unique<TabCaptureAccessHandler>());
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   media_access_handlers_.push_back(
       std::make_unique<controlled_frame::ControlledFrameMediaAccessHandler>());
 #endif

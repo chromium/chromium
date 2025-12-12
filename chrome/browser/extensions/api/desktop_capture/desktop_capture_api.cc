@@ -32,6 +32,10 @@ const char kDesktopCaptureApiTabUrlNotSecure[] =
     "URL scheme for the specified tab is not secure.";
 const char kTargetTabRequiredFromServiceWorker[] =
     "A target tab is required when called from a service worker context.";
+#if BUILDFLAG(IS_ANDROID)
+const char kAtLeastOneSourceTypeMustBeSpecified[] =
+    "At least one source type must be specified.";
+#endif
 }  // namespace
 
 DesktopCaptureChooseDesktopMediaFunction::
@@ -54,6 +58,14 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   std::optional<api::desktop_capture::ChooseDesktopMedia::Params> params =
       api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not use DesktopMediaList so we validate sources here instead
+  // of in the media code.
+  if (!params->sources.size()) {
+    return RespondNow(Error(kAtLeastOneSourceTypeMustBeSpecified));
+  }
+#endif
 
   // |target_render_frame_host| is the RenderFrameHost for which the stream is
   // created, and will also be used to determine where to show the picker's UI.
