@@ -721,7 +721,14 @@ bool WASAPIAudioInputStream::UpdateFormats() {
   sample_format_ = kSampleFormatS16;
   input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
   output_format_.wFormatTag = WAVE_FORMAT_PCM;
-  if (use_device_sample_format_) {
+  // WASAPI does not allow the AudioClient to control the process loopback
+  // device. AudioClient::GetMixFormat is not available for process loopback
+  // devices.
+  if (is_process_loopback_capture_ && use_device_sample_format_) {
+    sample_format_ = kSampleFormatF32;
+    input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+    output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+  } else if (use_device_sample_format_) {
     // Get the format the audio engine uses.
     WAVEFORMATEXTENSIBLE mix_format;
     HRESULT hr =
@@ -1972,6 +1979,10 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
                    ErrorToString(hr).c_str());
     open_result_ = OPEN_RESULT_AUDIO_CLIENT_INIT_FAILED;
     base::UmaHistogramSparse("Media.Audio.Capture.Win.InitError", hr);
+    if (is_process_loopback_capture_) {
+      base::UmaHistogramSparse(
+          "Media.Audio.Capture.Win.ProcessLoopbackInitError", hr);
+    }
     MaybeReportFormatRelatedInitError(hr);
     return hr;
   }

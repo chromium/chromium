@@ -1098,6 +1098,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.ProcessLoopbackInitError"
+    enum="Hresult" expires_after="2026-10-28">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The HRESULT code for an error when initializing for process loopback
+    capture. This is recorded only when initialization fails and the device is a
+    process loopback device.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.TimeToGetAudioClient" units="ms"
     expires_after="2026-05-30">
   <owner>henrika@chromium.org</owner>
