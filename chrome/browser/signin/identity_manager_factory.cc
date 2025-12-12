@@ -32,6 +32,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "components/unexportable_keys/unexportable_key_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -148,8 +149,7 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   params.unexportable_key_service =
       UnexportableKeyServiceFactory::GetForProfileAndPurpose(
-          profile,
-          UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding);
+          profile, unexportable_keys::KeyPurpose::kRefreshTokenBinding);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -174,8 +174,9 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);
 
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.IdentityManagerCreated(identity_manager.get());
+  }
 
   return identity_manager;
 }

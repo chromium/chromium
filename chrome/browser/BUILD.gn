@@ -7519,6 +7519,8 @@ static_library("browser") {
       "signin/bound_session_credentials/session_binding_helper.h",
       "signin/bound_session_credentials/throttled_gaia_auth_fetcher.cc",
       "signin/bound_session_credentials/throttled_gaia_auth_fetcher.h",
+      "signin/bound_session_credentials/unexportable_key_provider_config.cc",
+      "signin/bound_session_credentials/unexportable_key_provider_config.h",
       "signin/bound_session_credentials/unexportable_key_service_factory.cc",
       "signin/bound_session_credentials/unexportable_key_service_factory.h",
     ]

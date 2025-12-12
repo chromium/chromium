@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 #include "crypto/unexportable_key.h"
 
@@ -29,19 +31,20 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
       std::unique_ptr<unexportable_keys::UnexportableKeyService>(
           crypto::UnexportableKeyProvider::Config)>;
 
-  // An enum to define the intended use of the key.
-  enum class KeyPurpose {
-    kRefreshTokenBinding,
-    kDeviceBoundSessionCredentials,
-    // Temporary, will be removed when replaced by DBSC Standard.
-    kDeviceBoundSessionCredentialsPrototype,
-  };
-
+  // Creates a service instance for the given `config` to be used for garbage
+  // collection.
+  //
   // Returns nullptr if unexportable key provider is not supported by the
   // platform.
+  static std::unique_ptr<unexportable_keys::UnexportableKeyService>
+  CreateForGarbageCollection(crypto::UnexportableKeyProvider::Config config);
+
+  // Returns a handle to the service instance for the given `profile` and
+  // `purpose`. Returns nullptr if unexportable key provider is not supported by
+  // the platform.
   static unexportable_keys::UnexportableKeyService* GetForProfileAndPurpose(
       Profile* profile,
-      KeyPurpose purpose);
+      unexportable_keys::KeyPurpose purpose);
 
   // Returns nullptr if unexportable key provider is not supported by the
   // platform.
@@ -52,15 +55,11 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
   static unexportable_keys::UnexportableKeyServiceProxyImpl*
   RecreateMojoProxyForProfileAndPurposeWithReceiver(
       Profile* profile,
-      KeyPurpose purpose,
+      unexportable_keys::KeyPurpose purpose,
       mojo::PendingReceiver<unexportable_keys::mojom::UnexportableKeyService>
           receiver);
 
   static UnexportableKeyServiceFactory* GetInstance();
-
-#if BUILDFLAG(IS_MAC)
-  static std::string GetKeychainAccessGroup();
-#endif  // BUILDFLAG(IS_MAC)
 
   UnexportableKeyServiceFactory(const UnexportableKeyServiceFactory&) = delete;
   UnexportableKeyServiceFactory& operator=(

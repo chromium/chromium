@@ -7812,6 +7812,10 @@ test("unit_tests") {
         "../browser/signin/bound_session_credentials/dice_bound_session_cookie_service_unittest.cc",
       ]
     }
+
+    if (is_mac) {
+      sources += [ "../browser/signin/bound_session_credentials/unexportable_key_provider_config_mac_unittest.cc" ]
+    }
   }
 
   if (enable_offline_pages) {

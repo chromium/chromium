@@ -166,6 +166,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"  // nogncheck
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"  // nogncheck
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"  // nogncheck
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"  // nogncheck
@@ -1607,8 +1608,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         UnexportableKeyServiceFactory::
             RecreateMojoProxyForProfileAndPurposeWithReceiver(
                 profile_,
-                UnexportableKeyServiceFactory::KeyPurpose::
-                    kDeviceBoundSessionCredentials,
+                unexportable_keys::KeyPurpose::kDeviceBoundSessionCredentials,
                 std::move(receiver));
     if (uks) {
       network_context_params->bound_sessions_unexportable_key_service =

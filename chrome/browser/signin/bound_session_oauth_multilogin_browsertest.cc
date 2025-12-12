@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -105,7 +106,7 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return CHECK_DEREF(UnexportableKeyServiceFactory::GetForProfileAndPurpose(
         browser()->profile(),
-        UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding));
+        unexportable_keys::KeyPurpose::kRefreshTokenBinding));
   }
 
   FakeGaia& fake_gaia() { return CHECK_DEREF(fake_gaia_.fake_gaia()); }

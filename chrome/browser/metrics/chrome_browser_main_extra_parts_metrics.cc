@@ -45,6 +45,7 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -384,8 +385,9 @@ void RecordLinuxDistroSpecific(const std::string& version_string,
                                size_t parts,
                                const char* histogram_name) {
   base::Version version{version_string};
-  if (!version.IsValid() || version.components().size() < parts)
+  if (!version.IsValid() || version.components().size() < parts) {
     return;
+  }
 
   base::CheckedNumeric<int32_t> sample = 0;
   for (size_t i = 0; i < parts; i++) {
@@ -393,8 +395,9 @@ void RecordLinuxDistroSpecific(const std::string& version_string,
     sample += version.components()[i];
   }
 
-  if (sample.IsValid())
+  if (sample.IsValid()) {
     base::UmaHistogramSparse(histogram_name, sample.ValueOrDie());
+  }
 }
 
 // Some releases may have multiple names like "opensuse_leap", "opensuse leap",
@@ -693,8 +696,9 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
   enum Result { kNotPinned = 0, kPinned = 1, kFailure = 2, kNumResults };
 
   Result result = kFailure;
-  if (succeeded)
+  if (succeeded) {
     result = is_pinned_to_taskbar ? kPinned : kNotPinned;
+  }
 
   base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
                                 kNumResults);
@@ -734,8 +738,9 @@ void RecordIsPinnedToTaskbarHistogram() {
 // https://blogs.blackberry.com/en/2017/10/windows-10-parallel-loading-breakdown.
 bool IsParallelDllLoadingEnabled() {
   base::FilePath exe_path;
-  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
     return false;
+  }
   const wchar_t kIFEOKey[] =
       L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution "
       L"Options\\";
@@ -743,13 +748,16 @@ bool IsParallelDllLoadingEnabled() {
 
   base::win::RegKey key;
   if (ERROR_SUCCESS != key.Open(HKEY_LOCAL_MACHINE, browser_process_key.c_str(),
-                                KEY_QUERY_VALUE))
+                                KEY_QUERY_VALUE)) {
     return true;
+  }
 
   const wchar_t kMaxLoaderThreads[] = L"MaxLoaderThreads";
   DWORD max_loader_threads = 0;
-  if (ERROR_SUCCESS != key.ReadValueDW(kMaxLoaderThreads, &max_loader_threads))
+  if (ERROR_SUCCESS !=
+      key.ReadValueDW(kMaxLoaderThreads, &max_loader_threads)) {
     return true;
+  }
 
   // Note: If LoaderThreads is 0, it will be set to the default value of 4.
   return max_loader_threads != 1;
@@ -836,16 +844,18 @@ void RecordStartupMetrics() {
   int build = os_info.version_number().build;
   int patch_level = 0;
 
-  if (patch < 65536 && build < 65536)
+  if (patch < 65536 && build < 65536) {
     patch_level = MAKELONG(patch, build);
+  }
   DCHECK(patch_level) << "Windows version too high!";
   base::UmaHistogramSparse("Windows.PatchLevel", patch_level);
 
   int kernel32_patch = os_info.Kernel32VersionNumber().patch;
   int kernel32_build = os_info.Kernel32VersionNumber().build;
   int kernel32_patch_level = 0;
-  if (kernel32_patch < 65536 && kernel32_build < 65536)
+  if (kernel32_patch < 65536 && kernel32_build < 65536) {
     kernel32_patch_level = MAKELONG(kernel32_patch, kernel32_build);
+  }
   DCHECK(kernel32_patch_level) << "Windows kernel32.dll version too high!";
   base::UmaHistogramSparse("Windows.PatchLevelKernel32", kernel32_patch_level);
 
@@ -874,12 +884,7 @@ void RecordStartupMetrics() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  crypto::UnexportableKeyProvider::Config config;
-#if BUILDFLAG(IS_MAC)
-  config.keychain_access_group =
-      UnexportableKeyServiceFactory::GetKeychainAccessGroup();
-#endif  // BUILDFLAG(IS_MAC)
-  crypto::MaybeMeasureTpmOperations(std::move(config));
+  crypto::MaybeMeasureTpmOperations(unexportable_keys::GetDefaultConfig());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Record whether Chrome is the default browser or not.

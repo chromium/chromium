@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -76,7 +77,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
 
   unexportable_keys::UnexportableKeyService* key_service =
       UnexportableKeyServiceFactory::GetForProfileAndPurpose(
-          profile, UnexportableKeyServiceFactory::KeyPurpose::
+          profile, unexportable_keys::KeyPurpose::
                        kDeviceBoundSessionCredentialsPrototype);
 
   if (!key_service) {
