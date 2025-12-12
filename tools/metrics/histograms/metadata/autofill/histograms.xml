@@ -6527,13 +6527,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.SaveAndFill.DialogResult"
+    enum="SaveAndFillDialogResultLegacy" expires_after="M145">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Obsolete metric, replaced by Autofill.SaveAndFill.DialogResult2. Records the
+    user's action in the Save and Fill dialog. Logged when the user accepts
+    (with or without providing a CVC) or cancels the dialog.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.DialogResult2"
     enum="SaveAndFillDialogResult" expires_after="2026-06-01">
   <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Records the user's action in the Save and Fill dialog. Logged when the user
-    accepts (with or without providing a CVC) or cancels the dialog.
+    Records the user's action in the Save and Fill dialog. This histogram is
+    broken down by the version of the dialog shown to the user (local or
+    upload). Logged when the user accepts (with or without providing a CVC) or
+    cancels the dialog.
+
+    Note that a previous version of this histogram did not have a local/upload
+    breakdown and was obsoleted in December 2025.
   </summary>
 </histogram>
 

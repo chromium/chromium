@@ -210,7 +210,7 @@ TEST_F(SaveAndFillDialogControllerImplTest, IsValidNameOnCard) {
 }
 
 TEST_F(SaveAndFillDialogControllerImplTest,
-       Metrics_DialogResult_AcceptedWithCvc) {
+       Metrics_DialogResult_LocalDialogAcceptedWithCvc) {
   base::HistogramTester histogram_tester;
   payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
   details.security_code = u"123";
@@ -223,13 +223,13 @@ TEST_F(SaveAndFillDialogControllerImplTest,
   controller()->OnUserAcceptedDialog(details);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveAndFill.DialogResult",
-      autofill_metrics::SaveAndFillDialogResult::kAcceptedWithCvc,
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalAcceptedWithCvc,
       /*expected_bucket_count=*/1);
 }
 
 TEST_F(SaveAndFillDialogControllerImplTest,
-       Metrics_DialogResult_AcceptedWithoutCvc) {
+       Metrics_DialogResult_LocalDialogAcceptedWithoutCvc) {
   base::HistogramTester histogram_tester;
   payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
   details.security_code = u"";
@@ -242,12 +242,13 @@ TEST_F(SaveAndFillDialogControllerImplTest,
   controller()->OnUserAcceptedDialog({});
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveAndFill.DialogResult",
-      autofill_metrics::SaveAndFillDialogResult::kAcceptedWithoutCvc,
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalAcceptedWithoutCvc,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogResult_Canceled) {
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_LocalDialogCanceled) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(card_save_and_fill_dialog_callback_,
@@ -258,8 +259,72 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogResult_Canceled) {
   controller()->OnUserCanceledDialog();
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveAndFill.DialogResult",
-      autofill_metrics::SaveAndFillDialogResult::kCanceled,
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kLocalCanceled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogAcceptedWithCvc) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"123";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserAcceptedDialog(details);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadAcceptedWithCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogAcceptedWithoutCvc) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.security_code = u"";
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserAcceptedDialog({});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadAcceptedWithoutCvc,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_UploadDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kUploadCanceled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest,
+       Metrics_DialogResult_PendingDialogCanceled) {
+  base::HistogramTester histogram_tester;
+  SetDialogState(SaveAndFillDialogState::kPendingDialog);
+
+  EXPECT_CALL(card_save_and_fill_dialog_callback_, Run);
+
+  controller()->OnUserCanceledDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogResult2",
+      autofill_metrics::SaveAndFillDialogResult::kPendingCanceled,
       /*expected_bucket_count=*/1);
 }
 

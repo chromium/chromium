@@ -18,6 +18,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+namespace {
+using autofill_metrics::SaveAndFillDialogResult;
+}
 
 SaveAndFillDialogControllerImpl::SaveAndFillDialogControllerImpl() = default;
 SaveAndFillDialogControllerImpl::~SaveAndFillDialogControllerImpl() = default;
@@ -249,10 +252,25 @@ void SaveAndFillDialogControllerImpl::Dismiss() {
 void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
     const payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  autofill_metrics::LogSaveAndFillDialogResult(
-      user_provided_card_save_and_fill_details.security_code.has_value()
-          ? autofill_metrics::SaveAndFillDialogResult::kAcceptedWithCvc
-          : autofill_metrics::SaveAndFillDialogResult::kAcceptedWithoutCvc);
+  bool with_cvc =
+      !user_provided_card_save_and_fill_details.security_code.value_or(u"")
+           .empty();
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kLocalDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          with_cvc ? SaveAndFillDialogResult::kLocalAcceptedWithCvc
+                   : SaveAndFillDialogResult::kLocalAcceptedWithoutCvc);
+      break;
+    case SaveAndFillDialogState::kUploadDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          with_cvc ? SaveAndFillDialogResult::kUploadAcceptedWithCvc
+                   : SaveAndFillDialogResult::kUploadAcceptedWithoutCvc);
+      break;
+    case SaveAndFillDialogState::kPendingDialog:
+      // No metric is logged for the pending dialog.
+      // TODO(crbug.com/468350241): Investigate using NOTREACHED() here.
+      break;
+  }
   if (!card_save_and_fill_dialog_callback_.is_null()) {
     std::move(card_save_and_fill_dialog_callback_)
         .Run(payments::PaymentsAutofillClient::
@@ -262,8 +280,20 @@ void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
 }
 
 void SaveAndFillDialogControllerImpl::OnUserCanceledDialog() {
-  autofill_metrics::LogSaveAndFillDialogResult(
-      autofill_metrics::SaveAndFillDialogResult::kCanceled);
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kLocalDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kLocalCanceled);
+      break;
+    case SaveAndFillDialogState::kUploadDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kUploadCanceled);
+      break;
+    case SaveAndFillDialogState::kPendingDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kPendingCanceled);
+      break;
+  }
   Dismiss();
   if (!card_save_and_fill_dialog_callback_.is_null()) {
     std::move(card_save_and_fill_dialog_callback_)

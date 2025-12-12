@@ -154,34 +154,30 @@ TEST_F(SaveAndFillMetricsTest, LogStrikeDbMetrics_NumOfStrikesPresent) {
       /*sample=*/5, 1);
 }
 
-TEST_F(SaveAndFillMetricsTest, LogDialogResult_AcceptedWithCvc) {
+class SaveAndFillDialogResultMetricsTest
+    : public SaveAndFillMetricsTest,
+      public testing::WithParamInterface<SaveAndFillDialogResult> {};
+
+// Initializes the parameterized test suite with all possible values of
+// SaveAndFillMetricsDialogResult.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SaveAndFillDialogResultMetricsTest,
+    testing::Values(SaveAndFillDialogResult::kLocalAcceptedWithCvc,
+                    SaveAndFillDialogResult::kLocalAcceptedWithoutCvc,
+                    SaveAndFillDialogResult::kLocalCanceled,
+                    SaveAndFillDialogResult::kUploadAcceptedWithCvc,
+                    SaveAndFillDialogResult::kUploadAcceptedWithoutCvc,
+                    SaveAndFillDialogResult::kUploadCanceled,
+                    SaveAndFillDialogResult::kPendingCanceled));
+
+TEST_P(SaveAndFillDialogResultMetricsTest, LogDialogResult) {
   base::HistogramTester histogram_tester;
 
-  LogSaveAndFillDialogResult(SaveAndFillDialogResult::kAcceptedWithCvc);
+  LogSaveAndFillDialogResult(GetParam());
 
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogResult",
-                                      SaveAndFillDialogResult::kAcceptedWithCvc,
-                                      /*expected_bucket_count=*/1);
-}
-
-TEST_F(SaveAndFillMetricsTest, LogDialogResult_AcceptedWithoutCvc) {
-  base::HistogramTester histogram_tester;
-
-  LogSaveAndFillDialogResult(SaveAndFillDialogResult::kAcceptedWithoutCvc);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveAndFill.DialogResult",
-      SaveAndFillDialogResult::kAcceptedWithoutCvc,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(SaveAndFillMetricsTest, LogDialogResult_Canceled) {
-  base::HistogramTester histogram_tester;
-
-  LogSaveAndFillDialogResult(SaveAndFillDialogResult::kCanceled);
-
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogResult",
-                                      SaveAndFillDialogResult::kCanceled,
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogResult2",
+                                      GetParam(),
                                       /*expected_bucket_count=*/1);
 }
 

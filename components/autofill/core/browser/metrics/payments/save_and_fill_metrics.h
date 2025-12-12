@@ -50,13 +50,21 @@ enum class SaveAndFillSuggestionNotShownReason {
 //
 // LINT.IfChange(SaveAndFillDialogResult)
 enum class SaveAndFillDialogResult {
-  // User accepted the dialog and provided a CVC.
-  kAcceptedWithCvc = 0,
-  // User accepted the dialog but did not provide a CVC.
-  kAcceptedWithoutCvc = 1,
-  // User declined the dialog.
-  kCanceled = 2,
-  kMaxValue = kCanceled,
+  // User accepted the local dialog and provided a CVC.
+  kLocalAcceptedWithCvc = 0,
+  // User accepted the local dialog but did not provide a CVC.
+  kLocalAcceptedWithoutCvc = 1,
+  // User declined the local dialog.
+  kLocalCanceled = 2,
+  // User accepted the upload dialog and provided a CVC.
+  kUploadAcceptedWithCvc = 3,
+  // User accepted the upload dialog but did not provide a CVC.
+  kUploadAcceptedWithoutCvc = 4,
+  // User declined the upload dialog.
+  kUploadCanceled = 5,
+  // User declined the pending dialog.
+  kPendingCanceled = 6,
+  kMaxValue = kPendingCanceled,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogResult)
 

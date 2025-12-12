@@ -4236,12 +4236,22 @@ Called by update_autofill_enums.py.-->
 <!-- LINT.IfChange(SaveAndFillDialogResult) -->
 
 <enum name="SaveAndFillDialogResult">
+  <int value="0" label="Local dialog accepted with CVC provided"/>
+  <int value="1" label="Local dialog accepted with no CVC provided"/>
+  <int value="2" label="Local dialog rejected"/>
+  <int value="3" label="Upload dialog accepted with CVC provided"/>
+  <int value="4" label="Upload dialog accepted with no CVC provided"/>
+  <int value="5" label="Upload dialog rejected"/>
+  <int value="6" label="Pending dialog (upload in progress) canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillDialogResult) -->
+
+<enum name="SaveAndFillDialogResultLegacy">
   <int value="0" label="User accepted the dialog and provided a CVC"/>
   <int value="1" label="User accepted the dialog but did not provide a CVC"/>
   <int value="2" label="User canceled the dialog"/>
 </enum>
-
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillDialogResult) -->
 
 <!-- LINT.IfChange(SaveAndFillDialogShown) -->
 
