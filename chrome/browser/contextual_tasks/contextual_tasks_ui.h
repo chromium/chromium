@@ -274,8 +274,6 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::unique_ptr<ContextualTasksInternalsPageHandler>
       contextual_tasks_internals_page_handler_;
 
-  bool is_last_shown_in_tab_ = true;
-
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -441,21 +441,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   if (IsShownInTab()) {
     display_mode_msg->mutable_payload()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_TAB);
-    if (!is_last_shown_in_tab_) {
-      is_last_shown_in_tab_ = true;
-      if (composebox_handler_) {
-        composebox_handler_->UpdateSuggestedTabContext(nullptr);
-      }
-    }
   } else {
-    if (is_last_shown_in_tab_) {
-      // The WebUI starts showing in the side panel, show the auto suggested
-      // chip if possible.
-      is_last_shown_in_tab_ = false;
-      // TODO(https://crbug.com/467696560): Get the correct upload status of the
-      // current tab.
-      OnActiveTabContextStatusChanged(TabContextStatus::kNotUploaded);
-    }
     display_mode_msg->mutable_payload()->set_display_mode(
         lens::CobrowsingDisplayModeParams::COBROWSING_SIDEPANEL);
   }
