@@ -7,7 +7,12 @@
 (async () => {
   const src = chrome.runtime.getURL('/serialization_common_tests.js');
   const testsImport = await import(src);
-  chrome.test.runTests(testsImport.getMessageSerializationTestCases('runtime'));
+
+  chrome.test.getConfig(async (config) => {
+    let structuredCloneFeatureEnabled = config.customArg === 'true';
+    chrome.test.runTests(testsImport.getMessageSerializationTestCases(
+        /* apiToTest= */ 'runtime', structuredCloneFeatureEnabled));
+  })
 })();
 
 // The handlers below are for the background tests that run.

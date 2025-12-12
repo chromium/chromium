@@ -20,17 +20,16 @@ chrome.runtime.onConnect.addListener(function(port) {
 });
 
 // Run background tests after receiving signal from C++ test driver.
-chrome.test.sendMessage('background-script-evaluated', (message) => {
-  if (message != 'start background tests') {
-    return;
-  }
-  // Do not run the background.js tests until the C++ side indicates that the:
+chrome.test.sendMessage('background-script-evaluated', (tabIdMessage) => {
+  // Doesn't run the background.js tests until the C++ side indicates that the:
   //   1) tab (content script) message handlers have been registered and,
   //   2) `tabId` has been provided
   // so that the background tests will have an available tab target for their
   // messages.
   chrome.test.getConfig(function(config) {
-    let tabId = parseInt(config.customArg);
-    chrome.test.runTests(getMessageSerializationTestCases('tabs', tabId));
+    let structuredCloneFeatureEnabled = config.customArg === 'true';
+    let tabId = parseInt(tabIdMessage);
+    chrome.test.runTests(getMessageSerializationTestCases(
+        /* apiToTest= */ 'tabs', structuredCloneFeatureEnabled, tabId));
   });
 });

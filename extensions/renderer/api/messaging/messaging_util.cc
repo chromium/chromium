@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -29,6 +30,7 @@
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-json.h"
@@ -50,12 +52,12 @@ constexpr char kErrorMalformedJSONMessage[] =
 
 // Serializes the given `value` into a JSON string and returns it wrapped in a
 // Message object. This also populates user gesture and context privilege
-// information. Returns `nullptr` on failure, and populates `error` with the
+// information. Returns empty string on failure, and populates `error` with the
 // failure reason.
 std::string MessageFromV8UsingJSON(v8::Local<v8::Context> context,
+                                   v8::Isolate& isolate,
                                    v8::Local<v8::Value> value,
                                    std::string* error) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   // TODO(devlin): For some reason, we don't use the signature for
   // Port.postMessage when evaluating the parameters. We probably should, but
   // we don't know how many extensions that may break. It would be good to
@@ -65,13 +67,13 @@ std::string MessageFromV8UsingJSON(v8::Local<v8::Context> context,
     // JSON.stringify won't serialized undefined (it returns undefined), but it
     // will serialized null. We've always converted undefined to null in JS
     // bindings, so preserve this behavior for now.
-    value = v8::Null(isolate);
+    value = v8::Null(&isolate);
   }
 
   bool success = false;
   v8::Local<v8::String> stringified;
   {
-    v8::TryCatch try_catch(isolate);
+    v8::TryCatch try_catch(&isolate);
     success = v8::JSON::Stringify(context, value).ToLocal(&stringified);
   }
 
@@ -81,7 +83,7 @@ std::string MessageFromV8UsingJSON(v8::Local<v8::Context> context,
   }
 
   std::string message;
-  message = gin::V8ToString(isolate, stringified);
+  message = gin::V8ToString(&isolate, stringified);
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
   // `undefined` (as with e.g. passing a function). If JSON.stringify returns
@@ -139,15 +141,19 @@ MessageMetadata GetMessageMetadata(v8::Local<v8::Context> context) {
 
 // Serializes the given `value` using structured cloning and returns it wrapped
 // in a `Message object`. This also populates user gesture and context privilege
-// information. Returns nullptr on failure, and populates `error` with the
-// failure reason
+// information. Returns empty `StructureClonedMessageWireData` on failure, and
+// populates `error` with the failure reason.
 StructureClonedMessageWireData MessageFromV8UsingStructuredCloning(
-    v8::Local<v8::Context> context,
+    v8::Isolate& isolate,
     v8::Local<v8::Value> value,
     std::string* error) {
-  // TODO(crbug.com/40321352): Implement structured cloning from v8.
-  NOTIMPLEMENTED();
-  return StructureClonedMessageWireData();
+  blink::WebSerializedScriptValue serialized =
+      blink::WebSerializedScriptValue::Serialize(&isolate, value);
+  if (!serialized.IsValid()) {
+    *error = kErrorCouldNotSerialize;
+    return StructureClonedMessageWireData();
+  }
+  return StructureClonedMessageWireData(serialized.WireData());
 }
 
 }  // namespace
@@ -170,6 +176,8 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        mojom::SerializationFormat format,
                                        std::string* error) {
   DCHECK(!value.IsEmpty());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  CHECK(isolate);
 
   if (format == mojom::SerializationFormat::kStructuredCloned) {
     CHECK(base::FeatureList::IsEnabled(
@@ -181,7 +189,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
   StructureClonedMessageWireData structured_message;
   switch (format) {
     case mojom::SerializationFormat::kJson: {
-      json_message = MessageFromV8UsingJSON(context, value, error);
+      json_message = MessageFromV8UsingJSON(context, *isolate, value, error);
       if (!error->empty()) {
         return nullptr;
       }
@@ -190,7 +198,7 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
     }
     case mojom::SerializationFormat::kStructuredCloned: {
       structured_message =
-          MessageFromV8UsingStructuredCloning(context, value, error);
+          MessageFromV8UsingStructuredCloning(*isolate, value, error);
       if (!error->empty()) {
         return nullptr;
       }
@@ -231,13 +239,13 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
 
 // Deserializes the given `message` using structured cloning and returns it as a
 // v8::Value. Returns an empty handle on failure, and populates `error`.
-v8::Local<v8::Value> MessageToV8UsingStructuredCloning(
-    v8::Local<v8::Context> context,
-    const Message& message,
-    std::string* error) {
-  // TODO(crbug.com/40321352): Implement structured cloning to v8.
-  NOTIMPLEMENTED();
-  return v8::Local<v8::Value>();
+v8::Local<v8::Value> MessageToV8UsingStructuredCloning(v8::Isolate& isolate,
+                                                       const Message& message,
+                                                       std::string* error) {
+  blink::WebSerializedScriptValue serialized =
+      blink::WebSerializedScriptValue::Create(
+          base::span<const uint8_t>(message.structured_data()));
+  return serialized.Deserialize(&isolate);
 }
 
 // Deserializes the given JSON string `message` and returns it as a v8::Value.
@@ -250,12 +258,12 @@ v8::Local<v8::Value> MessageToV8UsingStructuredCloning(
 // If `is_parsing_fail_safe` is false, this function will CHECK() and cause a
 // crash.
 v8::Local<v8::Value> MessageToV8UsingJSON(v8::Local<v8::Context> context,
+                                          v8::Isolate& isolate,
                                           const Message& message,
                                           bool is_parsing_fail_safe,
                                           std::string* error) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::String> v8_message_string =
-      gin::StringToV8(isolate, message.data());
+      gin::StringToV8(&isolate, message.data());
   v8::Local<v8::Value> parsed_message;
   if (!v8::JSON::Parse(context, v8_message_string).ToLocal(&parsed_message)) {
     CHECK(is_parsing_fail_safe);
@@ -271,12 +279,15 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
                                  const Message& message,
                                  bool is_parsing_fail_safe,
                                  std::string* error) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  CHECK(isolate);
+
   switch (message.format()) {
     case mojom::SerializationFormat::kStructuredCloned:
-      return MessageToV8UsingStructuredCloning(context, message, error);
+      return MessageToV8UsingStructuredCloning(*isolate, message, error);
     case mojom::SerializationFormat::kJson:
-      return MessageToV8UsingJSON(context, message, is_parsing_fail_safe,
-                                  error);
+      return MessageToV8UsingJSON(context, *isolate, message,
+                                  is_parsing_fail_safe, error);
   }
   // We only support JSON or structured cloning serialization formats.
   NOTREACHED();

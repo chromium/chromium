@@ -13,6 +13,9 @@
 
 namespace extensions {
 
+// TODO(crbug.com/40321352): `mojo_base::BigBuffer`, by itself, doesn't support
+// JS `Blob`s because it doesn't have the `Blob`'s metadata. Switch to
+// `blink::mojom::CloneableMessage` to get `Blob` support.
 using StructureClonedMessageWireData = mojo_base::BigBuffer;
 using MessageData = std::variant<std::string, StructureClonedMessageWireData>;
 

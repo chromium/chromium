@@ -36,7 +36,9 @@ struct TestCase {
 
 using MessagingUtilTest = APIBindingTest;
 
-TEST_F(MessagingUtilTest, TestMaximumMessageSize) {
+// The Structure Cloned version of this test is at
+// StructuredCloneMessageSerializationApiTest.TestMaximumStructuredMessageSize.
+TEST_F(MessagingUtilTest, TestMaximumJSONMessageSize) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
