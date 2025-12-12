@@ -2120,15 +2120,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.DeviceBoundSessions.RegistrationResult"
+<histogram name="Net.DeviceBoundSessions.RegistrationResult{RegistrationType}"
     enum="DeviceBoundSessionError" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This records the outcome of Device Bound Session registration
-    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is logged
-    every time we attempt to register a new session.
+    This records the outcome of {RegistrationType} Device Bound Session
+    registration (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
+    This is logged every time we attempt to register a new session.
   </summary>
+  <token key="RegistrationType">
+    <variant name="" summary="any"/>
+    <variant name=".Federated" summary="a federated"/>
+    <variant name=".Standalone" summary="a standalone"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RequestDeferralCount"

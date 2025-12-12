@@ -231,6 +231,7 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
   if (!federated_provider_session.has_value()) {
     OnRegistrationComplete(
         std::move(on_access_callback), is_google_subdomain_for_histograms,
+        /*is_federated_registration_for_histograms=*/true,
         /*fetcher=*/nullptr,
         RegistrationResult(std::move(federated_provider_session.error())));
     return;
@@ -265,7 +266,9 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
 
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRegistrationComplete, weak_factory_.GetWeakPtr(),
-      std::move(on_access_callback), is_google_subdomain_for_histograms);
+      std::move(on_access_callback), is_google_subdomain_for_histograms,
+      /*is_federated_registration_for_histograms=*/federated_provider_session !=
+          nullptr);
   if (*federated_provider_session) {
     fetcher_raw->StartFetchWithFederatedKey(
         request_params, *(*federated_provider_session)->unexportable_key_id(),
@@ -395,6 +398,7 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     bool is_google_subdomain_for_histograms,
+    bool is_federated_registration_for_histograms,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
   if (is_google_subdomain_for_histograms) {
@@ -405,6 +409,13 @@ void SessionServiceImpl::OnRegistrationComplete(
       std::move(on_access_callback), fetcher, std::move(registration_result));
   base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RegistrationResult",
                                 result);
+  if (is_federated_registration_for_histograms) {
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RegistrationResult.Federated", result);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Net.DeviceBoundSessions.RegistrationResult.Standalone", result);
+  }
 }
 
 std::ranges::subrange<SessionServiceImpl::SessionsMap::iterator>
