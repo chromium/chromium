@@ -2250,8 +2250,10 @@ bool SystemAccentColorAllowed(const CSSParserContext& context) {
   // contexts because it could be read back by the page and used for
   // fingerprinting.
   if (const auto* document = context.GetDocument()) {
-    if (document->GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
-      return false;
+    if (Page* page = document->GetPage()) {
+      if (page->GetChromeClient().IsIsolatedSVGChromeClient()) {
+        return false;
+      }
     }
   }
 
