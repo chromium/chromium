@@ -1276,7 +1276,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     v -> mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
 
             Profile profile = mTabModelProfileSupplier.get();
-            ObservableSupplier<Integer> archivedTabCountSupplier =
+            NonNullObservableSupplier<Integer> archivedTabCountSupplier =
                     ArchivedTabModelOrchestrator.getForProfile(profile).getTabCountSupplier();
             getToolbarManager()
                     .initializeWithNative(

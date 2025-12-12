@@ -22,6 +22,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -79,7 +80,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private @Nullable LayoutStateObserver mLayoutStateObserver;
     @VisibleForTesting boolean mIphBeingShown;
     // Non-null when tab declutter is enabled and initWithNative is called.
-    private @Nullable ObservableSupplier<Integer> mArchivedTabCountSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mArchivedTabCountSupplier;
     private @Nullable Runnable mArchivedTabsIphShownCallback;
     private @Nullable Runnable mArchivedTabsIphDismissedCallback;
     private final Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
@@ -145,7 +146,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
             OnClickListener onClickListener,
             OnLongClickListener onLongClickListener,
             ObservableSupplier<Integer> tabCountSupplier,
-            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
             ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             Runnable archivedTabsIphShownCallback,
             Runnable archivedTabsIphDismissedCallback) {

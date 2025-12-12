@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -17,15 +17,11 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 
 /**
- * An {@link ObservableSupplier} which manages the total item count in the archived surface, which
- * includes tab counts in the archived {@link TabModel} and any tab groups from the {@link
- * TabGroupSyncService}.
+ * Manages the total item count in the archived surface, which includes tab counts in the archived
+ * {@link TabModel} and any tab groups from the {@link TabGroupSyncService}.
  */
 @NullMarked
-public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
-        implements Destroyable {
-    private static final int INITIAL_TAB_COUNT = 0;
-
+public class ArchivedTabCountTracker implements Destroyable {
     private final Callback<Integer> mArchivedTabModelTabCountObserver =
             (tabModelTabCount) -> {
                 updateArchivedTabCount();
@@ -33,6 +29,8 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
     private @Nullable TabModel mArchivedTabModel;
     private @Nullable NonNullObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final SettableNonNullObservableSupplier<Integer> mSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     private final TabGroupSyncService.Observer mTabGroupSyncObserver =
             new TabGroupSyncService.Observer() {
@@ -63,16 +61,6 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
             };
 
     /**
-     * Creates an instance of {@link ArchivedTabCountSupplier}.
-     *
-     * @return The supplier that manages tab count updates from both the tab model and sync service.
-     */
-    public ArchivedTabCountSupplier() {
-        // Set this supplier once so there is a base value at minimum.
-        super.set(INITIAL_TAB_COUNT);
-    }
-
-    /**
      * Setup the observers for tab counts when the tab model and sync service are available.
      *
      * @param archivedTabModel The {@link TabModel} representing archived tabs.
@@ -95,7 +83,7 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
         if (mArchivedTabModel != null) {
             totalTabCount += mArchivedTabModel.getCount();
         }
-        super.set(totalTabCount);
+        mSupplier.set(totalTabCount);
     }
 
     private int getArchivedTabGroupCount() {
@@ -114,11 +102,6 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
     }
 
     @Override
-    public void set(Integer tabCount) {
-        assert false : "ArchivedTabCountSupplier should only be set through its observers.";
-    }
-
-    @Override
     public void destroy() {
         if (mArchivedTabModelTabCountSupplier != null) {
             mArchivedTabModelTabCountSupplier.removeObserver(mArchivedTabModelTabCountObserver);
@@ -127,5 +110,10 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
         }
+        mSupplier.destroy();
+    }
+
+    public NonNullObservableSupplier<Integer> getSupplier() {
+        return mSupplier;
     }
 }

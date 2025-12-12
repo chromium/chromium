@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -118,7 +119,7 @@ public class ArchivedTabsMessageService
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
-    private final ObservableSupplier<Integer> mTabCountSupplier;
+    private final NonNullObservableSupplier<Integer> mTabCountSupplier;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
@@ -257,9 +258,7 @@ public class ArchivedTabsMessageService
                     mTabListItemSizeChangedObserver);
         }
 
-        if (mTabCountSupplier != null) {
-            mTabCountSupplier.removeObserver(mTabCountObserver);
-        }
+        mTabCountSupplier.removeObserver(mTabCountObserver);
 
         var layoutStateProvider = mLayoutStateProviderSupplier.get();
         if (layoutStateProvider != null) {

@@ -2333,7 +2333,7 @@ public class ToolbarManager
             @Nullable Runnable openGridTabSwitcherHandler,
             @Nullable OnClickListener bookmarkClickHandler,
             @Nullable OnClickListener customTabsBackClickHandler,
-            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
             ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             @Nullable UndoBarThrottle undoBarThrottle) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");

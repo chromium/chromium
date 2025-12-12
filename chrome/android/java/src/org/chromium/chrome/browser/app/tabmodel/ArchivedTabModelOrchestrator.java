@@ -20,7 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tabmodel.ArchivedTabCountSupplier;
+import org.chromium.chrome.browser.tabmodel.ArchivedTabCountTracker;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
@@ -164,7 +164,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private @Nullable HistoricalTabModelObserver mHistoricalTabModelObserver;
     private boolean mTriggerAutodeleteAfterDataCreated;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
-    private ArchivedTabCountSupplier mArchivedTabCountSupplier = new ArchivedTabCountSupplier();
+    private ArchivedTabCountTracker mArchivedTabCountTracker = new ArchivedTabCountTracker();
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -262,9 +262,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabArchiver = null;
         }
 
-        if (mArchivedTabCountSupplier != null) {
-            mArchivedTabCountSupplier.destroy();
-            mArchivedTabCountSupplier = null;
+        if (mArchivedTabCountTracker != null) {
+            mArchivedTabCountTracker.destroy();
+            mArchivedTabCountTracker = null;
         }
 
         super.destroy();
@@ -309,8 +309,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     /** Returns a supplier for the archive tab count. */
-    public ObservableSupplier<Integer> getTabCountSupplier() {
-        return mArchivedTabCountSupplier;
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
+        return mArchivedTabCountTracker.getSupplier();
     }
 
     public @Nullable TabModel getTabModel() {
@@ -436,7 +436,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             observer.onTabModelCreated(model);
         }
 
-        mArchivedTabCountSupplier.setupInternalObservers(model, mTabGroupSyncService);
+        mArchivedTabCountTracker.setupInternalObservers(model, mTabGroupSyncService);
 
         TabGroupModelFilter regularFilter =
                 mTabModelSelector
