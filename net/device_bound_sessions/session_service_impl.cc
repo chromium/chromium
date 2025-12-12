@@ -891,6 +891,11 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
     return;
   }
 
+  NotifySessionAccess(base::NullCallback(),
+                      SessionAccess::AccessType::kCreation,
+                      SessionKey{site, session_or_error.value()->id()},
+                      *session_or_error.value());
+
   AddSession(site, std::move(session_or_error.value()));
   std::move(callback).Run(SessionError::kSuccess);
 }
