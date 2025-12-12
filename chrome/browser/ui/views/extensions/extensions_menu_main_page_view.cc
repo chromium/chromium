@@ -202,7 +202,7 @@ ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewModel> model,
     extensions::ExtensionId extension_id,
-    ExtensionsMenuViewModel::MenuItemInfo menu_item,
+    ExtensionsMenuViewModel::MenuItemState menu_item,
     int index) {
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.

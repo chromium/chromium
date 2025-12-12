@@ -97,78 +97,6 @@ std::u16string GetPinButtonPressedAccText(bool is_pinned) {
                                              : IDS_EXTENSION_UNPINNED);
 }
 
-std::u16string GetSiteAccessToggleTooltip(bool is_on) {
-  return l10n_util::GetStringUTF16(
-      is_on ? IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_ON_TOOLTIP
-            : IDS_EXTENSIONS_MENU_EXTENSION_SITE_ACCESS_TOGGLE_OFF_TOOLTIP);
-}
-
-std::u16string GetSitePermissionsButtonText(
-    ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess
-        button_access) {
-  int label_id;
-  switch (button_access) {
-    case ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess::
-        kNone:
-      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE;
-      break;
-    case ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess::
-        kOnClick:
-      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK;
-      break;
-    case ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess::
-        kOnSite:
-      label_id = IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE;
-      break;
-    case ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess::
-        kOnAllSites:
-      label_id =
-          IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES;
-      break;
-  }
-  return l10n_util::GetStringUTF16(label_id);
-}
-
-std::u16string GetSitePermissionsButtonTooltip(
-    bool is_enterprise,
-    ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess
-        button_access) {
-  if (is_enterprise) {
-    return l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_TOOLTIP);
-  }
-
-  if (button_access != ExtensionsMenuViewModel::MenuItemInfo::
-                           SitePermissionsButtonAccess::kNone) {
-    return l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP);
-  }
-
-  // No tooltip is shown.
-  return std::u16string();
-}
-
-std::u16string GetSitePermissionsButtonAccName(
-    bool is_enterprise,
-    ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess
-        button_access,
-    std::u16string& button_text) {
-  if (is_enterprise) {
-    return l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
-        button_text);
-  }
-
-  if (button_access != ExtensionsMenuViewModel::MenuItemInfo::
-                           SitePermissionsButtonAccess::kNone) {
-    return l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
-        button_text);
-  }
-
-  return button_text;
-}
-
 views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     views::Button::PressedCallback callback,
     bool is_enterprise,
@@ -432,38 +360,31 @@ ExtensionMenuItemView::ExtensionMenuItemView(
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
 
 void ExtensionMenuItemView::Update(
-    ExtensionsMenuViewModel::MenuItemInfo menu_item) {
+    ExtensionsMenuViewModel::MenuItemState menu_item_state) {
   if (!base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     return;
   }
 
-  bool is_toggle_on =
-      menu_item.site_access_toggle_state ==
-      ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kOn;
   site_access_toggle_->SetVisible(
-      menu_item.site_access_toggle_state !=
-      ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kHidden);
-  site_access_toggle_->SetIsOn(is_toggle_on);
-  site_access_toggle_->SetTooltipText(GetSiteAccessToggleTooltip(is_toggle_on));
+      menu_item_state.site_access_toggle.status !=
+      ExtensionsMenuViewModel::ControlState::Status::kHidden);
+  site_access_toggle_->SetIsOn(menu_item_state.site_access_toggle.is_on);
+  site_access_toggle_->SetTooltipText(
+      menu_item_state.site_access_toggle.tooltip_text);
 
   site_permissions_button_->SetVisible(
-      menu_item.site_permissions_button_state !=
-      ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonState::
-          kHidden);
+      menu_item_state.site_permissions_button.status !=
+      ExtensionsMenuViewModel::ControlState::Status::kHidden);
   site_permissions_button_->SetEnabled(
-      menu_item.site_permissions_button_state ==
-      ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonState::
-          kEnabled);
-  std::u16string site_permissions_text =
-      GetSitePermissionsButtonText(menu_item.site_permissions_button_access);
-  site_permissions_button_->SetText(site_permissions_text);
-  site_permissions_button_->SetTooltipText(GetSitePermissionsButtonTooltip(
-      menu_item.is_enterprise, menu_item.site_permissions_button_access));
+      menu_item_state.site_permissions_button.status ==
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+  site_permissions_button_->SetText(
+      menu_item_state.site_permissions_button.text);
+  site_permissions_button_->SetTooltipText(
+      menu_item_state.site_permissions_button.tooltip_text);
   site_permissions_button_->GetViewAccessibility().SetName(
-      GetSitePermissionsButtonAccName(menu_item.is_enterprise,
-                                      menu_item.site_permissions_button_access,
-                                      site_permissions_text));
+      menu_item_state.site_permissions_button.accessible_name);
 
   // Update button size after changing its contents so it fits in the menu
   // item row.

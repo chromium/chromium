@@ -55,7 +55,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   ~ExtensionMenuItemView() override;
 
   // Updates the controller and child views to be on sync with the parent views.
-  void Update(ExtensionsMenuViewModel::MenuItemInfo menu_item);
+  void Update(ExtensionsMenuViewModel::MenuItemState menu_item);
 
   // Updates the pin button.
   void UpdatePinButton(bool is_force_pinned, bool is_pinned);

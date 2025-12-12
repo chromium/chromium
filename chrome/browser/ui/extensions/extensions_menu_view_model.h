@@ -29,44 +29,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public TabListInterfaceObserver,
                                 public content::WebContentsObserver {
  public:
-  // Holds the information about how the extension's menu item should look like.
-  // This will be used by the platform delegate as needed.
-  struct MenuItemInfo {
-    enum class SiteAccessToggleState {
-      // Button is not visible.
-      kHidden,
-      // Button is visible and off.
-      kOff,
-      // Button is visible and on.
-      kOn,
-    };
-
-    enum class SitePermissionsButtonAccess {
-      // Extension has no site access.
-      kNone,
-      // Extension has site access when clicked.
-      kOnClick,
-      // Extension has site access to this site.
-      kOnSite,
-      // Extension has site access to all sites.
-      kOnAllSites
-    };
-
-    enum class SitePermissionsButtonState {
-      // Button is not visible.
-      kHidden,
-      // Button is visible, but disabled.
-      kDisabled,
-      // Button is visible and enabled.
-      kEnabled,
-    };
-
-    SiteAccessToggleState site_access_toggle_state;
-    SitePermissionsButtonAccess site_permissions_button_access;
-    SitePermissionsButtonState site_permissions_button_state;
-    bool is_enterprise;
-  };
-
   // The type of optional section to display in the menu.
   enum class OptionalSection {
     // A section alerting the user that a page reload is required for changes to
@@ -132,6 +94,17 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     ControlState toggle;
   };
 
+  // Holds the information about how the extension's menu item should look like.
+  // This will be used by the platform delegate as needed.
+  struct MenuItemState {
+    // The state for the site access toggle.
+    ControlState site_access_toggle;
+    // The state for the site permissions button.
+    ControlState site_permissions_button;
+    // Whether the extension is installed from an enterprise policy.
+    bool is_enterprise;
+  };
+
   ExtensionsMenuViewModel(
       BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
@@ -169,9 +142,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Reloads the current web contents.
   void ReloadWebContents();
 
-  // Returns the menu item info for an extension.
-  MenuItemInfo GetMenuItemInfo(const extensions::ExtensionId& extension_id);
-
   // Returns the site access options state for an extension. This will crash if
   // called when the user cannot modify the extension site permissions, as this
   // method would compute invalid values.
@@ -181,6 +151,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the show requests toggle state for an extension.
   ControlState GetExtensionShowRequestsToggleState(
       const extensions::ExtensionId& extension_id);
+
+  // Returns the menu item state for an extension.
+  MenuItemState GetMenuItemState(const extensions::ExtensionId& extension_id);
 
   // Returns the optional section to display in the menu.
   OptionalSection GetOptionalSection();

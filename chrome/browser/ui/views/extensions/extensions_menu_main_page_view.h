@@ -51,7 +51,7 @@ class ExtensionsMenuMainPageView : public views::View {
   // extension.
   void CreateAndInsertMenuItem(std::unique_ptr<ExtensionActionViewModel> model,
                                extensions::ExtensionId extension_id,
-                               ExtensionsMenuViewModel::MenuItemInfo menu_item,
+                               ExtensionsMenuViewModel::MenuItemState menu_item,
                                int index);
 
   // Removes the menu item corresponding to `action_id`.

@@ -501,9 +501,9 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
         GetExtension(browser_, menu_item->view_model()->GetId());
     CHECK(extension);
 
-    ExtensionsMenuViewModel::MenuItemInfo menu_item_info =
-        menu_model_->GetMenuItemInfo(menu_item->view_model()->GetId());
-    menu_item->Update(menu_item_info);
+    ExtensionsMenuViewModel::MenuItemState menu_item_state =
+        menu_model_->GetMenuItemState(menu_item->view_model()->GetId());
+    menu_item->Update(menu_item_state);
   }
 }
 
@@ -572,8 +572,8 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
           extension_id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
-  ExtensionsMenuViewModel::MenuItemInfo menu_item =
-      menu_model_->GetMenuItemInfo(extension_id);
+  ExtensionsMenuViewModel::MenuItemState menu_item =
+      menu_model_->GetMenuItemState(extension_id);
 
   main_page->CreateAndInsertMenuItem(std::move(model), extension_id, menu_item,
                                      index);
