@@ -91,7 +91,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** The main settings screen, shown when the user first opens Settings. */
@@ -132,6 +134,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_APPEARANCE = "appearance";
     @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
 
+    public interface Observer {
+        /** Called when a preference item is selected. */
+        void onPreferenceSelected(Preference preference);
+    }
+
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
@@ -146,6 +153,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     private @Nullable MultiColumnSettings mMultiColumnSettings;
     private @Nullable SelectionDecoration mSelectionDecoration;
+
+    private final List<Observer> mObserverList = new ArrayList<>();
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -240,6 +249,18 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        onPreferenceSelected(preference);
+        return super.onPreferenceTreeClick(preference);
+    }
+
+    private void onPreferenceSelected(Preference preference) {
+        for (var observer : mObserverList) {
+            observer.onPreferenceSelected(preference);
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Ensure the preference disabled state is reflected when device is folded or unfolded.
@@ -301,6 +322,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Preference notifications = findPreference(PREF_NOTIFICATIONS);
             notifications.setOnPreferenceClickListener(
                     preference -> {
+                        onPreferenceSelected(preference);
                         startActivity(intent);
                         // We handle the click so the default action isn't triggered.
                         return true;
@@ -389,6 +411,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (view != null) {
             view.invalidateItemDecorations();
         }
+    }
+
+    public void addObserver(Observer observer) {
+        mObserverList.add(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mObserverList.remove(observer);
     }
 
     void setMultiColumnSettings(
@@ -509,6 +539,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         mManageSync.setOnPreferenceClickListener(
                 pref -> {
+                    onPreferenceSelected(pref);
                     Context context = getContext();
                     Profile profile = getProfile();
                     SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -549,7 +580,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         Preference autofillOptionsPreference = findPreference(PREF_AUTOFILL_OPTIONS);
         autofillOptionsPreference.setFragment(null);
         autofillOptionsPreference.setOnPreferenceClickListener(
-                unused -> {
+                preference -> {
+                    onPreferenceSelected(preference);
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(
                                     getContext(),
@@ -560,18 +592,23 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 });
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(
-                        preference ->
-                                SettingsNavigationHelper.showAutofillCreditCardSettings(
-                                        getActivity()));
+                        preference -> {
+                            onPreferenceSelected(preference);
+                            return SettingsNavigationHelper.showAutofillCreditCardSettings(
+                                    getActivity());
+                        });
         findPreference(PREF_AUTOFILL_ADDRESSES)
                 .setOnPreferenceClickListener(
-                        preference ->
-                                SettingsNavigationHelper.showAutofillProfileSettings(
-                                        getActivity()));
+                        preference -> {
+                            onPreferenceSelected(preference);
+                            return SettingsNavigationHelper.showAutofillProfileSettings(
+                                    getActivity());
+                        });
         PasswordsPreference passwordsPreference = findPreference(PREF_PASSWORDS);
         passwordsPreference.setProfile(getProfile());
         passwordsPreference.setOnPreferenceClickListener(
                 preference -> {
+                    onPreferenceSelected(preference);
                     PasswordManagerLauncher.showPasswordSettings(
                             getActivity(),
                             getProfile(),
@@ -606,10 +643,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
                 && !title.isEmpty()) {
             addPreferenceIfAbsent(PREF_PLUS_ADDRESSES);
-            Preference preference = findPreference(PREF_PLUS_ADDRESSES);
-            preference.setTitle(title);
-            preference.setOnPreferenceClickListener(
-                    unused -> {
+            Preference addressesPreference = findPreference(PREF_PLUS_ADDRESSES);
+            addressesPreference.setTitle(title);
+            addressesPreference.setOnPreferenceClickListener(
+                    preference -> {
+                        onPreferenceSelected(preference);
                         String url =
                                 ChromeFeatureList.getFieldTrialParamByFeature(
                                         ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "manage-url");
@@ -695,7 +733,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                         SemanticColorUtils.getDefaultTextColorAccent1(context)))));
 
         pref.setOnPreferenceClickListener(
-                (unused) -> {
+                preference -> {
+                    onPreferenceSelected(preference);
                     ChromeSharedPreferences.getInstance().writeBoolean(clickedPrefKey, true);
                     return false;
                 });
