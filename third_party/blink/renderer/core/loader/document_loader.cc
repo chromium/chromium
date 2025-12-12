@@ -2750,7 +2750,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   if (response_.FromSyntheticResponse()) {
     CHECK(frame_->IsOutermostMainFrame());
     CHECK_EQ(commit_reason_, CommitReason::kRegular);
-    csp->DisallowScriptForSyntheticResponse();
+    static const bool synthetic_response_dry_run(
+        blink::features::kServiceWorkerSyntheticResponseDryRun.Get());
+    if (!synthetic_response_dry_run) {
+      csp->DisallowScriptForSyntheticResponse();
+    }
   }
 
   content_security_notifier_ =
