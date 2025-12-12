@@ -567,6 +567,34 @@ if (is_android) {
     testonly = true
     sources = [ "android/java/res/xml/file_paths_file_provider.xml" ]
   }
+
+  android_resources("leak_canary_test_resources") {
+    testonly = true
+
+    # This overrides a value set by leakcanary.
+    resource_overlay = true
+    sources = [ "android/javatests/res/values/leak_canary.xml" ]
+  }
+
+  android_library("leak_canary_java") {
+    testonly = true
+    sources = [
+      "android/javatests/src/org/chromium/base/test/util/CommonLeaks.java",
+      "android/javatests/src/org/chromium/base/test/util/LeakCanaryChecker.java",
+    ]
+    deps = [
+      ":leak_canary_test_resources",
+      "//base:base_java_test_support",
+      "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_core_java",
+      "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_instrumentation_java",
+      "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_java",
+      "//third_party/android_deps:com_squareup_leakcanary_shark_android_java",
+      "//third_party/android_deps:com_squareup_leakcanary_shark_java",
+      "//third_party/androidx:androidx_work_work_multiprocess_java",
+      "//third_party/androidx:androidx_work_work_runtime_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
 }
 
 if (is_ios) {

@@ -1621,6 +1621,8 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetControllerTest.java",
     "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetTest.java",
     "src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
+    "src/org/chromium/chrome/test/memory_leaks/ChromeInstrumentationLeaks.java",
+    "src/org/chromium/chrome/test/memory_leaks/PublicTransitLeakTest.java",
   ]
 
   data = [ "//chrome/test/data/click.html" ]
@@ -1629,6 +1631,7 @@ android_library("chrome_test_java_various") {
     ":chrome_test_java_helper",
     "//base:base_java_test_support",
     "//base:holder_java",
+    "//base/test:leak_canary_java",
     "//chrome/browser/ntp_customization:java",
     "//components/browser_ui/http_auth/android:java",
     "//third_party/androidx:androidx_test_ext_junit_java",

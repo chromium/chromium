@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.ServiceLoader;
 
 /**
  * A custom runner for JUnit4 tests that checks requirements to conditionally ignore tests.
@@ -103,6 +104,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         void run(Context targetContext, FrameworkMethod testMethod);
     }
 
+    /** An interface for classes that want to do checks after all other tear down is complete. */
+    public interface AfterCleanupCheck {
+        /**
+         * @param clazz The class that was just run.
+         */
+        void onAfterTestClass(Class<?> clazz);
+    }
+
     /** Makes it more obvious that all tests are being marked as failed. */
     private static class BeforeClassException extends RuntimeException {
         private BeforeClassException(boolean batchedTest, Throwable causedBy) {
@@ -145,6 +154,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private long mTestStartTimeMs;
     private String mFailedBatchTestName;
     private JniTestInstancesSnapshot mJniZeroSnapshot;
+    private boolean mAnyTestFailed;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -308,6 +318,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
                     @Override
                     public void testFailure(Failure failure) {
+                        mAnyTestFailed = true;
                         mPendingFailure = failure;
                     }
 
@@ -558,6 +569,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         boolean finishSuccess = ActivityFinisher.finishAll();
         if (afterClassPassed && finishSuccess) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            if (!mAnyTestFailed) {
+                for (AfterCleanupCheck check :
+                        ServiceLoader.load(
+                                AfterCleanupCheck.class,
+                                AfterCleanupCheck.class.getClassLoader())) {
+                    check.onAfterTestClass(getTestClass().getJavaClass());
+                }
+            }
         } else {
             LifetimeAssert.resetForTesting();
         }
