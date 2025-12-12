@@ -183,18 +183,26 @@ void RegisterProfilePrefs(
       prefs::kAutofillSignInPromoDismissCountPerProfile, 0);
   registry->RegisterIntegerPref(prefs::kPasswordSignInPromoShownCountPerProfile,
                                 0);
-  registry->RegisterIntegerPref(
-      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(prefs::kAddressSignInPromoShownCountPerProfile,
                                 0);
-  registry->RegisterIntegerPref(
-      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(prefs::kBookmarkSignInPromoShownCountPerProfile,
                                 0);
   registry->RegisterIntegerPref(
+      prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, 0);
+
+  // Signin promo limits experiment prefs.
+  registry->RegisterIntegerPref(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
       prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(
-      prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, 0);
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
 }
 
 }  // namespace signin

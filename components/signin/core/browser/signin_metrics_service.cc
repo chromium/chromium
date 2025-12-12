@@ -513,16 +513,12 @@ void SigninMetricsService::RecordExplicitSigninMigrationStatus() {
 void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
     const CoreAccountInfo& account_info,
     signin_metrics::AccessPoint access_point) {
-  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
-    return;
-  }
-
   bool is_from_web_signin =
       GetTimeOfWebSignin(account_info.account_id).has_value();
   switch (access_point) {
     case signin_metrics::AccessPoint::kAddressBubble:
       base::UmaHistogramBoolean(
-          "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin",
+          "Signin.ShowCountAtSignin.AddressSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetAddressSigninPromoImpressionCount(account_info.gaia)
@@ -532,7 +528,7 @@ void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
       break;
     case signin_metrics::AccessPoint::kPasswordBubble:
       base::UmaHistogramBoolean(
-          "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin",
+          "Signin.ShowCountAtSignin.PasswordSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetPasswordSigninPromoImpressionCount(account_info.gaia)
@@ -542,7 +538,7 @@ void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
       break;
     case signin_metrics::AccessPoint::kBookmarkBubble:
       base::UmaHistogramBoolean(
-          "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin",
+          "Signin.ShowCountAtSignin.BookmarkSigninPromo",
           is_from_web_signin
               ? SigninPrefs(pref_service_.get())
                     .GetBookmarkSigninPromoImpressionCount(account_info.gaia)
@@ -555,14 +551,13 @@ void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
           SigninPrefs(pref_service_.get())
               .GetChromeSigninBubbleRepromptCount(account_info.gaia);
       if (uno_bubble_reprompt_count > 0) {
-        base::UmaHistogramBoolean(
-            "Signin.PromoLimitsExperiment.UnoBubbleRepromptCountAtSignin",
-            uno_bubble_reprompt_count);
+        base::UmaHistogramBoolean("Signin.ShowCountAtSignin.UnoBubbleReprompt",
+                                  uno_bubble_reprompt_count);
       }
       break;
     }
     default:
-      // No other access points are relevant for this experiment.
+      // No other access points are relevant.
       return;
   }
 }

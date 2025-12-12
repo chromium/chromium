@@ -866,7 +866,7 @@ class ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment
 };
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
-       DoNotShowAddressPromoAfterTwentyTimesShown) {
+       DoNotShowAddressPromoAfterMaxTimesShown) {
   ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
 
   profile()->GetPrefs()->SetInteger(
@@ -878,7 +878,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
-       DoNotShowPasswordPromoAfterTwentyTimesShown) {
+       DoNotShowPasswordPromoAfterMaxTimesShown) {
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
   profile()->GetPrefs()->SetInteger(
@@ -890,7 +890,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
-       DoNotShowBookmarkPromoAfterTwentyTimesShown) {
+       DoNotShowBookmarkPromoAfterMaxTimesShown) {
   ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 
   profile()->GetPrefs()->SetInteger(
@@ -1022,13 +1022,38 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
-       SkipCheckForNumberOfTimesDismissed) {
+       DoNotShowPasswordPromoAfterMaxTimesDismissed) {
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kAutofillSignInPromoDismissCountPerProfile, INT_MAX);
+      prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment,
+      switches::kContextualSigninPromoDismissedThreshold.Get());
 
-  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       DoNotShowAddressPromoAfterMaxTimesDismissed) {
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment,
+      switches::kContextualSigninPromoDismissedThreshold.Get());
+
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       DoNotShowBookmarkPromoAfterMaxTimesDismissed) {
+  base::test::ScopedFeatureList scoped_feature_list{syncer::kUnoPhase2FollowUp};
+
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment,
+      switches::kContextualSigninPromoDismissedThreshold.Get());
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 class SyncPromoIdentityPillManagerTest : public testing::Test {

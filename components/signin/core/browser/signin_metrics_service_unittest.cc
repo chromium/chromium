@@ -829,8 +829,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   Signin(email, signin_metrics::AccessPoint::kAddressBubble, gaia_id);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.AddressSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -845,8 +844,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   Signin(email, signin_metrics::AccessPoint::kAddressBubble);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.AddressSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.AddressSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -868,8 +866,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   Signin(email, signin_metrics::AccessPoint::kPasswordBubble, gaia_id);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.PasswordSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -885,8 +882,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   Signin(email, signin_metrics::AccessPoint::kPasswordBubble);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.PasswordSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -908,8 +904,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   Signin(email, signin_metrics::AccessPoint::kBookmarkBubble, gaia_id);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.BookmarkSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -921,12 +916,10 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 1);
 
   const std::string email("test@gmail.com");
-
   Signin(email, signin_metrics::AccessPoint::kBookmarkBubble);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
-      1);
+      "Signin.ShowCountAtSignin.BookmarkSigninPromo", 1, 1);
 }
 
 TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
@@ -945,6 +938,6 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
          gaia_id);
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.PromoLimitsExperiment.UnoBubbleRepromptCountAtSignin", 1, 1);
+      "Signin.ShowCountAtSignin.UnoBubbleReprompt", 1, 1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

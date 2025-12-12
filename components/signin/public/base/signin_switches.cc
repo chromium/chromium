@@ -412,7 +412,11 @@ BASE_FEATURE(kSigninPromoLimitsExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kContextualSigninPromoShownThreshold(
     &kSigninPromoLimitsExperiment,
     "contextual_signin_promo_shown_threshold",
-    20);
+    6);
+const base::FeatureParam<int> kContextualSigninPromoDismissedThreshold(
+    &kSigninPromoLimitsExperiment,
+    "contextual_signin_promo_dismissed_threshold",
+    2);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kSignInPromoMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);

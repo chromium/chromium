@@ -276,6 +276,51 @@ int GetBookmarkPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
           : prefs::kBookmarkSignInPromoShownCountPerProfile);
 }
 
+int GetContextualPromoDismissCountPerSignedOutProfile(Profile& profile,
+                                                      SignInPromoType type) {
+  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    return profile.GetPrefs()->GetInteger(
+        prefs::kAutofillSignInPromoDismissCountPerProfile);
+  }
+
+  switch (type) {
+    case SignInPromoType::kAddress:
+      return profile.GetPrefs()->GetInteger(
+          prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment);
+    case SignInPromoType::kPassword:
+      return profile.GetPrefs()->GetInteger(
+          prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment);
+    case SignInPromoType::kBookmark:
+      return profile.GetPrefs()->GetInteger(
+          prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
+    case SignInPromoType::kExtension:
+      NOTREACHED();
+  }
+}
+
+int GetContextualPromoDismissCountPerAccount(Profile& profile,
+                                             SignInPromoType type,
+                                             const GaiaId& gaia_id) {
+  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    return SigninPrefs(*profile.GetPrefs())
+        .GetAutofillSigninPromoDismissCount(gaia_id);
+  }
+
+  switch (type) {
+    case SignInPromoType::kAddress:
+      return SigninPrefs(*profile.GetPrefs())
+          .GetAddressSigninPromoDismissCount(gaia_id);
+    case SignInPromoType::kPassword:
+      return SigninPrefs(*profile.GetPrefs())
+          .GetPasswordSigninPromoDismissCount(gaia_id);
+    case SignInPromoType::kBookmark:
+      return SigninPrefs(*profile.GetPrefs())
+          .GetBookmarkSigninPromoDismissCount(gaia_id);
+    case SignInPromoType::kExtension:
+      NOTREACHED();
+  }
+}
+
 bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
                                                       SignInPromoType type) {
   // Footer sign in promos are always shown.
@@ -306,17 +351,17 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
       NOTREACHED();
   }
 
-  // For SigninPromoLimitsExperiment, don't check the dismiss count.
-  if (base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
-    return show_count < switches::kContextualSigninPromoShownThreshold.Get();
-  }
-
   int dismiss_count =
       account.gaia.empty()
-          ? profile.GetPrefs()->GetInteger(
-                prefs::kAutofillSignInPromoDismissCountPerProfile)
-          : SigninPrefs(*profile.GetPrefs())
-                .GetAutofillSigninPromoDismissCount(account.gaia);
+          ? GetContextualPromoDismissCountPerSignedOutProfile(profile, type)
+          : GetContextualPromoDismissCountPerAccount(profile, type,
+                                                     account.gaia);
+
+  if (base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    return show_count < switches::kContextualSigninPromoShownThreshold.Get() &&
+           dismiss_count <
+               switches::kContextualSigninPromoDismissedThreshold.Get();
+  }
 
   // Don't show the promo again if it
   // - has already been shown `kSigninPromoShownThreshold` times for its

@@ -362,10 +362,14 @@ BASE_DECLARE_FEATURE(kShowProfilePickerToAllUsersExperiment);
 // promos and UNO bubble reprompt.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSigninPromoLimitsExperiment);
-// Param that controls the threshold of the contextual sign in promos shown
+// Param that controls the threshold of the contextual sign in promo shown
 // limit for the experiment.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<int> kContextualSigninPromoShownThreshold;
+// Param that controls the threshold of the contextual sign in promos dismissed
+// limit for the experiment.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<int> kContextualSigninPromoDismissedThreshold;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Uses the Material Next theme for the signin promo.
