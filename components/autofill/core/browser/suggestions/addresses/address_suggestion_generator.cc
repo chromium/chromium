@@ -245,10 +245,8 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
-  auto profile_ptrs = base::ToVector(
-      profiles, [](const AutofillProfile& profile) -> const AutofillProfile* {
-        return &profile;
-      });
+  std::vector<const AutofillProfile*> profile_ptrs = base::ToVector(
+      profiles, [](const AutofillProfile& profile) { return &profile; });
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
     differentiating_labels = AutofillProfile::CreateInferredLabels(
@@ -1061,44 +1059,43 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  auto it = all_suggestion_data.find(SuggestionDataSource::kAddress);
-  std::vector<SuggestionData> address_suggestion_data =
-      it != all_suggestion_data.end() ? it->second
-                                      : std::vector<SuggestionData>();
-
-  if (!address_suggestion_data.empty()) {
-    std::vector<AutofillProfile> profiles_to_suggest = base::ToVector(
-        std::move(address_suggestion_data),
-        [](SuggestionData& suggestion_data) {
+  // Handling `kAddress` suggestions.
+  if (const std::vector<SuggestionData>* address_suggestion_data =
+          base::FindOrNull(all_suggestion_data, SuggestionDataSource::kAddress);
+      address_suggestion_data && !address_suggestion_data->empty()) {
+    std::vector<AutofillProfile> addresses_to_suggest = base::ToVector(
+        *address_suggestion_data, [](SuggestionData suggestion_data) {
           return std::get<AutofillProfile>(std::move(suggestion_data));
         });
 
     callback({FillingProduct::kAddress,
               GenerateAddressSuggestions(
                   form, trigger_field, form_structure, trigger_autofill_field,
-                  client, profiles_to_suggest,
+                  client, addresses_to_suggest,
                   GetPlusAddressEmailOverride(plus_address_email_override_,
                                               all_suggestion_data))});
     return;
   }
 
   // Handling `kAddressOnTyping` suggestions.
-  it = all_suggestion_data.find(SuggestionDataSource::kAddressOnTyping);
-  address_suggestion_data = it != all_suggestion_data.end()
-                                ? it->second
-                                : std::vector<SuggestionData>();
-  if (address_suggestion_data.empty()) {
-    callback({FillingProduct::kAddress, {}});
+  if (const std::vector<SuggestionData>* address_on_typing_suggestion_data =
+          base::FindOrNull(all_suggestion_data,
+                           SuggestionDataSource::kAddressOnTyping);
+      address_on_typing_suggestion_data &&
+      !address_on_typing_suggestion_data->empty()) {
+    std::vector<AddressOnTypingSuggestionData> addresses_to_suggest =
+        base::ToVector(*address_on_typing_suggestion_data,
+                       [](SuggestionData suggestion_data) {
+                         return std::get<AddressOnTypingSuggestionData>(
+                             std::move(suggestion_data));
+                       });
+    callback({FillingProduct::kAddress,
+              GenerateAddressOnTypingSuggestions(addresses_to_suggest)});
     return;
   }
-  std::vector<AddressOnTypingSuggestionData> addresses_to_suggest =
-      base::ToVector(std::move(address_suggestion_data),
-                     [](SuggestionData& suggestion_data) {
-                       return std::get<AddressOnTypingSuggestionData>(
-                           std::move(suggestion_data));
-                     });
-  callback({FillingProduct::kAddress,
-            GenerateAddressOnTypingSuggestions(addresses_to_suggest)});
+
+  callback({FillingProduct::kAddress, {}});
+  return;
 }
 
 std::vector<AutofillProfile>
@@ -1158,8 +1155,10 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {
-      if (auto it = skip_reasons.find(form_structure->field(i)->global_id());
-          it == skip_reasons.end() || it->second.empty()) {
+      if (const DenseSet<FieldFillingSkipReason>* field_skip_reasons =
+              base::FindOrNull(skip_reasons,
+                               form_structure->field(i)->global_id());
+          !field_skip_reasons || field_skip_reasons->empty()) {
         field_types.insert(form_structure->field(i)->Type().GetAddressType());
       }
     }
