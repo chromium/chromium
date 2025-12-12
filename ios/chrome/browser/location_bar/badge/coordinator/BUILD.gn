@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/badge/ui",
+    "//ios/chrome/browser/location_bar/badge/ui:constants",
     "//ios/chrome/browser/location_bar/ui_bundled:metrics",
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -40,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
     "//ios/web/public",
   ]

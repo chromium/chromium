@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -13,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -501,7 +505,9 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     metricsData->appearance_time = base::Time::Now();
   }
 
-  // TODO(crbug.com/467513851): Implement [self setEntrypointConfig].
+  LocationBarBadgeConfiguration* badgeConfig =
+      [self createConfigFromContextualPanelEntrypointConfig:config];
+  [self updateBadgeConfig:badgeConfig];
   [self.consumer setContextualPanelItemType:config->item_type];
   [self.consumer
       transitionToContextualPanelOpenedState:
@@ -537,6 +543,67 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+// Creates a `LocationBarBadgeConfiguration` from
+// a `ContextualPanelItemConfiguration`.
+- (LocationBarBadgeConfiguration*)
+    createConfigFromContextualPanelEntrypointConfig:
+        (ContextualPanelItemConfiguration*)config {
+  if (!config) {
+    return nil;
+  }
+
+  LocationBarBadgeType badgeType;
+  switch (config->item_type) {
+    case ContextualPanelItemType::SamplePanelItem:
+      badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
+      break;
+    case ContextualPanelItemType::PriceInsightsItem:
+      badgeType = LocationBarBadgeType::kPriceInsights;
+      break;
+    case ContextualPanelItemType::ReaderModeItem:
+      badgeType = LocationBarBadgeType::kReaderMode;
+      break;
+  }
+
+  RecordLocationBarBadgeUpdate(badgeType);
+  // TODO(crbug.com/448422022): Store Contextual Panel Entrypoint badges
+  // instead of preventing them.
+  if ([self.consumer isBadgeVisible]) {
+    return nil;
+  }
+
+  NSString* accessibilityLabel =
+      base::SysUTF8ToNSString(config->accessibility_label);
+
+  UIImage* image;
+  CGFloat symbolPointSize = kBadgeSymbolPointSize;
+  switch (config->image_type) {
+    case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
+      image = DefaultSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          symbolPointSize);
+      break;
+    case ContextualPanelItemConfiguration::EntrypointImageType::Image:
+      image = CustomSymbolWithPointSize(
+          base::SysUTF8ToNSString(config->entrypoint_image_name),
+          symbolPointSize);
+      break;
+  }
+
+  LocationBarBadgeConfiguration* badgeConfig =
+      [[LocationBarBadgeConfiguration alloc]
+           initWithBadgeType:badgeType
+          accessibilityLabel:accessibilityLabel
+                  badgeImage:image];
+  badgeConfig.badgeText = base::SysUTF8ToNSString(config->entrypoint_message);
+
+  if (config->accessibility_hint.size() > 0) {
+    badgeConfig.accessibilityHint =
+        base::SysUTF8ToNSString(config->accessibility_hint);
+  }
+  return badgeConfig;
 }
 
 @end
