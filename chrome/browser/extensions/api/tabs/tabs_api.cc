@@ -734,9 +734,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     }
 
     // Validate the tab information. Return an error if it's not valid.
-    std::string tab_error =
-        ValidateTab(source_window, window_profile, calling_profile,
-                    web_contents, is_locked_fullscreen, urls_);
+    std::string tab_error = ValidateTab(source_window, window_profile,
+                                        web_contents, is_locked_fullscreen);
     if (!tab_error.empty()) {
       return RespondNow(Error(std::move(tab_error)));
     }
@@ -1035,10 +1034,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 std::string WindowsCreateFunction::ValidateTab(
     WindowController* source_window,
     Profile* window_profile,
-    Profile* calling_profile,
     content::WebContents* web_contents,
-    bool is_locked_fullscreen,
-    const std::vector<GURL>& urls) {
+    bool is_locked_fullscreen) {
   if (!source_window) {
     // The source window can be null for prerender tabs.
     return tabs_constants::kInvalidWindowStateError;
