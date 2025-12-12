@@ -188,7 +188,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   for (int i = 0; i < output_bus_->channels(); ++i) {
     buffer_span[i].mNumberChannels = 1;
     buffer_span[i].mDataByteSize = output_bus_->frames() * sizeof(float);
-    buffer_span[i].mData = output_bus_->channel_span(i).data();
+    buffer_span[i].mData = output_bus_->channel(i).data();
   }
 
   // Decodes |num_frames| of encoded data into |output_bus_| by calling the

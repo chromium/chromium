@@ -228,7 +228,7 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
   }
 
   for (size_t ch = 0; ch < buffer.size(); ++ch) {
-    auto channel_data = bus_->channel_span(ch);
+    auto channel_data = bus_->channel(ch);
     // SAFETY:
     // https://xiph.org/flac/api/group__flac__stream__decoder.html#ga61e48dc2c0d2f6c5519290ff046874a4
     // says that each buffer pointer will point to a signed array of samples of

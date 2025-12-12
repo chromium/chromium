@@ -40,7 +40,7 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
   for (int ch = 0; ch < kChannels; ++ch) {
     const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
     base::span<const uint8_t> input_span(base::as_byte_span(
-        base::allow_nonunique_obj, expected_data->channel_span(ch)));
+        base::allow_nonunique_obj, expected_data->channel(ch)));
     base::span<uint8_t> UNSAFE_TODO(
         output_span(buffer->channel_data()[ch], kSpanSize));
     EXPECT_EQ(input_span, output_span);
@@ -129,7 +129,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
 
   // Fill the first channel with kGuardValue.
   input_bus_->Zero();
-  std::ranges::fill(input_bus_->channel_span(0), kGuardValue);
+  std::ranges::fill(input_bus_->channel(0), kGuardValue);
 
   // Feed in data into the queue and clear it.
   bool first_buffer_emitted = false;

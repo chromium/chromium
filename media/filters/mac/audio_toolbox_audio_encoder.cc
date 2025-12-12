@@ -63,7 +63,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 
     // A non-const version of channel(i) exists, but the compiler doesn't select
     // it for some reason.
-    buffer_span[i].mData = const_cast<float*>(bus->channel_span(i).data());
+    buffer_span[i].mData = const_cast<float*>(bus->channel(i).data());
   }
 
   // nFramesPerPacket is 1 for the input stream.

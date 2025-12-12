@@ -1195,7 +1195,7 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForEarlyStartTime) {
   for (int i = 0; i < std::floor(kBuffers); ++i) {
     EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
     EXPECT_EQ(frames_read, bus->frames());
-    for (auto sample : bus->channel_span(0)) {
+    for (auto sample : bus->channel(0)) {
       ASSERT_FLOAT_EQ(0.0f, sample);
     }
 
@@ -1213,10 +1213,10 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForEarlyStartTime) {
   const size_t zero_frames =
       bus->frames() * (kBuffers - static_cast<int>(kBuffers));
 
-  for (float zeroed_sample : bus->channel_span(0).first(zero_frames)) {
+  for (float zeroed_sample : bus->channel(0).first(zero_frames)) {
     ASSERT_FLOAT_EQ(0.0f, zeroed_sample);
   }
-  for (float non_zero_sample : bus->channel_span(0).subspan(zero_frames)) {
+  for (float non_zero_sample : bus->channel(0).subspan(zero_frames)) {
     ASSERT_NE(0.0f, non_zero_sample);
   }
 }
@@ -1231,7 +1231,7 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(hardware_params_);
   EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
   EXPECT_NE(0, frames_read);
-  for (auto sample : bus->channel_span(0)) {
+  for (auto sample : bus->channel(0)) {
     ASSERT_NE(0.0f, sample);
   }
 
@@ -1245,7 +1245,7 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
   renderer_->OnResume();
   EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
   EXPECT_NE(0, frames_read);
-  for (auto sample : bus->channel_span(0)) {
+  for (auto sample : bus->channel(0)) {
     ASSERT_NE(0.0f, sample);
   }
 }

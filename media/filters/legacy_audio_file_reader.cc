@@ -309,7 +309,7 @@ bool LegacyAudioFileReader::OnNewFrame(
         reinterpret_cast<float*>(frame->data[0]), frames_read);
   } else if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLTP) {
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      audio_bus->channel_span(ch).copy_from_nonoverlapping(UNSAFE_TODO(
+      audio_bus->channel(ch).copy_from_nonoverlapping(UNSAFE_TODO(
           base::span(reinterpret_cast<float*>(frame->extended_data[ch]),
                      static_cast<size_t>(frames_read))));
     }

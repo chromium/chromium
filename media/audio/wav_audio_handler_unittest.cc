@@ -614,7 +614,7 @@ TEST(WavAudioHandlerTest, AtEndBoundaryCondition) {
   EXPECT_TRUE(handler->AtEnd());
 
   auto bus = AudioBus::Create(1, 4);
-  auto channel_data = bus->channel_span(0);
+  auto channel_data = bus->channel(0);
   for (int i = 0; i < bus->frames(); ++i) {
     channel_data[i] = 1.0f;
   }

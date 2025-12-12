@@ -49,7 +49,7 @@ class TestScenario {
   // of channel 0.
   TestScenario WithABadSample(float bad_value) const {
     TestScenario result(*this);
-    result.bus_->channel_span(0)[result.bus_->frames() / 2] = bad_value;
+    result.bus_->channel(0)[result.bus_->frames() / 2] = bad_value;
     return result;
   }
 

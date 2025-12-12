@@ -371,8 +371,8 @@ class AudioDecoderTest
       // over-conservative, since it will require that the output be a sequence
       // of bit-for-bit identical floats rather than a sequence of equivalent
       // floats, but that's okay.
-      hasher.Update(base::as_byte_span(base::allow_nonunique_obj,
-                                       output->channel_span(ch)));
+      hasher.Update(
+          base::as_byte_span(base::allow_nonunique_obj, output->channel(ch)));
     }
     std::array<uint8_t, crypto::hash::kSha256Size> digest;
     hasher.Finish(digest);

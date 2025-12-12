@@ -82,7 +82,7 @@ static void FillWithSquarePulseTrain(size_t half_pulse_width,
                                      int channel,
                                      AudioBus* audio_bus) {
   FillWithSquarePulseTrain(half_pulse_width, offset,
-                           audio_bus->channel_span(channel));
+                           audio_bus->channel(channel));
 }
 
 class AudioRendererAlgorithmTest : public testing::Test {
@@ -429,7 +429,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
       // perfectly. Do not check them.
       if (n > 3) {
          for (int m = 0; m < channels_; ++m) {
-           auto pulse_ch = pulse_buffer->channel_span(m);
+           auto pulse_ch = pulse_buffer->channel(m);
            auto input_ch = input_data[m];
 
            // Because of overlap-and-add we might have round off error.
@@ -711,8 +711,8 @@ TEST_F(AudioRendererAlgorithmTest, MovingBlockEnergy) {
   const size_t kNumBlocks = kFrames - (kFramesPerBlock - 1);
   std::unique_ptr<AudioBus> a = AudioBus::Create(kChannels, kFrames);
   auto energies = base::HeapArray<float>::Uninit(kChannels * kNumBlocks);
-  auto ch_left = a->channel_span(0);
-  auto ch_right = a->channel_span(1);
+  auto ch_left = a->channel(0);
+  auto ch_right = a->channel(1);
 
   // Fill up both channels.
   for (size_t n = 0; n < kFrames; ++n) {
@@ -751,8 +751,8 @@ TEST_F(AudioRendererAlgorithmTest, FullAndDecimatedSearch) {
       0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 1.0f, 0.1f, 0.0f, 0.0f};
   std::unique_ptr<AudioBus> search_region =
       AudioBus::Create(kChannels, kFramesInSearchRegion);
-  search_region->channel_span(0).copy_from_nonoverlapping(ch_0);
-  search_region->channel_span(1).copy_from_nonoverlapping(ch_1);
+  search_region->channel(0).copy_from_nonoverlapping(ch_0);
+  search_region->channel(1).copy_from_nonoverlapping(ch_1);
 
   const size_t kFramePerBlock = 4;
   const std::array<float, kFramePerBlock> target_0 = {1.0f, 1.0f, 1.0f, 0.0f};
@@ -760,8 +760,8 @@ TEST_F(AudioRendererAlgorithmTest, FullAndDecimatedSearch) {
 
   std::unique_ptr<AudioBus> target =
       AudioBus::Create(kChannels, kFramePerBlock);
-  target->channel_span(0).copy_from_nonoverlapping(target_0);
-  target->channel_span(1).copy_from_nonoverlapping(target_1);
+  target->channel(0).copy_from_nonoverlapping(target_0);
+  target->channel(1).copy_from_nonoverlapping(target_1);
 
   auto energy_target = base::HeapArray<float>::Uninit(kChannels);
 
@@ -904,9 +904,9 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_ChannelMask) {
   // actually has audio data in it.
   for (int ch = 0; ch < bus->channels(); ++ch) {
     if (ch % 2 == 1) {
-      ASSERT_TRUE(std::ranges::all_of(bus->channel_span(ch), is_zero));
+      ASSERT_TRUE(std::ranges::all_of(bus->channel(ch), is_zero));
     } else {
-      ASSERT_FALSE(std::ranges::all_of(bus->channel_span(ch), is_zero));
+      ASSERT_FALSE(std::ranges::all_of(bus->channel(ch), is_zero));
     }
   }
 

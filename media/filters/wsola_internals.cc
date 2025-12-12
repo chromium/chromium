@@ -64,8 +64,8 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
   const size_t last_index = num_frames - rem;
   const int channels = a->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> a_src = a->channel_span(ch).subspan(frame_offset_a);
-    base::span<const float> b_src = b->channel_span(ch).subspan(frame_offset_b);
+    base::span<const float> a_src = a->channel(ch).subspan(frame_offset_a);
+    base::span<const float> b_src = b->channel(ch).subspan(frame_offset_b);
 
     // First sum all components.
     __m128 m_sum = _mm_setzero_ps();
@@ -90,10 +90,8 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
 
   // C version is required to handle remainder of frames (% 4 != 0)
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> ch_a =
-        a->channel_span(ch).subspan(frame_offset_a, rem);
-    base::span<const float> ch_b =
-        b->channel_span(ch).subspan(frame_offset_b, rem);
+    base::span<const float> ch_a = a->channel(ch).subspan(frame_offset_a, rem);
+    base::span<const float> ch_b = b->channel(ch).subspan(frame_offset_b, rem);
     dot_product[ch] +=
         std::inner_product(ch_a.begin(), ch_a.end(), ch_b.begin(), 0.0f);
   }
@@ -112,8 +110,8 @@ __attribute__((target("avx2,fma"))) void MultiChannelDotProduct_AVX2(
   const size_t last_index = num_frames - rem;
   const int channels = a->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> a_src = a->channel_span(ch).subspan(frame_offset_a);
-    base::span<const float> b_src = b->channel_span(ch).subspan(frame_offset_b);
+    base::span<const float> a_src = a->channel(ch).subspan(frame_offset_a);
+    base::span<const float> b_src = b->channel(ch).subspan(frame_offset_b);
 
     // First sum all components using FMA.
     __m256 m_sum = _mm256_setzero_ps();
@@ -142,10 +140,8 @@ __attribute__((target("avx2,fma"))) void MultiChannelDotProduct_AVX2(
 
   // C version is required to handle remainder of frames (% 8 != 0)
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> ch_a =
-        a->channel_span(ch).subspan(frame_offset_a, rem);
-    base::span<const float> ch_b =
-        b->channel_span(ch).subspan(frame_offset_b, rem);
+    base::span<const float> ch_a = a->channel(ch).subspan(frame_offset_a, rem);
+    base::span<const float> ch_b = b->channel(ch).subspan(frame_offset_b, rem);
     dot_product[ch] +=
         std::inner_product(ch_a.begin(), ch_a.end(), ch_b.begin(), 0.0f);
   }
@@ -164,8 +160,8 @@ void MultiChannelDotProduct_NEON(const AudioBus* a,
   const size_t last_index = num_frames - rem;
   const int channels = a->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> a_src = a->channel_span(ch).subspan(frame_offset_a);
-    base::span<const float> b_src = b->channel_span(ch).subspan(frame_offset_b);
+    base::span<const float> a_src = a->channel(ch).subspan(frame_offset_a);
+    base::span<const float> b_src = b->channel(ch).subspan(frame_offset_b);
 
     // First sum all components.
     float32x4_t m_sum = vmovq_n_f32(0);
@@ -187,10 +183,8 @@ void MultiChannelDotProduct_NEON(const AudioBus* a,
 
   // C version is required to handle remainder of frames (% 4 != 0)
   for (int ch = 0; ch < channels; ++ch) {
-    base::span<const float> ch_a =
-        a->channel_span(ch).subspan(frame_offset_a, rem);
-    base::span<const float> ch_b =
-        b->channel_span(ch).subspan(frame_offset_b, rem);
+    base::span<const float> ch_a = a->channel(ch).subspan(frame_offset_a, rem);
+    base::span<const float> ch_b = b->channel(ch).subspan(frame_offset_b, rem);
     dot_product[ch] +=
         std::inner_product(ch_a.begin(), ch_a.end(), ch_b.begin(), 0.0f);
   }
@@ -208,8 +202,8 @@ void MultiChannelDotProduct_C(const AudioBus* a,
   std::fill(dot_product.begin(), dot_product.end(), 0.0f);
 
   for (int k = 0; k < a->channels(); ++k) {
-    auto ch_a = a->channel_span(k).subspan(frame_offset_a, num_frames);
-    auto ch_b = b->channel_span(k).subspan(frame_offset_b, num_frames);
+    auto ch_a = a->channel(k).subspan(frame_offset_a, num_frames);
+    auto ch_b = b->channel(k).subspan(frame_offset_b, num_frames);
     dot_product[k] =
         std::inner_product(ch_a.begin(), ch_a.end(), ch_b.begin(), 0.0f);
   }
@@ -258,7 +252,7 @@ void MultiChannelMovingBlockEnergies(const AudioBus* input,
   CHECK_EQ(energy.size(), num_blocks * channels);
 
   for (int k = 0; k < input->channels(); ++k) {
-    base::span<const float> input_channel = input->channel_span(k);
+    base::span<const float> input_channel = input->channel(k);
 
     auto first_block = input_channel.first(frames_per_block);
     energy[k] = std::inner_product(first_block.begin(), first_block.end(),

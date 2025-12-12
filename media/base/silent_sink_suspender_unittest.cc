@@ -113,7 +113,7 @@ TEST_F(SilentSinkSuspenderTest, SuspendResumeTriggered) {
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus->channel(0));
 }
 
 TEST_F(SilentSinkSuspenderTest, MultipleSuspend) {
@@ -158,7 +158,7 @@ TEST_F(SilentSinkSuspenderTest, MultipleResume) {
   std::unique_ptr<AudioBus> true_bus2 = AudioBus::Create(params_);
   fake_callback_.Render(base::TimeDelta(), base::TimeTicks(), {},
                         true_bus2.get());
-  EXPECT_NE(true_bus1->channel_span(0), true_bus2->channel_span(0));
+  EXPECT_NE(true_bus1->channel(0), true_bus2->channel(0));
 
   // Reset the fake callback data generation and force two Render() calls before
   // the sink can transition.
@@ -177,11 +177,11 @@ TEST_F(SilentSinkSuspenderTest, MultipleResume) {
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus1->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus1->channel(0));
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus2->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus2->channel(0));
 }
 
 TEST_F(SilentSinkSuspenderTest, SetDetectSilence) {

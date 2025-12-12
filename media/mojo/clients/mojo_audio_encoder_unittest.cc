@@ -263,8 +263,8 @@ TEST_F(MojoAudioEncoderTest, Encode) {
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
 
-        const auto channel_bytes = base::as_bytes(base::allow_nonunique_obj,
-                                                  audio_bus->channel_span(0));
+        const auto channel_bytes =
+            base::as_bytes(base::allow_nonunique_obj, audio_bus->channel(0));
 
         auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_bytes);
 

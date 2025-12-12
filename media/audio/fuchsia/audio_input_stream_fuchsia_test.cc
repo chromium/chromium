@@ -125,7 +125,7 @@ class AudioInputStreamFuchsiaTest : public testing::Test {
     ASSERT_EQ(callback_.packets()[0]->frames(),
               static_cast<int>(kFramesPerPacket));
     for (size_t i = 0; i < samples.size(); ++i) {
-      EXPECT_EQ(samples[i], callback_.packets()[0]->channel_span(
+      EXPECT_EQ(samples[i], callback_.packets()[0]->channel(
                                 i % num_channels)[i / num_channels]);
     }
   }
@@ -217,8 +217,8 @@ TEST_F(AudioInputStreamFuchsiaTest, CaptureTwoPackets) {
   ASSERT_EQ(callback_.packets()[1]->frames(),
             static_cast<int>(kFramesPerPacket));
   for (size_t i = 0; i < kFramesPerPacket; ++i) {
-    EXPECT_EQ(samples1[i], callback_.packets()[0]->channel_span(0)[i]);
-    EXPECT_EQ(samples2[i], callback_.packets()[1]->channel_span(0)[i]);
+    EXPECT_EQ(samples1[i], callback_.packets()[0]->channel(0)[i]);
+    EXPECT_EQ(samples2[i], callback_.packets()[1]->channel(0)[i]);
   }
 }
 

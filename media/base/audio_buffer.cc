@@ -314,8 +314,7 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
 
   std::vector<const uint8_t*> data(channel_count);
   for (int ch = 0; ch < channel_count; ch++) {
-    data[ch] =
-        reinterpret_cast<const uint8_t*>(audio_bus->channel_span(ch).data());
+    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch).data());
   }
 
   return CopyFrom(kSampleFormatPlanarF32, channel_layout, channel_count,
@@ -526,7 +525,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
 
   if (sample_format_ == kSampleFormatPlanarF32) {
     for (int ch = 0; ch < channel_count_; ++ch) {
-      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
+      auto dest_data = dest->channel(ch).subspan(dest_offset);
       const float* source_data =
           UNSAFE_TODO(reinterpret_cast<const float*>(channel_data_[ch]) +
                       source_frame_offset);
@@ -542,7 +541,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     for (int ch = 0; ch < channel_count_; ++ch) {
       const uint8_t* source_data =
           UNSAFE_TODO(channel_data_[ch] + source_frame_offset);
-      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
+      auto dest_data = dest->channel(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] =
             UnsignedInt8SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));
@@ -557,7 +556,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int16_t* source_data =
           UNSAFE_TODO(reinterpret_cast<const int16_t*>(channel_data_[ch]) +
                       source_frame_offset);
-      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
+      auto dest_data = dest->channel(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] =
             SignedInt16SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));
@@ -572,7 +571,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       const int32_t* source_data =
           UNSAFE_TODO(reinterpret_cast<const int32_t*>(channel_data_[ch]) +
                       source_frame_offset);
-      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
+      auto dest_data = dest->channel(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] =
             SignedInt32SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));

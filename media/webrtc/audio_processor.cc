@@ -113,7 +113,7 @@ class AudioProcessorCaptureBus {
 
   base::span<float* const> channel_ptrs() {
     for (int i = 0; i < bus_->channels(); ++i) {
-      channel_ptrs_[i] = bus_->channel_span(i).data();
+      channel_ptrs_[i] = bus_->channel(i).data();
     }
     return channel_ptrs_;
   }
@@ -454,7 +454,7 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
                                            audio_bus.channels());
   std::array<const float*, media::limits::kMaxChannels> input_ptrs;
   for (int i = 0; i < audio_bus.channels(); ++i) {
-    input_ptrs[i] = audio_bus.channel_span(i).data();
+    input_ptrs[i] = audio_bus.channel(i).data();
   }
 
   const int apm_error = webrtc_audio_processing_->AnalyzeReverseStream(
@@ -564,8 +564,8 @@ std::optional<double> AudioProcessor::ProcessData(
       // The right channel is a copy of the left channel. Remaining channels
       // have already been set to zero at initialization.
       CHECK_GE(output_bus->bus()->channels(), 2);
-      output_bus->bus()->channel_span(1).copy_from_nonoverlapping(
-          output_bus->bus()->channel_span(0));
+      output_bus->bus()->channel(1).copy_from_nonoverlapping(
+          output_bus->bus()->channel(0));
     }
   }
 

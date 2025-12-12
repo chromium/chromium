@@ -75,11 +75,10 @@ class AudioBusTest : public testing::Test {
         SCOPED_TRACE(base::StringPrintf("ch=%d, i=%d", ch, i));
 
         if (epsilon == 0) {
-          ASSERT_FLOAT_EQ(expected->channel_span(ch)[i],
-                          result->channel_span(ch)[i]);
+          ASSERT_FLOAT_EQ(expected->channel(ch)[i], result->channel(ch)[i]);
         } else {
-          ASSERT_NEAR(expected->channel_span(ch)[i],
-                      result->channel_span(ch)[i], epsilon);
+          ASSERT_NEAR(expected->channel(ch)[i], result->channel(ch)[i],
+                      epsilon);
         }
       }
     }
@@ -104,12 +103,12 @@ class AudioBusTest : public testing::Test {
     }
 
     for (int i = 0; i < bus->channels(); ++i) {
-      VerifySpanIsFilledWithValue(bus->channel_span(i), i);
+      VerifySpanIsFilledWithValue(bus->channel(i), i);
     }
 
     bus->Zero();
     for (int i = 0; i < bus->channels(); ++i) {
-      VerifySpanIsFilledWithValue(bus->channel_span(i), 0);
+      VerifySpanIsFilledWithValue(bus->channel(i), 0);
     }
   }
 
@@ -212,7 +211,7 @@ TEST_F(AudioBusTest, AllChannels) {
   // channel individually.
   int current_channel = 0;
   for (auto channel : bus->AllChannels()) {
-    EXPECT_EQ(channel, bus->channel_span(current_channel++));
+    EXPECT_EQ(channel, bus->channel(current_channel++));
   }
 
   EXPECT_EQ(current_channel, kChannels);
@@ -245,7 +244,7 @@ TEST_F(AudioBusTest, AllChannelsSubspan) {
   constexpr size_t kCount = 25;
   for (auto channel : bus->AllChannelsSubspan(kOffset, kCount)) {
     EXPECT_EQ(channel,
-              bus->channel_span(current_channel++).subspan(kOffset, kCount));
+              bus->channel(current_channel++).subspan(kOffset, kCount));
   }
 
   EXPECT_EQ(current_channel, kChannels);
@@ -444,7 +443,7 @@ TEST_F(AudioBusTest, FromInterleaved) {
   std::unique_ptr<AudioBus> expected =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    expected->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
+    expected->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -520,7 +519,7 @@ TEST_F(AudioBusTest, ToInterleaved) {
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   // Fill the bus with our test vector.
   for (int ch = 0; ch < bus->channels(); ++ch) {
-    bus->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
+    bus->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -571,7 +570,7 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
   bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
                                                 bus->frames());
   // Verify FromInterleaved applied no sanity.
-  ASSERT_EQ(bus->channel_span(0)[0], kTestVectorFloat32Invalid[0]);
+  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
   std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array.data());
   for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i)
@@ -600,7 +599,7 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
       kTestVectorFloat32Sanitized, bus->frames());
 
   // Verify FromInterleaved applied no sanity.
-  ASSERT_EQ(bus->channel_span(0)[0], kTestVectorFloat32Invalid[0]);
+  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
 
   std::unique_ptr<AudioBus> copy_to_bus =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
@@ -608,8 +607,7 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
 
   for (int ch = 0; ch < expected->channels(); ++ch) {
     for (int i = 0; i < expected->frames(); ++i)
-      ASSERT_EQ(copy_to_bus->channel_span(ch)[i],
-                expected->channel_span(ch)[i]);
+      ASSERT_EQ(copy_to_bus->channel(ch)[i], expected->channel(ch)[i]);
   }
 
   ASSERT_EQ(expected->channels(), copy_to_bus->channels());
@@ -628,7 +626,7 @@ TEST_F(AudioBusTest, ToInterleavedPartial) {
   std::unique_ptr<AudioBus> expected =
       AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
   for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    expected->channel_span(ch).copy_from(base::span(kTestVectorResult[ch]));
+    expected->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
   }
 
   {
@@ -705,7 +703,7 @@ TEST_F(AudioBusTest, FromInterleavedPartialDoesNotZeroOutUntouchedFrames) {
     // Verification
     for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
       auto sample_array_for_current_channel =
-          test_data.bus_under_test->channel_span(ch);
+          test_data.bus_under_test->channel(ch);
       for (int frame_index =
                test_data.kInterleavedFrameCount + kWriteOffsetInFrames;
            frame_index < test_data.kFrameCount; frame_index++) {
@@ -728,7 +726,7 @@ TEST_F(AudioBusTest, FromInterleavedPartialDoesNotZeroOutUntouchedFrames) {
     // Verification
     for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
       auto sample_array_for_current_channel =
-          test_data.bus_under_test->channel_span(ch);
+          test_data.bus_under_test->channel(ch);
       // Check untouched frames before write offset
       for (int frame_index = 0; frame_index < kWriteOffsetInFrames;
            frame_index++) {

@@ -40,7 +40,7 @@ MultiChannelResampler::MultiChannelResampler(int channels,
     resampler_audio_bus_ = AudioBus::Create(channels - 1, request_size);
     for (int i = 0; i < resampler_audio_bus_->channels(); ++i) {
       wrapped_resampler_audio_bus_->SetChannelData(
-          i + 1, resampler_audio_bus_->channel_span(i));
+          i + 1, resampler_audio_bus_->channel(i));
     }
   }
 }
@@ -53,7 +53,7 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
   const size_t total_frames = base::checked_cast<size_t>(frames);
   // Optimize the single channel case to avoid the chunking process below.
   if (audio_bus->channels() == 1) {
-    resamplers_[0]->Resample(audio_bus->channel_span(0).first(total_frames));
+    resamplers_[0]->Resample(audio_bus->channel(0).first(total_frames));
     return;
   }
 
@@ -78,7 +78,7 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
       // the first channel, then it will call it for the remaining channels,
       // since they all buffer in the same way and are processing the same
       // number of frames.
-      resamplers_[i]->Resample(audio_bus->channel_span(i)
+      resamplers_[i]->Resample(audio_bus->channel(i)
                                    .subspan(output_frames_ready_)
                                    .first(frames_this_time));
     }
@@ -106,7 +106,7 @@ void MultiChannelResampler::ProvideInput(int channel,
 
     // Copy the channel data from what we received from |read_cb_|.
     dest_span.copy_from_nonoverlapping(
-        wrapped_resampler_audio_bus_->channel_span(channel).first(
+        wrapped_resampler_audio_bus_->channel(channel).first(
             frames_to_provide));
   }
 }

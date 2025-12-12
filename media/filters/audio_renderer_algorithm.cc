@@ -523,9 +523,8 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
     if (!channel_mask_[k])
       continue;
 
-    const base::span<const float> ch_opt_frame =
-        optimal_block_->channel_span(k);
-    base::span<float> ch_output = wsola_output_->channel_span(k).subspan(
+    const base::span<const float> ch_opt_frame = optimal_block_->channel(k);
+    base::span<float> ch_output = wsola_output_->channel(k).subspan(
         static_cast<size_t>(num_complete_frames_));
     for (size_t n = 0u; n < ola_hop_size; ++n) {
       ch_output[n] = ch_output[n] * ola_window_[ola_hop_size + n] +
@@ -584,7 +583,7 @@ int AudioRendererAlgorithm::WriteCompletedFramesTo(
   for (int k = 0; k < channels_; ++k) {
     if (!channel_mask_[k])
       continue;
-    base::span<float> ch = wsola_output_->channel_span(k);
+    base::span<float> ch = wsola_output_->channel(k);
     ch.copy_prefix_from(ch.subspan(base::checked_cast<size_t>(rendered_frames),
                                    frames_to_move));
   }
@@ -641,8 +640,8 @@ void AudioRendererAlgorithm::GetOptimalBlock() {
     for (int k = 0; k < channels_; ++k) {
       if (!channel_mask_[k])
         continue;
-      base::span<float> ch_opt = optimal_block_->channel_span(k);
-      const base::span<const float> ch_target = target_block_->channel_span(k);
+      base::span<float> ch_opt = optimal_block_->channel(k);
+      const base::span<const float> ch_target = target_block_->channel(k);
       for (int n = 0; n < ola_window_size_; ++n) {
         ch_opt[n] = ch_opt[n] * transition_window_[n] +
                     ch_target[n] * transition_window_[ola_window_size_ + n];
@@ -679,8 +678,8 @@ void AudioRendererAlgorithm::CreateSearchWrappers() {
   AudioBus::ChannelVector active_search_channels;
   for (int ch = 0; ch < channels_; ++ch) {
     if (channel_mask_[ch]) {
-      active_target_channels.push_back(target_block_->channel_span(ch));
-      active_search_channels.push_back(search_block_->channel_span(ch));
+      active_target_channels.push_back(target_block_->channel(ch));
+      active_search_channels.push_back(search_block_->channel(ch));
     }
   }
 

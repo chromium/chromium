@@ -356,7 +356,7 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
-  std::ranges::generate(data_bus->channel_span(0),
+  std::ranges::generate(data_bus->channel(0),
                         [i = 0]() mutable { return (i++ % 11) * 0.1f - 0.5f; });
 
   // Test without and with audio processing enabled.
@@ -415,8 +415,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
               EXPECT_FALSE(new_volume.has_value());
             }
 
-            auto left_channel = processed_audio.channel_span(0);
-            auto right_channel = processed_audio.channel_span(1);
+            auto left_channel = processed_audio.channel(0);
+            auto right_channel = processed_audio.channel(1);
 
             const float left_channel_energy =
                 std::inner_product(left_channel.begin(), left_channel.end(),
