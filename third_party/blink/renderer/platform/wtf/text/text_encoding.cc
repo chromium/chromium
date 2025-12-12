@@ -38,10 +38,10 @@
 namespace blink {
 
 TextEncoding::TextEncoding(const char* name)
-    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
+    : name_(AtomicCanonicalTextEncodingName(name)) {}
 
 TextEncoding::TextEncoding(const String& name)
-    : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
+    : name_(AtomicCanonicalTextEncodingName(name)) {}
 
 String TextEncoding::Decode(base::span<const uint8_t> data,
                             bool stop_on_error,
@@ -71,8 +71,10 @@ bool TextEncoding::UsesVisualOrdering() const {
   if (NoExtendedTextEncodingNameUsed())
     return false;
 
-  static const char* const kA = AtomicCanonicalTextEncodingName("ISO-8859-8");
-  return name_ == kA;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      AtomicString, canonical_8859_8,
+      (AtomicCanonicalTextEncodingName("ISO-8859-8")));
+  return name_ == canonical_8859_8;
 }
 
 bool TextEncoding::IsNonByteBasedEncoding() const {

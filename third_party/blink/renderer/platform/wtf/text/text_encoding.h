@@ -62,6 +62,7 @@ class WTF_EXPORT TextEncoding final {
   bool IsNonByteBasedEncoding() const;
 
  private:
+  // A canonical encoding name, or a null AtomicString.
   AtomicString name_;
 };
 

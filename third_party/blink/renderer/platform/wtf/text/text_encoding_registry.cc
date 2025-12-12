@@ -63,8 +63,10 @@ struct TextCodecFactory {
   explicit TextCodecFactory(NewTextCodecFunction f = nullptr) : function(f) {}
 };
 
-typedef HashMap<const char*, const char*, CaseFoldingHashTraits<const char*>>
-    TextEncodingNameMap;
+// TODO(crbug.com/40476285): CaseFoldingHashTraits is expensive. Encoding names
+// consist of ASCII characters, and we can use IgnoringAsciiCaseHashTraits.
+using TextEncodingNameMap =
+    HashMap<const char*, AtomicString, CaseFoldingHashTraits<const char*>>;
 using TextCodecMap = HashMap<AtomicString, TextCodecFactory>;
 
 static base::Lock& EncodingRegistryLock() {
@@ -89,27 +91,29 @@ ALWAYS_INLINE void AtomicSetDidExtendTextCodecMaps() {
 
 #if !DCHECK_IS_ON()
 
-static inline void CheckExistingName(const char*, const char*) {}
+static inline void CheckExistingName(const char*, const AtomicString&) {}
 
 #else
 
-static void CheckExistingName(const char* alias, const char* atomic_name) {
+static void CheckExistingName(const char* alias,
+                              const AtomicString& canonical_name) {
   EncodingRegistryLock().AssertAcquired();
   const auto it = g_text_encoding_name_map->find(alias);
   if (it == g_text_encoding_name_map->end())
     return;
-  const char* old_atomic_name = it->value;
-  if (old_atomic_name == atomic_name)
-    return;
-  // Keep the warning silent about one case where we know this will happen.
-  if (UNSAFE_TODO(strcmp(alias, "ISO-8859-8-I")) == 0 &&
-      UNSAFE_TODO(strcmp(old_atomic_name, "ISO-8859-8-I")) == 0 &&
-      EqualIgnoringASCIICase(atomic_name, "iso-8859-8")) {
+  const AtomicString& old_canonical_name = it->value;
+  if (old_canonical_name == canonical_name) {
     return;
   }
-  LOG(ERROR) << "alias " << alias << " maps to " << old_atomic_name
+  // Keep the warning silent about one case where we know this will happen.
+  if (UNSAFE_TODO(strcmp(alias, "ISO-8859-8-I")) == 0 &&
+      old_canonical_name == "ISO-8859-8-I" &&
+      EqualIgnoringASCIICase(canonical_name, "iso-8859-8")) {
+    return;
+  }
+  LOG(ERROR) << "alias " << alias << " maps to " << old_canonical_name
              << " already, but someone is trying to make it map to "
-             << atomic_name;
+             << canonical_name;
 }
 
 #endif
@@ -134,13 +138,11 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   EncodingRegistryLock().AssertAcquired();
   if (IsUndesiredAlias(alias))
     return;
-  const auto it = g_text_encoding_name_map->find(name);
-  DCHECK(UNSAFE_TODO(strcmp(alias, name)) == 0 ||
-         it != g_text_encoding_name_map->end());
-  const char* atomic_name =
-      it != g_text_encoding_name_map->end() ? it->value : name;
-  CheckExistingName(alias, atomic_name);
-  g_text_encoding_name_map->insert(alias, atomic_name);
+  // TODO(tkent): This function creates AtomicStrings for an identical string
+  // repeatedly. We should make the `name` argument AtomicString.
+  AtomicString canonical_name(name);
+  CheckExistingName(alias, canonical_name);
+  g_text_encoding_name_map->insert(alias, canonical_name);
 }
 
 static void AddToTextCodecMap(const char* canonical_name,
@@ -192,9 +194,9 @@ std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
   return factory.function(encoding);
 }
 
-const char* AtomicCanonicalTextEncodingName(const char* name) {
+AtomicString AtomicCanonicalTextEncodingName(const char* name) {
   if (!name || !name[0])
-    return nullptr;
+    return g_null_atom;
   base::AutoLock lock(EncodingRegistryLock());
 
   if (!g_text_encoding_name_map)
@@ -205,19 +207,19 @@ const char* AtomicCanonicalTextEncodingName(const char* name) {
     return it1->value;
 
   if (AtomicDidExtendTextCodecMaps())
-    return nullptr;
+    return g_null_atom;
 
   ExtendTextCodecMaps();
   AtomicSetDidExtendTextCodecMaps();
   const auto it2 = g_text_encoding_name_map->find(name);
-  return it2 != g_text_encoding_name_map->end() ? it2->value : nullptr;
+  return it2 != g_text_encoding_name_map->end() ? it2->value : g_null_atom;
 }
 
 template <typename CharacterType>
-const char* AtomicCanonicalTextEncodingName(
+AtomicString AtomicCanonicalTextEncodingName(
     base::span<const CharacterType> characters) {
   if (characters.size() > kMaxEncodingNameLength) {
-    return nullptr;
+    return g_null_atom;
   }
   std::array<char, kMaxEncodingNameLength + 1> buffer;
   size_t j = 0;
@@ -228,15 +230,15 @@ const char* AtomicCanonicalTextEncodingName(
   return AtomicCanonicalTextEncodingName(buffer.data());
 }
 
-const char* AtomicCanonicalTextEncodingName(const String& alias) {
+AtomicString AtomicCanonicalTextEncodingName(const String& alias) {
   if (alias.empty()) {
-    return nullptr;
+    return g_null_atom;
   }
   if (alias.Contains('\0')) {
-    return nullptr;
+    return g_null_atom;
   }
   if (!alias.ContainsOnlyASCIIOrEmpty()) {
-    return nullptr;
+    return g_null_atom;
   }
   return VisitCharacters(
       alias, [](auto chars) { return AtomicCanonicalTextEncodingName(chars); });
@@ -266,8 +268,10 @@ void DumpTextEncodingNameMap() {
 
   base::AutoLock lock(EncodingRegistryLock());
 
-  for (const auto& it : *g_text_encoding_name_map)
-    UNSAFE_TODO(fprintf(stderr, "'%s' => '%s'\n", it.key, it.value));
+  for (const auto& it : *g_text_encoding_name_map) {
+    UNSAFE_TODO(
+        fprintf(stderr, "'%s' => '%s'\n", it.key, it.value.Latin1().c_str()));
+  }
 }
 #endif
 
