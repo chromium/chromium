@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_arguments.h"
 
 #include <inttypes.h>
@@ -18,6 +13,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/json/string_escape.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -48,7 +44,7 @@ void CopyTraceEventParameter(char** buffer,
         strlcpy(*buffer, *member, static_cast<size_t>(end - *buffer)) + 1;
     DCHECK_LE(static_cast<ptrdiff_t>(written), end - *buffer);
     *member = *buffer;
-    *buffer += written;
+    UNSAFE_TODO(*buffer += written);
   }
 }
 
@@ -113,11 +109,13 @@ const char* TypeToString(unsigned char arg_type) {
 void AppendValueDebugString(const TraceArguments& args,
                             size_t idx,
                             std::string* out) {
-  *out += (args.names()[idx] ? args.names()[idx] : "NULL_NAME");
+  *out += (UNSAFE_TODO(args.names()[idx]) ? UNSAFE_TODO(args.names()[idx])
+                                          : "NULL_NAME");
   *out += "=";
-  *out += TypeToString(args.types()[idx]);
+  *out += TypeToString(UNSAFE_TODO(args.types()[idx]));
   *out += "(";
-  args.values()[idx].AppendAsJSON(args.types()[idx], out);
+  UNSAFE_TODO(args.values()[idx])
+      .AppendAsJSON(UNSAFE_TODO(args.types()[idx]), out);
   *out += ")";
 }
 
@@ -137,8 +135,8 @@ void StringStorage::Reset(size_t alloc_size) {
 
 bool StringStorage::Contains(const TraceArguments& args) const {
   for (size_t n = 0; n < args.size(); ++n) {
-    if (args.types()[n] == TRACE_VALUE_TYPE_COPY_STRING &&
-        !Contains(args.values()[n].as_string)) {
+    if (UNSAFE_TODO(args.types()[n]) == TRACE_VALUE_TYPE_COPY_STRING &&
+        !Contains(UNSAFE_TODO(args.values()[n]).as_string)) {
       return false;
     }
   }
@@ -222,16 +220,16 @@ TraceArguments::TraceArguments(int num_args,
 
   size_ = static_cast<unsigned char>(num_args);
   for (size_t n = 0; n < size_; ++n) {
-    types_[n] = arg_types[n];
-    names_[n] = arg_names[n];
-    values_[n].as_uint = arg_values[n];
+    UNSAFE_TODO(types_[n]) = UNSAFE_TODO(arg_types[n]);
+    UNSAFE_TODO(names_[n]) = UNSAFE_TODO(arg_names[n]);
+    UNSAFE_TODO(values_[n]).as_uint = UNSAFE_TODO(arg_values[n]);
   }
 }
 
 void TraceArguments::Reset() {
   for (size_t n = 0; n < size_; ++n) {
-    if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE) {
-      delete values_[n].as_convertable;
+    if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_CONVERTABLE) {
+      delete UNSAFE_TODO(values_[n]).as_convertable;
     }
   }
   size_ = 0;
@@ -246,31 +244,31 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
   if (copy_all_strings) {
     alloc_size += GetAllocLength(*extra_string);
     for (size_t n = 0; n < size_; ++n) {
-      alloc_size += GetAllocLength(names_[n]);
+      alloc_size += GetAllocLength(UNSAFE_TODO(names_[n]));
     }
   }
   for (size_t n = 0; n < size_; ++n) {
-    if (copy_all_strings && types_[n] == TRACE_VALUE_TYPE_STRING) {
-      types_[n] = TRACE_VALUE_TYPE_COPY_STRING;
+    if (copy_all_strings && UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_STRING) {
+      UNSAFE_TODO(types_[n]) = TRACE_VALUE_TYPE_COPY_STRING;
     }
-    if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
-      alloc_size += GetAllocLength(values_[n].as_string);
+    if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
+      alloc_size += GetAllocLength(UNSAFE_TODO(values_[n]).as_string);
     }
   }
 
   if (alloc_size) {
     storage->Reset(alloc_size);
     char* ptr = storage->data();
-    const char* end = ptr + alloc_size;
+    const char* end = UNSAFE_TODO(ptr + alloc_size);
     if (copy_all_strings) {
       CopyTraceEventParameter(&ptr, extra_string, end);
       for (size_t n = 0; n < size_; ++n) {
-        CopyTraceEventParameter(&ptr, &names_[n], end);
+        CopyTraceEventParameter(&ptr, &UNSAFE_TODO(names_[n]), end);
       }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
-        CopyTraceEventParameter(&ptr, &values_[n].as_string, end);
+      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
+        CopyTraceEventParameter(&ptr, &UNSAFE_TODO(values_[n]).as_string, end);
       }
     }
 #if DCHECK_IS_ON()
@@ -280,12 +278,12 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
         DCHECK(storage->Contains(*extra_string));
       }
       for (size_t n = 0; n < size_; ++n) {
-        DCHECK(storage->Contains(names_[n]));
+        UNSAFE_TODO(DCHECK(storage->Contains(names_[n])));
       }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
-        DCHECK(storage->Contains(values_[n].as_string));
+      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_COPY_STRING) {
+        UNSAFE_TODO(DCHECK(storage->Contains(values_[n].as_string)));
       }
     }
 #endif  // DCHECK_IS_ON()

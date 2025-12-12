@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/process_memory_dump.h"
 
 #include <errno.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -259,7 +255,7 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   for (size_t i = 0; i < pages_to_fault; ++i) {
     // Reading from a volatile is a visible side-effect for the purposes of
     // optimization. This guarantees that the optimizer will not kill this line.
-    base_address[i * PAGE_SIZE];
+    UNSAFE_TODO(base_address[i * PAGE_SIZE]);
   }
 
   return resident_pages * PAGE_SIZE;

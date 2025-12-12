@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_log.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
 #include "base/format_macros.h"
@@ -294,12 +290,14 @@ class JsonStringOutputWriter
       did_strip_prefix_ = true;
       return perfetto::trace_processor::util::OkStatus();
     } else if (buffer_->as_string().empty() &&
-               !strncmp(string.c_str(), kJsonJoiner, strlen(kJsonJoiner))) {
+               !UNSAFE_TODO(
+                   strncmp(string.c_str(), kJsonJoiner, strlen(kJsonJoiner)))) {
       // We only remove the leading joiner comma for the first chunk in a buffer
       // since the consumer is expected to insert commas between the buffers we
       // provide.
       buffer_->as_string() += string.substr(strlen(kJsonJoiner));
-    } else if (!strncmp(string.c_str(), kJsonSuffix, strlen(kJsonSuffix))) {
+    } else if (!UNSAFE_TODO(
+                   strncmp(string.c_str(), kJsonSuffix, strlen(kJsonSuffix)))) {
       return perfetto::trace_processor::util::OkStatus();
     } else {
       buffer_->as_string() += string;
@@ -671,7 +669,7 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   }
   if (size) {
     auto data_copy = std::make_unique<uint8_t[]>(size);
-    memcpy(&data_copy[0], data, size);
+    UNSAFE_TODO(memcpy(&data_copy[0], data, size));
     auto status = trace_processor_->Parse(std::move(data_copy), size);
     DCHECK(status.ok()) << status.message();
   }

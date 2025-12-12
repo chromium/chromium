@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TRACE_EVENT_MEMORY_USAGE_ESTIMATOR_H_
 #define BASE_TRACE_EVENT_MEMORY_USAGE_ESTIMATOR_H_
 
@@ -28,6 +23,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -309,7 +305,7 @@ size_t EstimateMemoryUsage(const std::basic_string<C, T, A>& string) {
   // by checking that c_str() points inside |string|.
   const uint8_t* cstr = reinterpret_cast<const uint8_t*>(string.c_str());
   const uint8_t* inline_cstr = reinterpret_cast<const uint8_t*>(&string);
-  if (cstr >= inline_cstr && cstr < inline_cstr + sizeof(string)) {
+  if (cstr >= inline_cstr && cstr < UNSAFE_TODO(inline_cstr + sizeof(string))) {
     // SSO string
     return 0;
   }

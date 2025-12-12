@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_event.h"
 
 #include <inttypes.h>
@@ -25,6 +20,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -261,7 +257,7 @@ static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
     if (!IsKeyValueInDict(key_values, dict)) {
       return false;
     }
-    ++key_values;
+    UNSAFE_TODO(++key_values);
   }
   return true;
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/malloc_dump_provider.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/allocator/buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -261,7 +257,7 @@ void ReportPartitionAllocThreadCacheStats(
           "%s/buckets_alloc/%07d", name.c_str(), static_cast<int>(bucket_size));
       auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
       buckets_alloc_dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects,
-                                    stats.allocs_per_bucket_[i]);
+                                    UNSAFE_TODO(stats.allocs_per_bucket_[i]));
     }
   }
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)

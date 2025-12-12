@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TRACE_EVENT_TRACE_EVENT_IMPL_H_
 #define BASE_TRACE_EVENT_TRACE_EVENT_IMPL_H_
 
@@ -16,6 +11,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -79,10 +75,14 @@ class BASE_EXPORT TraceEvent {
   const char* name() const { return name_; }
 
   size_t arg_size() const { return args_.size(); }
-  unsigned char arg_type(size_t index) const { return args_.types()[index]; }
-  const char* arg_name(size_t index) const { return args_.names()[index]; }
+  unsigned char arg_type(size_t index) const {
+    return UNSAFE_TODO(args_.types()[index]);
+  }
+  const char* arg_name(size_t index) const {
+    return UNSAFE_TODO(args_.names()[index]);
+  }
   const TraceValue& arg_value(size_t index) const {
-    return args_.values()[index];
+    return UNSAFE_TODO(args_.values()[index]);
   }
 
   ConvertableToTraceFormat* arg_convertible_value(size_t index) {

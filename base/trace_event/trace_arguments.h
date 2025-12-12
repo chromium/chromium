@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TRACE_EVENT_TRACE_ARGUMENTS_H_
 #define BASE_TRACE_EVENT_TRACE_ARGUMENTS_H_
 
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -516,9 +512,9 @@ class BASE_EXPORT StringStorage {
   constexpr char* data() { return data_ ? data_->chars : nullptr; }
 
   constexpr const char* begin() const { return data(); }
-  constexpr const char* end() const { return data() + size(); }
+  constexpr const char* end() const { return UNSAFE_TODO(data() + size()); }
   inline char* begin() { return data(); }
-  inline char* end() { return data() + size(); }
+  inline char* end() { return UNSAFE_TODO(data() + size()); }
 
   // True iff storage is empty.
   constexpr bool empty() const { return size() == 0; }
@@ -614,11 +610,11 @@ class BASE_EXPORT TraceArguments {
   // Destructor. NOTE: Intentionally inlined (see note above).
   ~TraceArguments() {
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE) {
-        delete values_[n].as_convertable;
+      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_CONVERTABLE) {
+        delete UNSAFE_TODO(values_[n]).as_convertable;
       }
-      if (types_[n] == TRACE_VALUE_TYPE_PROTO) {
-        delete values_[n].as_proto;
+      if (UNSAFE_TODO(types_[n]) == TRACE_VALUE_TYPE_PROTO) {
+        delete UNSAFE_TODO(values_[n]).as_proto;
       }
     }
   }
@@ -629,7 +625,7 @@ class BASE_EXPORT TraceArguments {
 
   // Allow move operations.
   TraceArguments(TraceArguments&& other) noexcept {
-    ::memcpy(static_cast<void*>(this), &other, sizeof(*this));
+    UNSAFE_TODO(::memcpy(static_cast<void*>(this), &other, sizeof(*this)));
     // All owning pointers were copied to |this|. Setting |other.size_| will
     // mask the pointer values still in |other|.
     other.size_ = 0;
