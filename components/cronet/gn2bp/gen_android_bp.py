@@ -2690,7 +2690,8 @@ def _extract_linker_script(ldflags):
 
 def _create_linker_script_filegroup(linker_script_path):
   filegroup_name = linker_script_path.replace('/', '_').replace('.', '_')
-  filegroup_module = Module("filegroup", f"{filegroup_name}_filegroup",
+  filegroup_module = Module("filegroup",
+                            f"{MODULE_PREFIX}{filegroup_name}_filegroup",
                             f"Created to reference {linker_script_path}")
   filegroup_module.srcs = [linker_script_path]
   # TODO(aymanm): Change the default for build_file_path to be top-level.
