@@ -183,6 +183,8 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
 }
 
 void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
+  ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensor");
+
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -192,6 +194,7 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
       FROM_HERE,
       base::BindOnce(
           [](WebNNTensorImpl* self, ExportTensorCallback callback,
+             ScopedTrace scoped_trace,
              mojo::ReportBadMessageCallback bad_message_cb) {
             if (self->is_exported()) {
               LOG(ERROR)
@@ -204,7 +207,7 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
             self->ExportTensorImpl(std::move(self->representation_access_),
                                    std::move(callback));
           },
-          base::RetainedRef(this), std::move(callback),
+          base::RetainedRef(this), std::move(callback), std::move(scoped_trace),
           GetMojoReceiver().GetBadMessageCallback()));
 }
 

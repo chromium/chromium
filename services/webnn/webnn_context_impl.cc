@@ -147,6 +147,9 @@ void WebNNContextImpl::CreateTensor(
     mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  ScopedTrace scoped_trace("WebNNContextImpl::CreateTensor");
+
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -254,6 +257,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                                                CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
+  ScopedTrace scoped_trace("WebNNContextImpl::CreateTensorFromMailbox");
+
   if (!tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -277,7 +282,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   ScheduleTaskWithThisContext(
       base::BindOnce(
           [](mojom::TensorInfoPtr tensor_info, const gpu::Mailbox& mailbox,
-             CreateTensorCallback callback, WebNNContextImpl& self) {
+             CreateTensorCallback callback, ScopedTrace scoped_trace,
+             WebNNContextImpl& self) {
             CHECK(self.shared_image_manager_);
 
             constexpr char kWebNNCreateTensorErrorMessage[] =
@@ -321,7 +327,8 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 mojom::CreateTensorResult::NewSuccess(std::move(success)));
             self.tensor_impls_.emplace(*std::move(result));
           },
-          std::move(tensor_info), mailbox, std::move(callback)));
+          std::move(tensor_info), mailbox, std::move(callback),
+          std::move(scoped_trace)));
 }
 
 void WebNNContextImpl::RemoveWebNNTensorImpl(
