@@ -234,7 +234,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidSettingsContainment,
     &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
-    &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidTabHighlighting,
     &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidThemeModule,
@@ -563,7 +562,6 @@ BASE_FEATURE(kAndroidSearchInSettings,"SearchInSettings", base::FEATURE_DISABLED
 BASE_FEATURE(kAndroidSettingsContainment, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSurfaceColorUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabHighlighting, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,"AndroidTabSkipSaveTabsTaskKillswitch", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidThemeModule, base::FEATURE_ENABLED_BY_DEFAULT);

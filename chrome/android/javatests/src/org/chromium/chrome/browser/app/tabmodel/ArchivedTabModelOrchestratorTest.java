@@ -44,9 +44,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiverImpl;
@@ -77,7 +75,6 @@ import java.util.concurrent.TimeUnit;
 /** Tests for ArchivedTabModelOrchestrator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Test interacts with activity shutdown and thus is incompatible with batching")
-@EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
 public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";

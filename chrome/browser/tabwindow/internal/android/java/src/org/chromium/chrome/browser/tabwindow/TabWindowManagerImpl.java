@@ -727,9 +727,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private boolean isPossiblyAnArchivedTab() {
-        return ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()
-                && (mArchivedTabModelSelector == null
-                        || !mArchivedTabModelSelector.isTabStateInitialized());
+        return mArchivedTabModelSelector == null
+                || !mArchivedTabModelSelector.isTabStateInitialized();
     }
 
     private @Nullable Tab getTabFromTabModelSelector(

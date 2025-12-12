@@ -88,6 +88,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
+    @Mock TabModelSelector mArchivedTabModelSelector;
 
     private TestTabModelDirectory mMockDirectory;
     private CipherFactory mCipherFactory;
@@ -132,6 +133,13 @@ public class TabbedModeTabPersistencePolicyTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mArchivedTabModelSelector.isTabStateInitialized()).thenReturn(true);
+                    TabWindowManagerSingleton.getInstance()
+                            .setArchivedTabModelSelector(mArchivedTabModelSelector);
+                });
     }
 
     @After
@@ -143,6 +151,10 @@ public class TabbedModeTabPersistencePolicyTest {
         }
 
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWindowManagerSingleton.getInstance().setArchivedTabModelSelector(null);
+                });
     }
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(
@@ -258,10 +270,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Test
     @Feature("TabPersistentStore")
     @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
-    })
+    @DisableFeatures({ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH})
     public void testCleanupInstanceState() throws Throwable {
         assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
 

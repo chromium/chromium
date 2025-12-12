@@ -875,7 +875,6 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 

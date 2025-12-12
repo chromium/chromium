@@ -46,7 +46,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,7 +86,6 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
 public class TabWindowManagerImplUnitTest {
     private static final Token GROUP_ID = new Token(12, 34);
     private static final int TAB_ID = 2;
@@ -887,16 +885,6 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    public void testCanTabStateBeDeleted_ArchiveDisabled() {
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Tabs.TabStateCleanupAbortedByArchive", false);
-        assertTrue(mSubject.canTabStateBeDeleted(0));
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testCanTabStateBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -962,7 +950,6 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testCanTabThumbnailBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();

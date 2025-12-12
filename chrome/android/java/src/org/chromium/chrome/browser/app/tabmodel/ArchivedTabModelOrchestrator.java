@@ -516,7 +516,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     private void rescueArchivedTabsImpl(TabbedModeTabModelOrchestrator orchestrator) {
         assertNativeReady();
-        assert ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled();
         pauseSaveTabList(orchestrator);
         mTabArchiver.rescueArchivedTabs(
                 assertNonNull(orchestrator.getTabModelSelector())

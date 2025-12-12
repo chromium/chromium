@@ -25,9 +25,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -48,10 +50,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
-    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY,
-})
+@DisableFeatures({ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY})
 @Batch(Batch.PER_CLASS)
 public class TabPersistentStoreIntegrationTest {
     @Rule
@@ -66,6 +65,19 @@ public class TabPersistentStoreIntegrationTest {
     public void setUp() throws Exception {
         mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    ArchivedTabModelOrchestrator orchestrator =
+                            ArchivedTabModelOrchestrator.getForProfile(profile);
+                    return orchestrator != null && orchestrator.isTabModelInitialized();
+                });
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
         mTabPersistentStore =
                 (TabPersistentStoreImpl)

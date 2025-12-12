@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.os.Looper;
@@ -43,7 +44,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
@@ -105,7 +105,6 @@ import java.util.concurrent.TimeoutException;
 // parameterized tests caused cross-talk between tests.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH})
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
@@ -398,6 +397,10 @@ public class TabPersistentStoreTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    TabModelSelector mockArchived = mock(TabModelSelector.class);
+                    when(mockArchived.isTabStateInitialized()).thenReturn(true);
+                    TabWindowManagerSingleton.getInstance()
+                            .setArchivedTabModelSelector(mockArchived);
                     ApplicationStatus.registerStateListenerForActivity(
                             mActivityStateListener, mChromeActivity);
                 });
@@ -407,6 +410,7 @@ public class TabPersistentStoreTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    TabWindowManagerSingleton.getInstance().setArchivedTabModelSelector(null);
                     ApplicationStatus.onStateChangeForTesting(
                             mChromeActivity, ActivityState.DESTROYED);
                     ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);

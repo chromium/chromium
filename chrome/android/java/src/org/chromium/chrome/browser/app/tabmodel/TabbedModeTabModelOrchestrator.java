@@ -27,7 +27,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -276,10 +275,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         super.onNativeLibraryReady(tabContentManager);
-
-        if (!ChromeFeatureList.sAndroidTabDeclutterRescueKillSwitch.isEnabled()) {
-            return;
-        }
         assertCreated();
 
         TabModelUtils.runOnTabStateInitialized(

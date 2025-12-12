@@ -79,7 +79,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
 public class TabArchiverTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
