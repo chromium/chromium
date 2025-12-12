@@ -387,6 +387,8 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testSignOutUnsavedDataDialogShown() {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
