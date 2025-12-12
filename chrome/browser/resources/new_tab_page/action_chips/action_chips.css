@@ -217,7 +217,22 @@
 
 :host([show-simplified-ui_]) .chip-body {
   font-size: 13px;
+  mask-image:
+    linear-gradient(
+      to right,
+      var(--color-sys-on-surface-subtle) 90%,
+      transparent 98.5%
+    );
+  overflow: hidden;
   text-align: start;
+  text-overflow: clip;
+  white-space: nowrap;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      var(--color-sys-on-surface-subtle) 90%,
+      transparent 98.5%
+    );
 }
 
 .deep-dive-chip .chip-body {
