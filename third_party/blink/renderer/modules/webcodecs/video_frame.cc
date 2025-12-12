@@ -1520,8 +1520,7 @@ bool VideoFrame::IsOpaque() const {
 bool VideoFrame::IsAccelerated() const {
   if (auto local_handle = handle_->CloneForInternalUse()) {
     return handle_->sk_image() ? false
-                               : WillCreateAcceleratedImagesFromVideoFrame(
-                                     local_handle->frame().get());
+                               : WillCreateAcceleratedImagesFromVideoFrame();
   }
   return false;
 }

@@ -106,7 +106,7 @@ media::VideoTransformation ImageOrientationToVideoTransformation(
   };
 }
 
-bool WillCreateAcceleratedImagesFromVideoFrame(const media::VideoFrame* frame) {
+bool WillCreateAcceleratedImagesFromVideoFrame() {
   return ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
 }
 

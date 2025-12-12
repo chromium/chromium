@@ -192,44 +192,8 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameOrientation) {
 }
 
 TEST_P(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
-  // I420A frame.
-  {
-    auto alpha_frame = media::VideoFrame::CreateTransparentFrame(kTestSize);
-    EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(alpha_frame.get()),
-              expect_accelerated_images());
-  }
-
-  // Software RGB frame.
-  {
-    auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
-                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
-                                     media::PIXEL_FORMAT_XRGB,
-                                     base::TimeDelta(), test_sii_.get());
-    EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()),
-              expect_accelerated_images());
-  }
-
-  // GpuMemoryBuffer frame.
-  {
-    auto cpu_frame = CreateTestFrame(
-        kTestSize, gfx::Rect(kTestSize), kTestSize,
-        media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
-        media::PIXEL_FORMAT_XRGB, base::TimeDelta(), test_sii_.get());
-    EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(cpu_frame.get()),
-              expect_accelerated_images());
-  }
-
-  // shared images frame.
-  {
-    auto shared_image_frame = CreateTestFrame(
-        kTestSize, gfx::Rect(kTestSize), kTestSize,
-        media::VideoFrame::STORAGE_OPAQUE, media::PIXEL_FORMAT_XRGB,
-        base::TimeDelta(), test_sii_.get());
-    EXPECT_TRUE(shared_image_frame->HasSharedImage());
-    EXPECT_EQ(
-        WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()),
-        expect_accelerated_images());
-  }
+  EXPECT_EQ(WillCreateAcceleratedImagesFromVideoFrame(),
+            expect_accelerated_images());
 }
 
 TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {

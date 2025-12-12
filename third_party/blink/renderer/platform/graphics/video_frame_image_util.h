@@ -46,8 +46,7 @@ ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
 // |snapshot_provider| is given to CreateImageFromVideoFrame().
-PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
-    const media::VideoFrame* frame);
+PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 
 // Returns a StaticBitmapImage for the given frame. Accelerated images will be
 // preferred if possible.
