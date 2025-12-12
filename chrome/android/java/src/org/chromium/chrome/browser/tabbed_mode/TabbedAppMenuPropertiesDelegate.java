@@ -624,7 +624,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.open_history_menu_id,
                         R.string.menu_history,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_history_googblue_24dp : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_history_24dp : 0));
     }
 
     private MVCListAdapter.ListItem buildDownloadsItem() {

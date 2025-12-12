@@ -151,7 +151,7 @@ public class PageInfoHistoryController
                 rowParams.title != null
                         && mDelegate.isSiteSettingsAvailable()
                         && !mDelegate.isIncognito();
-        rowParams.iconResId = R.drawable.ic_history_googblue_24dp;
+        rowParams.iconResId = R.drawable.ic_history_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
 
