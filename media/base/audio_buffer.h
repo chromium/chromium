@@ -319,16 +319,17 @@ class MEDIA_EXPORT AudioBufferMemoryPool
   size_t GetPoolSizeForTesting();
   int GetChannelAlignment() const { return alignment_; }
 
-  struct ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
+  class ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
    public:
-    ExternalMemoryFromPool(
-        scoped_refptr<AudioBufferMemoryPool> pool,
-        std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
-        size_t size);
+    ExternalMemoryFromPool(scoped_refptr<AudioBufferMemoryPool> pool,
+                           base::AlignedHeapArray<uint8_t> memory);
     ExternalMemoryFromPool(ExternalMemoryFromPool&&);
     ~ExternalMemoryFromPool() override;
 
-    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory_;
+   private:
+    friend class AudioBufferMemoryPool;
+
+    base::AlignedHeapArray<uint8_t> memory_;
     scoped_refptr<AudioBufferMemoryPool> pool_;
   };
 

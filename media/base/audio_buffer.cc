@@ -34,17 +34,13 @@ namespace {
 class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit SelfOwnedMemory(size_t size)
-      : heap_array_(UNSAFE_TODO(
-            base::HeapArray<uint8_t, base::AlignedFreeDeleter>::
-                FromOwningPointer(
-                    static_cast<uint8_t*>(
-                        base::AlignedAlloc(size, AudioBus::kChannelAlignment)),
-                    size))) {
+      : heap_array_(
+            base::AlignedUninit<uint8_t>(size, AudioBus::kChannelAlignment)) {
     span_ = heap_array_.as_span();
   }
 
  private:
-  base::HeapArray<uint8_t, base::AlignedFreeDeleter> heap_array_;
+  base::AlignedHeapArray<uint8_t> heap_array_;
 };
 
 std::unique_ptr<AudioBuffer::ExternalMemory> AllocateMemory(size_t size) {
@@ -69,10 +65,9 @@ AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
     ExternalMemoryFromPool&& am) = default;
 AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
     scoped_refptr<AudioBufferMemoryPool> pool,
-    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
-    size_t size)
-    : memory_(std::move(memory)), pool_(pool) {
-  span_ = UNSAFE_TODO({memory_.get(), size});
+    base::AlignedHeapArray<uint8_t> memory)
+    : memory_(std::move(memory)), pool_(std::move(pool)) {
+  span_ = memory_.as_span();
 }
 
 AudioBufferMemoryPool::ExternalMemoryFromPool::~ExternalMemoryFromPool() {
@@ -105,11 +100,10 @@ AudioBufferMemoryPool::CreateBuffer(size_t size) {
 
   // FFmpeg may not always initialize the entire output memory, so just like
   // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
-  auto memory = std::unique_ptr<uint8_t, base::AlignedFreeDeleter>(
-      static_cast<uint8_t*>(base::AlignedAlloc(size, GetChannelAlignment())));
-  UNSAFE_TODO(memset(memory.get(), 0, size));
+  auto memory = base::AlignedUninit<uint8_t>(size, GetChannelAlignment());
+  std::ranges::fill(memory, 0u);
   return std::make_unique<ExternalMemoryFromPool>(
-      ExternalMemoryFromPool(this, std::move(memory), size));
+      ExternalMemoryFromPool(this, std::move(memory)));
 }
 
 void AudioBufferMemoryPool::ReturnBuffer(ExternalMemoryFromPool memory) {
