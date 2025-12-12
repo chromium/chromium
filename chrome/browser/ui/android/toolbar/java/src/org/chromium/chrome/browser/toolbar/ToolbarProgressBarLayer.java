@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -32,8 +36,11 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
     private final ToolbarProgressBar mProgressBarView;
     private final View mToolbarHairline;
     private final Supplier<@ControlsPosition Integer> mControlsPositionSupplier;
+    private final Supplier<Integer> mBookmarkBarIdSupplier;
     private final TopControlsStacker mTopControlsStacker;
     private final BottomControlsStacker mBottomControlsStacker;
+    private final boolean mIsToolbarPositionCustomizationEnabled;
+    private final Handler mHandler = new Handler();
 
     /**
      * Construct the browser control layer that represents the toolbar progress bar.
@@ -43,8 +50,10 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
      * @param toolbarProgressBar The ToolbarProgressBar view instance.
      * @param hairlineView The view for toolbar hairline.
      * @param controlsPositionSupplier The supplier for the current ControlsPosition.
+     * @param bookmarkBarIdSupplier The supplier for the bookmark bar Id.
      * @param topControlStacker The TopControlStacker instance.
      * @param bottomControlsStacker The BottomControlsStacker instance.
+     * @param isToolbarPositionCustomizationEnabled Whether the toolbar position is customizable.
      */
     public ToolbarProgressBarLayer(
             ControlContainer controlContainer,
@@ -52,18 +61,22 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
             ToolbarProgressBar toolbarProgressBar,
             View hairlineView,
             Supplier<@ControlsPosition Integer> controlsPositionSupplier,
+            Supplier<Integer> bookmarkBarIdSupplier,
             TopControlsStacker topControlStacker,
-            BottomControlsStacker bottomControlsStacker) {
+            BottomControlsStacker bottomControlsStacker,
+            boolean isToolbarPositionCustomizationEnabled) {
         mControlContainer = controlContainer;
         mProgressBarContainer = progressBarContainer;
         mProgressBarView = toolbarProgressBar;
         mToolbarHairline = hairlineView;
         mControlsPositionSupplier = controlsPositionSupplier;
-
+        mBookmarkBarIdSupplier = bookmarkBarIdSupplier;
         mTopControlsStacker = topControlStacker;
         mBottomControlsStacker = bottomControlsStacker;
+        mIsToolbarPositionCustomizationEnabled = isToolbarPositionCustomizationEnabled;
 
         mTopControlsStacker.addControl(this);
+        updateTopAnchorView();
     }
 
     public void destroy() {
@@ -87,7 +100,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
     @Override
     public int getTopControlVisibility() {
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        return mProgressBarView.getVisibility() == View.VISIBLE
+        return mProgressBarView.isStarted()
                         && mControlsPositionSupplier.get() == ControlsPosition.TOP
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
@@ -97,6 +110,11 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
     public boolean contributesToTotalHeight() {
         // The progress bar draws over other views, so it does not add height to the top controls.
         return false;
+    }
+
+    @Override
+    public void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        updateTopAnchorView();
     }
 
     /**
@@ -109,7 +127,9 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
 
         // Control container / progress bar container can have a non-zero translation
         // when sitting at the bottom / during animation.
-        // TODO(crbug.com/419846301): Coordinate the yOffset based on browser controls.
+        // TODO(crbug.com/466162772): This calculation is based on the fact that the progress bar
+        // lives with toolbar in the scene layer. As a result, the yOffset for the progress bar
+        // needs to be based on the control container's position.
         final float controlContainerY = mControlContainer.getView().getY();
         final float progressBarContainerY = mProgressBarContainer.getY();
         int yOffset =
@@ -144,5 +164,35 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
         }
         drawingInfo.progressBarRect.offset(0, yOffset);
         drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
+    }
+
+    // Progress bar should anchor at the bottom of the top controls.
+    private void updateTopAnchorView() {
+        // When mIsToolbarPositionCustomizationEnabled, this is handled in
+        // ToolbarPositionController. Avoid doing duplicate work.
+        if (mIsToolbarPositionCustomizationEnabled) return;
+
+        Runnable progressBarChangeRunnable =
+                () -> {
+                    if (mControlsPositionSupplier.get() != ControlsPosition.TOP) return;
+                    CoordinatorLayout.LayoutParams lp =
+                            (CoordinatorLayout.LayoutParams)
+                                    mProgressBarContainer.getLayoutParams();
+                    if (mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)
+                            && mBookmarkBarIdSupplier.get() != 0) {
+                        int bookmarkBarId = mBookmarkBarIdSupplier.get();
+                        lp.setAnchorId(bookmarkBarId);
+                    } else {
+                        lp.setAnchorId(mControlContainer.getView().getId());
+                    }
+                    mProgressBarContainer.setLayoutParams(lp);
+                };
+
+        // Anchor ID cannot be changed during a layout pass. Post the runnable instead.
+        if (((ViewGroup) mProgressBarContainer.getParent()).isInLayout()) {
+            mHandler.post(progressBarChangeRunnable);
+        } else {
+            progressBarChangeRunnable.run();
+        }
     }
 }

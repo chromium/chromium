@@ -1181,8 +1181,15 @@ public class ToolbarManager
                         progressBar,
                         mToolbarHairline,
                         mToolbarPositionSupplier,
+                        () ->
+                                mBookmarkBarHeightSupplier != null
+                                                && mBookmarkBarHeightSupplier.get() == 0
+                                        ? 0
+                                        : R.id.bookmark_bar,
                         topControlsStacker,
-                        bottomControlsStacker);
+                        bottomControlsStacker,
+                        ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                                mActivity, mIsCustomTab));
 
         HomeButtonDisplay homeButtonDisplay =
                 mIsNewTabPageCustomizationToolbarButtonEnabled
@@ -1857,6 +1864,7 @@ public class ToolbarManager
     private void initializeToolbarPositionController() {
         if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                 mActivity, mIsCustomTab)) {
+            mToolbarPositionSupplier.set(mBrowserControlsSizer.getControlsPosition());
             return;
         }
 
