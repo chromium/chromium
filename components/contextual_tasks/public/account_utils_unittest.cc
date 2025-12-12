@@ -212,4 +212,30 @@ TEST_F(AccountUtilsTest,
                              GURL("https://google.com/u/1/test")));
 }
 
+TEST_F(AccountUtilsTest, IsUserSignedInToWeb_BrowserAndWebAccounts) {
+  AccountInfo primary_account_info =
+      identity_test_environment_.MakePrimaryAccountAvailable(
+          "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.SetCookieAccounts(
+      {{primary_account_info.email, primary_account_info.gaia}});
+
+  EXPECT_TRUE(IsUserSignedInToWeb(identity_test_environment_.identity_manager(),
+                                  GURL("https://google.com/u/0/test")));
+}
+
+TEST_F(AccountUtilsTest, IsUserSignedInToWeb_WebOnly) {
+  identity_test_environment_.SetCookieAccounts(
+      {{"primary@example.com",
+        signin::GetTestGaiaIdForEmail("primary@example.com")}});
+
+  EXPECT_TRUE(IsUserSignedInToWeb(identity_test_environment_.identity_manager(),
+                                  GURL("https://google.com/u/0/test")));
+}
+
+TEST_F(AccountUtilsTest, IsUserSignedInToWeb_NoAccounts) {
+  EXPECT_FALSE(
+      IsUserSignedInToWeb(identity_test_environment_.identity_manager(),
+                          GURL("https://google.com/u/0/test")));
+}
+
 }  // namespace contextual_tasks

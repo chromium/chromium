@@ -72,6 +72,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                ContextualTasksUI* webui_controller),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
+  MOCK_METHOD(bool, IsSignedInToWebOrBrowser, (const GURL& url), (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -111,6 +112,8 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         context_controller_.get());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+        .WillByDefault(Return(true));
+    ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
         .WillByDefault(Return(true));
 
     ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
@@ -324,6 +327,30 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+  task_environment()->RunUntilIdle();
+}
+
+// If the user is signed out of the browser, an account mismatch shouldn't
+// prevent AI navigations from being intercepted.
+TEST_F(ContextualTasksUiServiceTest,
+       AiPageNotIntercepted_AccountMismatch_SignedOut) {
+  GURL ai_url(kAiPageUrl);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL());
+
+  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
+      .WillByDefault(Return(false));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+      .Times(1);
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
   task_environment()->RunUntilIdle();
