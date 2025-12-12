@@ -110,6 +110,38 @@ void ActiveTaskContextProviderImpl::OnTaskUpdated(
   RefreshContext();
 }
 
+void ActiveTaskContextProviderImpl::OnTaskRemoved(
+    const base::Uuid& task_id,
+    ContextualTasksService::TriggerSource source) {
+  if (active_task_id_ == task_id) {
+    // The task that was last shown was just removed. Refresh the tabs.
+    active_task_id_ = std::nullopt;
+    RefreshContext();
+  }
+}
+
+void ActiveTaskContextProviderImpl::OnTaskAssociatedToTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  // Ignore the event if it is not for the task in the active tab.
+  if (!active_task_id_ || active_task_id_ != task_id) {
+    return;
+  }
+
+  RefreshContext();
+}
+
+void ActiveTaskContextProviderImpl::OnTaskDisassociatedFromTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  // Ignore the event if it is not for the task in the active tab.
+  if (!active_task_id_ || active_task_id_ != task_id) {
+    return;
+  }
+
+  RefreshContext();
+}
+
 void ActiveTaskContextProviderImpl::RefreshContext() {
   // Increment the callback ID to invalidate any outstanding callbacks.
   callback_id_++;

@@ -49,6 +49,12 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   // ContextualTasksService::Observer implementation.
   void OnTaskUpdated(const ContextualTask& task,
                      ContextualTasksService::TriggerSource source) override;
+  void OnTaskRemoved(const base::Uuid& task_id,
+                     ContextualTasksService::TriggerSource source) override;
+  void OnTaskAssociatedToTab(const base::Uuid& task_id,
+                             SessionID tab_id) override;
+  void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                  SessionID tab_id) override;
 
  private:
   // Determines the active task and triggers a context fetch.
