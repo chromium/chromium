@@ -177,9 +177,9 @@ TEST(CheckDeathTest, Basics) {
   EXPECT_CHECK("Check failed: false. foo", CHECK(false) << "foo");
 
   double a = 2, b = 1;
-  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000)", CHECK_LT(a, b));
+  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000). ", CHECK_LT(a, b));
 
-  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000)custom message",
+  EXPECT_CHECK("Check failed: a < b (2.000000 vs. 1.000000). custom message",
                CHECK_LT(a, b) << "custom message");
 }
 
@@ -189,29 +189,17 @@ TEST(CheckDeathTest, PCheck) {
   std::string err =
       logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode());
 
-  EXPECT_CHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
-      " : " +
-          err,
-      PCHECK(fopen(file, "r") != nullptr));
+  EXPECT_CHECK("Check failed: fopen(file, \"r\") != nullptr. : " + err,
+               PCHECK(fopen(file, "r") != nullptr));
 
-  EXPECT_CHECK(
-      "Check failed: fopen(file, \"r\") != nullptr."
-      " foo: " +
-          err,
-      PCHECK(fopen(file, "r") != nullptr) << "foo");
+  EXPECT_CHECK("Check failed: fopen(file, \"r\") != nullptr. foo: " + err,
+               PCHECK(fopen(file, "r") != nullptr) << "foo");
 
-  EXPECT_DCHECK(
-      "DCHECK failed: fopen(file, \"r\") != nullptr."
-      " : " +
-          err,
-      DPCHECK(fopen(file, "r") != nullptr));
+  EXPECT_DCHECK("DCHECK failed: fopen(file, \"r\") != nullptr. : " + err,
+                DPCHECK(fopen(file, "r") != nullptr));
 
-  EXPECT_DCHECK(
-      "DCHECK failed: fopen(file, \"r\") != nullptr."
-      " foo: " +
-          err,
-      DPCHECK(fopen(file, "r") != nullptr) << "foo");
+  EXPECT_DCHECK("DCHECK failed: fopen(file, \"r\") != nullptr. foo: " + err,
+                DPCHECK(fopen(file, "r") != nullptr) << "foo");
 }
 
 TEST(CheckDeathTest, CheckOp) {
@@ -619,7 +607,7 @@ TEST(CheckTest, NotImplemented) {
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
                                  base::Location::Current().line_number(),
                                  NOTIMPLEMENTED() << "foo",
-                                 expected_msg + "foo\n");
+                                 expected_msg + ". foo\n");
 #else
   // Expect nothing.
   EXPECT_NO_LOG(NOTIMPLEMENTED() << "foo");
@@ -632,7 +620,7 @@ void NiLogOnce() {
 
 TEST(CheckTest, NotImplementedLogOnce) {
   static const std::string expected_msg =
-      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce()\n";
+      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce(). \n";
 
 #if DCHECK_IS_ON()
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
@@ -654,16 +642,17 @@ void NiLogTenTimesWithStream() {
 TEST(CheckTest, NotImplementedLogOnceWithStreamedParams) {
   static const std::string expected_msg1 =
       kNotImplementedMessage +
-      "void (anonymous namespace)::NiLogTenTimesWithStream() iteration: 0\n";
+      "void (anonymous namespace)::NiLogTenTimesWithStream(). "
+      " iteration: 0\n";
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact, exactly once.
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
-                                 base::Location::Current().line_number() - 13,
+                                 base::Location::Current().line_number() - 14,
                                  NiLogTenTimesWithStream(), expected_msg1);
   // A different NOTIMPLEMENTED_LOG_ONCE() call is still logged.
   static const std::string expected_msg2 =
-      kNotImplementedMessage + __PRETTY_FUNCTION__ + "tree fish\n";
+      kNotImplementedMessage + __PRETTY_FUNCTION__ + ". tree fish\n";
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
                                  base::Location::Current().line_number(),
                                  NOTIMPLEMENTED_LOG_ONCE() << "tree fish",
