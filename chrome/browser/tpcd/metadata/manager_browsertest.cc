@@ -76,11 +76,6 @@ Profile* CreateRegularProfile() {
   return profile_manager->GetProfile(new_path);
 }
 #endif
-
-const char kThirdPartyCookieAllowMechanismHistogram[] =
-    "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism3";
-using ThirdPartyCookieAllowMechanism =
-    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 }  // namespace
 
 class ManagerBrowserTest : public InProcessBrowserTest {
@@ -362,8 +357,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -372,27 +365,17 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1Sub, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 }
 
@@ -444,25 +427,17 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -471,10 +446,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 }
 
@@ -524,7 +495,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -533,33 +503,23 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_2, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_3, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -568,12 +528,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::
-            kAllowBy3PCDMetadataSourceCriticalSector,
-        2);
   }
 }
 

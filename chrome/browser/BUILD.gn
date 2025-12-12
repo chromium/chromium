@@ -921,8 +921,6 @@ static_library("browser") {
     "page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h",
     "page_load_metrics/observers/tab_strip_page_load_metrics_observer.cc",
     "page_load_metrics/observers/tab_strip_page_load_metrics_observer.h",
-    "page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.cc",
-    "page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.h",
     "page_load_metrics/observers/translate_page_load_metrics_observer.cc",
     "page_load_metrics/observers/translate_page_load_metrics_observer.h",
     "page_load_metrics/observers/webui_page_load_metrics_observer.cc",

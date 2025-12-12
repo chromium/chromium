@@ -84,9 +84,6 @@ class CookieSettingsBase {
   // Enum for measuring the mechanism for re-enabling third-party cookies when
   // applying 3PCD experiment. These values are persisted to logs. Entries
   // should not be renumbered and numeric values should never be reused.
-  //
-  // Keep in sync with ThirdPartyCookieAllowMechanism at
-  // //src/tools/metrics/histograms/metadata/page/enums.xml
   enum class ThirdPartyCookieAllowMechanism {
     kNone = 0,
     // Allow by explicit cookie content setting (e.g. UserBypass).

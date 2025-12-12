@@ -291,7 +291,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kChromeCSIPageT,
           WebFeature::kChromeCSIStartE,
           WebFeature::kChromeCSITran,
-          WebFeature::kThirdPartyCookieAccessBlockByExperiment,
           WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies,
           WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_all,
           WebFeature::
@@ -335,21 +334,12 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel,
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use,
-          WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting,
-          WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
-          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD,
-          WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics,
-          WebFeature::kThirdPartyCookieDeprecation_AllowByStorageAccess,
-          WebFeature::kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess,
           WebFeature::kAutoSpeculationRulesOptedOut,
           WebFeature::kOverrideFlashEmbedwithHTML,
           WebFeature::kElementRequestPointerLock,
           WebFeature::kKeyboardApiLock,
           WebFeature::kLCPImageWasLazy,
           WebFeature::kUserFeatureNgOptimizedImage,
-          WebFeature::
-              kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls,
           WebFeature::kUserFeatureNgAfterRender,
           WebFeature::kUserFeatureNgHydration,
           WebFeature::kUserFeatureNextThirdPartiesGA,
@@ -395,7 +385,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kGeolocationWatchPosition,
           WebFeature::
               kServiceWorkerStaticRouter_RaceNetworkAndFetchHandlerImprovement,
-          WebFeature::kThirdPartyCookieBlocked,
           WebFeature::kStorageAccessAPI_requestStorageAccessFor_Method,
           WebFeature::kSharedWorkerScriptUnderServiceWorkerControlIsBlob,
           WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath,

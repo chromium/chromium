@@ -51,33 +51,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:ConnectionReuseStatus) -->
 
-<enum name="CookieReadStatus">
-  <int value="0" label="kNone"/>
-  <int value="1" label="kNotOnboardedAllowed"/>
-  <int value="2" label="kNotOnboardedBlocked"/>
-  <int value="3" label="kNotOnboardedAllowedAd"/>
-  <int value="4" label="kNotOnboardedBlockedAd"/>
-  <int value="5" label="kAllowed"/>
-  <int value="6" label="kAllowedAd"/>
-  <int value="7" label="kAllowedOther"/>
-  <int value="8" label="kAllowedOtherAd"/>
-  <int value="9" label="kAllowedHeuristics"/>
-  <int value="10" label="kAllowedHeuristicsAd"/>
-  <int value="11" label="kAllowedMetadataGrant"/>
-  <int value="12" label="kAllowedMetadataGrantAd"/>
-  <int value="13" label="kAllowedTrial"/>
-  <int value="14" label="kAllowedTrialAd"/>
-  <int value="15" label="kAllowedTopLevelTrial"/>
-  <int value="16" label="kAllowedTopLevelTrialAd"/>
-  <int value="17" label="kBlocked"/>
-  <int value="18" label="kBlockedAd"/>
-  <int value="19" label="kBlockedOtherAd"/>
-  <int value="20" label="kBlockedSkippedHeuristicsAd"/>
-  <int value="21" label="kBlockedSkippedMetadataGrantAd"/>
-  <int value="22" label="kBlockedSkippedTrialAd"/>
-  <int value="23" label="kBlockedSkippedTopLevelTrialAd"/>
-</enum>
-
 <enum name="CrossOriginAdStatus">
   <int value="0" label="Ad Origin indeterminable"/>
   <int value="1" label="Main Frame Origin same as Ad"/>
@@ -423,71 +396,6 @@ chromium-metrics-reviews@google.com.
 <enum name="PreviewFinalStatus">
   <int value="0" label="just previewed"/>
   <int value="1" label="previewed and promoted"/>
-</enum>
-
-<enum name="ThirdPartyCookieAllowMechanism">
-  <int value="0" label="kNone: No allow mechanism applied (Not recorded)."/>
-  <int value="1"
-      label="kAllowByExplicitSetting: Allowed by explicit cookie content
-             setting (e.g. UserBypass)."/>
-  <int value="2"
-      label="kAllowByGlobalSetting: Allowed by global 3p cookie setting
-             setting (e.g. Enterprise Policy: BlockThirdPartyCookies, UX,
-             Default allow)."/>
-  <int value="3"
-      label="kAllowBy3PCDMetadata: (Deprecated) Allowed by 3PCD metadata
-             grants content settings (Global Allowlist)."/>
-  <int value="4"
-      label="kAllowBy3PCD: Allowed by third-party deprecation trial."/>
-  <int value="5" label="kAllowBy3PCDHeuristics: Allowed by 3PCD heuristics."/>
-  <int value="6" label="kAllowByStorageAccess: Allowed by Storage access API."/>
-  <int value="7"
-      label="kAllowByTopLevelStorageAccess: Allowed by top-level Storage
-             access API."/>
-  <int value="8"
-      label="kAllowByCORSException: Allowed by opting into CORS protections."/>
-  <int value="9"
-      label="kAllowByTopLevel3PCD: Allowed by top-level third-party
-             deprecation trial."/>
-  <int value="10"
-      label="kAllowByEnterprisePolicyCookieAllowedForUrls: Allowed by
-             CookiesAllowedForUrls Enterprise Policy."/>
-  <int value="11"
-      label="kAllowBy3PCDMetadataSourceUnspecified: Allowed by entries with
-             unspecified source within the 3PCD metadata grants content
-             settings (Global Allowlist)."/>
-  <int value="12"
-      label="kAllowBy3PCDMetadataSourceTest: Allowed by test entries within
-             the 3PCD metadata grants content settings (Global Allowlist)."/>
-  <int value="13"
-      label="kAllowBy3PCDMetadataSource1pDt: Allowed by 1P DT entries within
-             the 3PCD metadata grants content settings (Global Allowlist)."/>
-  <int value="14"
-      label="kAllowBy3PCDMetadataSource3pDt: Allowed by 3P DT entries within
-             the 3PCD metadata grants content settings (Global Allowlist)"/>
-  <int value="15"
-      label="kAllowBy3PCDMetadataSourceDogFood: Allowed by dogfood entries
-             within the 3PCD metadata grants content settings (Global
-             Allowlist)."/>
-  <int value="16"
-      label="kAllowBy3PCDMetadataSourceCriticalSector: Allowed by critical
-             sector entries within the 3PCD metadata grants content settings
-             (Global Allowlist)."/>
-  <int value="17"
-      label="kAllowBy3PCDMetadataSourceCuj: Allowed by critical user journey
-             entries within the 3PCD metadata grants content settings (Global
-             Allowlist)."/>
-  <int value="18"
-      label="kAllowBy3PCDMetadataSourceGovEduTld: Allowed by government and
-             education TLD entries within the 3PCD metadata grants content
-             settings (Global Allowlist)."/>
-  <int value="19" label="kAllowByScheme: Allowed by the top-level scheme."/>
-  <int value="20"
-      label="kAllowByTrackingProtectionException: Allowed by explicit
-             tracking protection content setting."/>
-  <int value="21"
-      label="kAllowBySandboxValue: Allowed by sandbox value
-             `allow-same-site-none-cookies`"/>
 </enum>
 
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->

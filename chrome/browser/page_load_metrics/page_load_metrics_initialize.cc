@@ -41,7 +41,6 @@
 #include "chrome/browser/page_load_metrics/observers/security_state_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/tab_strip_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/webui_page_load_metrics_observer.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -268,9 +267,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
     tracker->AddObserver(std::make_unique<BookmarkBarMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<NewTabPageInitiatedPageLoadMetricsObserver>());
-    tracker->AddObserver(
-        std::make_unique<ThirdPartyCookieDeprecationMetricsObserver>(
-            web_contents()->GetBrowserContext()));
     if (content::PreloadServingMetricsCapsule::IsFeatureEnabled()) {
       tracker->AddObserver(
           std::make_unique<PreloadServingMetricsPageLoadMetricsObserver>());

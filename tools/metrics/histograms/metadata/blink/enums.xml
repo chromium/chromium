@@ -5228,7 +5228,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use"/>
   <int value="4708" label="OBSOLETE_RubyElementWithDisplayBlockAndRt"/>
   <int value="4709" label="OBSOLETE_CSSDeclarationAfterNestedRule"/>
-  <int value="4710" label="ThirdPartyCookieAdAccessBlockByExperiment"/>
+  <int value="4710" label="OBSOLETE_ThirdPartyCookieAdAccessBlockByExperiment"/>
   <int value="4711" label="ServiceWorkerStaticRouter_AddRoutes"/>
   <int value="4712"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_caches"/>
@@ -5261,14 +5261,19 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel"/>
   <int value="4730"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use"/>
-  <int value="4731" label="ThirdPartyCookieDeprecation_AllowByExplicitSetting"/>
-  <int value="4732" label="ThirdPartyCookieDeprecation_AllowByGlobalSetting"/>
-  <int value="4733" label="ThirdPartyCookieDeprecation_AllowBy3PCDMetadata"/>
-  <int value="4734" label="ThirdPartyCookieDeprecation_AllowBy3PCD"/>
-  <int value="4735" label="ThirdPartyCookieDeprecation_AllowBy3PCDHeuristics"/>
-  <int value="4736" label="ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
+  <int value="4731"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByExplicitSetting"/>
+  <int value="4732"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByGlobalSetting"/>
+  <int value="4733"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCDMetadata"/>
+  <int value="4734" label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCD"/>
+  <int value="4735"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowBy3PCDHeuristics"/>
+  <int value="4736"
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByStorageAccess"/>
   <int value="4737"
-      label="ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess"/>
   <int value="4738" label="IframeAdAuctionHeadersAttribute"/>
   <int value="4739" label="AutoSpeculationRulesOptedOut"/>
   <int value="4740" label="OverrideFlashEmbedwithHTML"/>
@@ -5309,7 +5314,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4775" label="UserFeatureNgOptimizedImage"/>
   <int value="4776" label="CSSAtRulePageMargin"/>
   <int value="4777"
-      label="ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
+      label="OBSOLETE_ThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls"/>
   <int value="4778" label="UserFeatureNgAfterRender"/>
   <int value="4779" label="UserFeatureNgHydration"/>
   <int value="4780" label="CapturedSurfaceControl"/>
@@ -5432,7 +5437,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4873" label="DOMClobberedNotShadowedDocumentPropertyAccessed"/>
   <int value="4874" label="DOMClobberedShadowedFormPropertyAccessed"/>
   <int value="4875" label="DOMClobberedNotShadowedFormPropertyAccessed"/>
-  <int value="4876" label="TpcdCookieReadBlockedByAdHeuristics"/>
+  <int value="4876" label="OBSOLETE_TpcdCookieReadBlockedByAdHeuristics"/>
   <int value="4877" label="UsedColorSchemeRootScrollbarsDark"/>
   <int value="4878" label="SerialPortConnected"/>
   <int value="4879" label="DevicePostureMediaFeature"/>
@@ -5693,7 +5698,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
   <int value="5113" label="AudioContextPlayoutStats"/>
-  <int value="5114" label="ThirdPartyCookieBlocked"/>
+  <int value="5114" label="OBSOLETE_ThirdPartyCookieBlocked"/>
   <int value="5115"
       label="V8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter"/>
   <int value="5116"
