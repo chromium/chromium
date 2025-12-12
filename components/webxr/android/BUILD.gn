@@ -149,7 +149,6 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrHostActivity.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",
-      "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionTypeSupplier.java",
     ]
 
     deps += [
