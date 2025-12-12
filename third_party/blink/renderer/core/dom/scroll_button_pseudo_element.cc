@@ -59,7 +59,7 @@ ScrollButtonPseudoElement::ScrollButtonPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
-      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+      PostLayoutSnapshotClient(originating_element->GetDocument().GetFrame()) {
   SetTabIndexExplicitly();
   UseCounter::Count(GetDocument(), WebFeature::kScrollButtonPseudoElement);
 }

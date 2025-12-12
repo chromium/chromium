@@ -149,6 +149,7 @@
 #include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -209,7 +210,6 @@
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -379,9 +379,9 @@ mojom::blink::StorageTypeAccessed ToMojoStorageType(
   }
 }
 
-HeapVector<Member<ScrollSnapshotClient>> CopyClients(
-    const HeapHashSet<WeakMember<ScrollSnapshotClient>>& clients) {
-  HeapVector<Member<ScrollSnapshotClient>> copy;
+HeapVector<Member<PostLayoutSnapshotClient>> CopyClients(
+    const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>& clients) {
+  HeapVector<Member<PostLayoutSnapshotClient>> copy;
   copy.ReserveInitialCapacity(clients.size());
   copy.AppendRange(clients.begin(), clients.end());
   return copy;
@@ -524,7 +524,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(frame_color_overlay_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
-  visitor->Trace(scroll_snapshot_clients_);
+  visitor->Trace(post_layout_snapshot_clients_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
   visitor->Trace(box_shadow_paint_image_generator_);
@@ -4072,36 +4072,36 @@ void LocalFrame::SetNavigationConfidence(
       std::make_pair(randomized_trigger_rate, confidence));
 }
 
-void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
-  scroll_snapshot_clients_.insert(&client);
+void LocalFrame::AddPostLayoutSnapshotClient(PostLayoutSnapshotClient& client) {
+  post_layout_snapshot_clients_.insert(&client);
 }
 
-void LocalFrame::UpdateScrollSnapshotClientsForServiceAnimations() {
-  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
+void LocalFrame::UpdatePostLayoutSnapshotClientsForServiceAnimations() {
+  for (auto& client : CopyClients(post_layout_snapshot_clients_)) {
     client->UpdateSnapshotForServiceAnimations();
   }
 }
 
-bool LocalFrame::UpdateScrollSnapshotClients() {
+bool LocalFrame::UpdatePostLayoutSnapshotClients() {
   bool valid = true;
   // Any calls that update style and layout may create scroll snapshot
   // clients. As such, we can't iterate over the live clients directly.
   // See https://crbug.com/421471058 for details.
-  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
+  for (auto& client : CopyClients(post_layout_snapshot_clients_)) {
     valid &= !client->UpdateSnapshot();
   }
   return valid;
 }
 
-void LocalFrame::ClearScrollSnapshotClients() {
-  scroll_snapshot_clients_.clear();
+void LocalFrame::ClearPostLayoutSnapshotClients() {
+  post_layout_snapshot_clients_.clear();
 }
 
-void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
+void LocalFrame::ScheduleNextServiceForPostLayoutSnapshotClients() {
   // Any calls that update style and layout may create scroll snapshot
   // clients. As such, we can't iterate over the live clients directly.
   // See https://crbug.com/421471058 for details.
-  for (auto& client : CopyClients(scroll_snapshot_clients_)) {
+  for (auto& client : CopyClients(post_layout_snapshot_clients_)) {
     if (client->ShouldScheduleNextService()) {
       View()->ScheduleAnimation();
       return;
@@ -4110,7 +4110,7 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
 }
 
 void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
-  for (auto& client : scroll_snapshot_clients_) {
+  for (auto& client : post_layout_snapshot_clients_) {
     if (AnchorPositionScrollData* scroll_data =
             DynamicTo<AnchorPositionScrollData>(client.Get())) {
       if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
@@ -4122,7 +4122,7 @@ void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
 
 void LocalFrame::CheckPositionAnchorsForChainedVisibilityChanges() {
   AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
-      scroll_snapshot_clients_);
+      post_layout_snapshot_clients_);
 }
 
 bool LocalFrame::IsSameOrigin() {

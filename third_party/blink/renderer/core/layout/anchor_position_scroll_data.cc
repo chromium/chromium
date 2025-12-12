@@ -57,7 +57,7 @@ std::pair<bool, bool> CheckHasDefaultAnchorReferences(
 }  // namespace
 
 AnchorPositionScrollData::AnchorPositionScrollData(Element* anchored_element)
-    : ScrollSnapshotClient(anchored_element->GetDocument().GetFrame()),
+    : PostLayoutSnapshotClient(anchored_element->GetDocument().GetFrame()),
       anchored_element_(anchored_element) {}
 
 AnchorPositionScrollData::~AnchorPositionScrollData() = default;
@@ -363,7 +363,7 @@ void AnchorPositionScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(anchored_element_);
   visitor->Trace(default_anchor_adjustment_data_);
   visitor->Trace(position_visibility_observer_);
-  ScrollSnapshotClient::Trace(visitor);
+  PostLayoutSnapshotClient::Trace(visitor);
   ElementRareDataField::Trace(visitor);
 }
 

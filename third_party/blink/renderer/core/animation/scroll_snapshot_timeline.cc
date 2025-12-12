@@ -16,7 +16,8 @@
 namespace blink {
 
 ScrollSnapshotTimeline::ScrollSnapshotTimeline(Document* document)
-    : AnimationTimeline(document), ScrollSnapshotClient(document->GetFrame()) {}
+    : AnimationTimeline(document),
+      PostLayoutSnapshotClient(document->GetFrame()) {}
 
 bool ScrollSnapshotTimeline::IsResolved() const {
   return ScrollContainer();
@@ -171,7 +172,7 @@ LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(timeline_state_snapshotted_);
   AnimationTimeline::Trace(visitor);
-  ScrollSnapshotClient::Trace(visitor);
+  PostLayoutSnapshotClient::Trace(visitor);
 }
 
 void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {

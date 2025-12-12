@@ -18,7 +18,7 @@
 namespace blink {
 
 ScrollStateQuerySnapshot::ScrollStateQuerySnapshot(Element& container)
-    : ScrollSnapshotClient(container.GetDocument().GetFrame()),
+    : PostLayoutSnapshotClient(container.GetDocument().GetFrame()),
       container_(container) {}
 
 bool ScrollStateQuerySnapshot::UpdateSnapshot() {
@@ -111,7 +111,7 @@ bool ScrollStateQuerySnapshot::ShouldScheduleNextService() {
 
 void ScrollStateQuerySnapshot::Trace(Visitor* visitor) const {
   visitor->Trace(container_);
-  ScrollSnapshotClient::Trace(visitor);
+  PostLayoutSnapshotClient::Trace(visitor);
 }
 
 }  // namespace blink

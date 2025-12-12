@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_POSITION_SCROLL_DATA_H_
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -48,7 +48,7 @@ class LayoutObject;
 // layout and/or paint.
 class AnchorPositionScrollData
     : public GarbageCollected<AnchorPositionScrollData>,
-      public ScrollSnapshotClient,
+      public PostLayoutSnapshotClient,
       public ElementRareDataField {
  public:
   explicit AnchorPositionScrollData(Element* anchored_element);
@@ -111,7 +111,7 @@ class AnchorPositionScrollData
   // using `this` as its AnchroScrollData.
   bool IsActive() const;
 
-  // ScrollSnapshotClient:
+  // PostLayoutSnapshotClient:
   bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
   bool IsAnchorPositionScrollData() const override { return true; }
@@ -209,7 +209,7 @@ class AnchorPositionScrollData
 
 template <>
 struct DowncastTraits<AnchorPositionScrollData> {
-  static bool AllowFrom(const ScrollSnapshotClient& client) {
+  static bool AllowFrom(const PostLayoutSnapshotClient& client) {
     return client.IsAnchorPositionScrollData();
   }
 };

@@ -95,7 +95,7 @@ void AnchorPositionVisibilityObserver::UpdateForCssAnchorVisibility() {
 }
 
 void AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
-    const HeapHashSet<WeakMember<ScrollSnapshotClient>>& clients) {
+    const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>& clients) {
   HeapVector<Member<AnchorPositionVisibilityObserver>>
       observers_with_chained_anchor;
   for (auto& client : clients) {

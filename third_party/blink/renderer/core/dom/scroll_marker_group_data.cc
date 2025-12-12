@@ -605,7 +605,7 @@ void ScrollMarkerGroupData::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
   v->Trace(pending_selected_marker_);
   v->Trace(focus_group_);
-  ScrollSnapshotClient::Trace(v);
+  PostLayoutSnapshotClient::Trace(v);
   ElementRareDataField::Trace(v);
 }
 

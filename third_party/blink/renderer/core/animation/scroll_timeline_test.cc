@@ -441,7 +441,7 @@ TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
 
   // Validate that no frame is scheduled when there is no scroll change.
   GetChromeClient().UnsetAnimationScheduled();
-  GetFrame().ScheduleNextServiceForScrollSnapshotClients();
+  GetFrame().ScheduleNextServiceForPostLayoutSnapshotClients();
   EXPECT_FALSE(GetChromeClient().AnimationScheduled());
 
   // Validate that frame is scheduled when scroll changes.
@@ -449,7 +449,7 @@ TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
   scrollable_area->SetScrollOffset(ScrollOffset(0, 30),
                                    mojom::blink::ScrollType::kProgrammatic,
                                    cc::ScrollSourceType::kNone);
-  GetFrame().ScheduleNextServiceForScrollSnapshotClients();
+  GetFrame().ScheduleNextServiceForPostLayoutSnapshotClients();
   EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 }
 

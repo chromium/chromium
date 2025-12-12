@@ -199,9 +199,9 @@ void DocumentAnimations::UpdateAnimations(
   UpdateCompositorAnimationTriggers();
 
   document_->GetWorkletAnimationController().UpdateAnimationStates();
-  document_->GetFrame()->ScheduleNextServiceForScrollSnapshotClients();
+  document_->GetFrame()->ScheduleNextServiceForPostLayoutSnapshotClients();
   for (auto& timeline : timelines_) {
-    // ScrollSnapshotTimelines are already handled as ScrollSnapshotClients
+    // ScrollSnapshotTimelines are already handled as PostLayoutSnapshotClients
     // above.
     if (!timeline->IsScrollSnapshotTimeline()) {
       timeline->ScheduleNextService();

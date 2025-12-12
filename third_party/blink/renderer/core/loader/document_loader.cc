@@ -2959,7 +2959,7 @@ void DocumentLoader::CommitNavigation() {
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
 
-  frame_->ClearScrollSnapshotClients();
+  frame_->ClearPostLayoutSnapshotClients();
 
   // Determine whether to give the frame sticky user activation. These checks
   // mirror the check in Navigator::DidNavigate(). Main frame navigations and

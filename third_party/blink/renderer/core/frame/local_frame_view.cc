@@ -2286,8 +2286,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // failures are fixed.
   BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
 
-  // RunScrollSnapshotClientSteps must not run more than once.
-  bool should_run_scroll_snapshot_client_steps = true;
+  // RunPostLayoutSnapshotClientSteps must not run more than once.
+  bool should_run_post_layout_snapshot_client_steps = true;
 
   // Run style, layout, compositing and prepaint lifecycle phases and deliver
   // resize observations if required. Resize observer callbacks/delegates have
@@ -2325,14 +2325,14 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     }
     DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
 
-    // ScrollSnapshotClients may be associated with scrollers that never had a
-    // chance to get a layout box at the time style was calculated; when this
+    // PostLayoutSnapshotClients may be associated with scrollers that never had
+    // a chance to get a layout box at the time style was calculated; when this
     // situation happens, RunScrollTimelineSteps will re-snapshot all affected
     // clients and dirty style for associated effect targets.
     //
     // https://github.com/w3c/csswg-drafts/issues/5261
-    if (should_run_scroll_snapshot_client_steps) {
-      should_run_scroll_snapshot_client_steps = false;
+    if (should_run_post_layout_snapshot_client_steps) {
+      should_run_post_layout_snapshot_client_steps = false;
       bool needs_to_repeat_lifecycle = RunSnapshotPostLayoutStateSteps();
       if (needs_to_repeat_lifecycle) {
         continue;
@@ -2423,7 +2423,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // Only run the rest of the steps here if resize observer is done.
     if (needs_to_repeat_lifecycle) {
       if (RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
-        should_run_scroll_snapshot_client_steps = true;
+        should_run_post_layout_snapshot_client_steps = true;
       }
       continue;
     }
@@ -2495,7 +2495,7 @@ bool LocalFrameView::RunSnapshotPostLayoutStateSteps() {
   bool re_run_lifecycles = false;
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
-        bool valid = frame_view.GetFrame().UpdateScrollSnapshotClients();
+        bool valid = frame_view.GetFrame().UpdatePostLayoutSnapshotClients();
         re_run_lifecycles |= !valid;
       });
   return re_run_lifecycles;
@@ -3675,7 +3675,7 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
     }
 
     if (!RuntimeEnabledFeatures::RunSnapshotPostLayoutStateStepsEnabled()) {
-      GetFrame().UpdateScrollSnapshotClientsForServiceAnimations();
+      GetFrame().UpdatePostLayoutSnapshotClientsForServiceAnimations();
     }
     if (SVGDocumentExtensions::ServiceSmilOnAnimationFrame(*document)) {
       GetPage()->Animator().SetHasSmilAnimation();

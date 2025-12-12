@@ -12,15 +12,15 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
 // See ScrollTimeline.
 class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
-                                           public ScrollSnapshotClient {
+                                           public PostLayoutSnapshotClient {
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using ScrollAxis = V8ScrollAxis::Enum;
@@ -170,7 +170,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     }
   };
 
-  // ScrollSnapshotClient:
+  // PostLayoutSnapshotClient:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.

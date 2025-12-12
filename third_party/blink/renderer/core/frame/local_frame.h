@@ -153,7 +153,7 @@ class PerformanceMonitor;
 class WebLinkPreviewTriggerer;
 class PluginData;
 class PolicyContainer;
-class ScrollSnapshotClient;
+class PostLayoutSnapshotClient;
 class SpellChecker;
 class StorageKey;
 class StyleEnvironmentVariables;
@@ -873,14 +873,14 @@ class CORE_EXPORT LocalFrame final
   mojo::PendingRemote<mojom::blink::BlobURLStore>
   GetBlobUrlStorePendingRemote();
 
-  void AddScrollSnapshotClient(ScrollSnapshotClient&);
+  void AddPostLayoutSnapshotClient(PostLayoutSnapshotClient&);
 
   // Take a snapshot for relevant scrollers at the beginning of a frame update.
   // https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
   //
-  // Each ScrollSnapshotClients has their internal state updated at
+  // Each PostLayoutSnapshotClients has their internal state updated at
   // a specific point in the lifecycle (see call to UpdateSnapshot).
-  // Since this call takes place *before* layout, ScrollSnapshotClients also
+  // Since this call takes place *before* layout, PostLayoutSnapshotClients also
   // get an additional opportunity to update their state (see UpdateSnapshot).
   //
   // The lifecycle update will call this function after style and layout has
@@ -893,20 +893,20 @@ class CORE_EXPORT LocalFrame final
   // Returns true if all client states are valid, otherwise returns false.
   //
   // https://github.com/w3c/csswg-drafts/issues/5261
-  bool UpdateScrollSnapshotClients();
-  // Separate invocation for UpdateScrollSnapshotClients when called for
+  bool UpdatePostLayoutSnapshotClients();
+  // Separate invocation for UpdatePostLayoutSnapshotClients when called for
   // ServiceScrollAnimations(). See documentation for
-  // ScrollSnapshotClient::UpdateSnapshotForServiceAnimations().
-  void UpdateScrollSnapshotClientsForServiceAnimations();
+  // PostLayoutSnapshotClient::UpdateSnapshotForServiceAnimations().
+  void UpdatePostLayoutSnapshotClientsForServiceAnimations();
 
-  void ClearScrollSnapshotClients();
+  void ClearPostLayoutSnapshotClients();
 
-  const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
-  GetScrollSnapshotClientsForTesting() {
-    return scroll_snapshot_clients_;
+  const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>&
+  GetPostLayoutSnapshotClientsForTesting() {
+    return post_layout_snapshot_clients_;
   }
 
-  void ScheduleNextServiceForScrollSnapshotClients();
+  void ScheduleNextServiceForPostLayoutSnapshotClients();
 
   void CheckPositionAnchorsForCssVisibilityChanges();
   // This is called after all other position-visibility conditions have been
@@ -1165,9 +1165,10 @@ class CORE_EXPORT LocalFrame final
   // frame.
   Member<TextFragmentHandler> text_fragment_handler_;
 
-  // ScrollSnapshotClients owned by elements in this frame. The clients must
+  // PostLayoutSnapshotClients owned by elements in this frame. The clients must
   // be registered at the actual elements as the references here are weak.
-  HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
+  HeapHashSet<WeakMember<PostLayoutSnapshotClient>>
+      post_layout_snapshot_clients_;
 
   bool is_window_controls_overlay_visible_ = false;
   // |layout_zoom_factor_| is asynchronously set sometimes (most prominently
