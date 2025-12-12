@@ -309,7 +309,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/animation/compositor_animation_runner.h"
-#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -4140,10 +4139,7 @@ void BrowserView::ReparentTabStripAndWebAppViewsToTopContainer(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Only reparent and set background if the tab_strip_region_view_ is parented
-  // to browser_view.
-  top_container()->SetBackground(
-      views::CreateSolidBackground(ui::kColorFrameActive));
+  // Only reparent if the tab_strip_region_view_ is parented to browser_view.
   top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -6239,7 +6235,6 @@ void BrowserView::OnImmersiveFullscreenExited() {
   if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
   }
-  top_container()->SetBackground(nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ReparentTopContainerForEndOfImmersive();

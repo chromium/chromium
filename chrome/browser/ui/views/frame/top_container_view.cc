@@ -11,10 +11,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_class_properties.h"
 
@@ -72,11 +75,8 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
 }
 
 void TopContainerView::OnPaintBackground(gfx::Canvas* canvas) {
-  // Top container draws an opaque background when in vertical tabstrip mode.
   if (browser_view_->ShouldDrawVerticalTabStrip()) {
-    // Color matches toolbar; this provides a backdrop for e.g. caption buttons.
-    const SkColor color =
-        ui::ColorVariant(kColorToolbar).ResolveToSkColor(GetColorProvider());
+    // Top container draws an opaque background when in vertical tabstrip mode.
 
     // Rounded corners are drawn when not maximized or fullscreen.
     bool use_rounded_corners =
@@ -86,26 +86,23 @@ void TopContainerView::OnPaintBackground(gfx::Canvas* canvas) {
       use_rounded_corners = false;
     }
 #endif
+    gfx::ScopedCanvas scoped(canvas);
     if (use_rounded_corners) {
       const float radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
       const SkVector radii[4] = {
           {radius, radius}, {radius, radius}, {0, 0}, {0, 0}};
       const SkPath path = SkPath::RRect(
           SkRRect::MakeRectRadii(gfx::RectToSkRect(GetLocalBounds()), radii));
-      cc::PaintFlags flags;
-      flags.setAntiAlias(true);
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(color);
-      canvas->DrawPath(path, flags);
-    } else {
-      canvas->DrawColor(color);
+      canvas->ClipPath(path, true);
     }
-  }
+    TopContainerBackground::PaintBackground(canvas, this, browser_view_);
 
-  // In some cases, a background may be set by e.g. the immersive mode
-  // controller, in which case it must be rendered in addition to anything done
-  // above. See https://crbug.com/467112888 for an example of how this can fail.
-  View::OnPaintBackground(canvas);
+  } else if (browser_view_->IsFullscreen()) {
+    // When in immersive mode, top container is painted with the frame color.
+    // The color matches the active frame, allowing the tabstrip to paint
+    // correctly.
+    canvas->DrawColor(GetColorProvider()->GetColor(ui::kColorFrameActive));
+  }
 }
 
 void TopContainerView::ChildPreferredSizeChanged(views::View* child) {
