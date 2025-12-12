@@ -13,11 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/transport_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "url/origin.h"
 
 class GURL;
@@ -31,6 +33,9 @@ struct TransportInfo;
 namespace network {
 
 struct ResourceRequest;
+
+mojom::TransportType MapTransportTypeToMojomTransportType(
+    const net::TransportType type);
 
 // Applies Private Network Access checks to a single fetch / URL load.
 //

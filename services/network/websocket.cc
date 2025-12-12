@@ -47,6 +47,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/websocket_factory.h"
@@ -240,9 +241,11 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
   if (impl_->url_loader_network_observer_ &&
       check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
     impl_->url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+        MapTransportTypeToMojomTransportType(info.type),
         base::BindOnce(
             [](base::WeakPtr<WebSocket> weak_self,
-               net::CompletionOnceCallback callback, bool permission_granted) {
+               net::CompletionOnceCallback callback,
+               mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
                 // Checking the weak ptr not to call the `callback` after
                 // `this` is destructed. This is needed because the
@@ -250,8 +253,12 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
                 // `WebSocket`.
                 return;
               }
+              // Note: The WebSocket handshake request is made with cache mode
+              // "no-store", so they are never cached and this code doesn't
+              // need to handle a kRetryDueToCache result. See
+              // https://websockets.spec.whatwg.org/#websocket-opening-handshake
               std::move(callback).Run(
-                  permission_granted
+                  result == mojom::LocalNetworkAccessResult::kGranted
                       ? net::OK
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },

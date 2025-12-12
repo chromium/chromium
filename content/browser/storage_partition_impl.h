@@ -375,6 +375,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
+      network::mojom::TransportType transport_type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,

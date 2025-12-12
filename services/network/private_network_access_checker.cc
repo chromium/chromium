@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -24,6 +25,20 @@ using Result = PrivateNetworkAccessCheckResult;
 using Policy = mojom::PrivateNetworkRequestPolicy;
 
 }  // namespace
+
+mojom::TransportType MapTransportTypeToMojomTransportType(
+    const net::TransportType type) {
+  switch (type) {
+    case net::TransportType::kDirect:
+      return mojom::TransportType::kDirect;
+    case net::TransportType::kProxied:
+      return mojom::TransportType::kProxied;
+    case net::TransportType::kCached:
+      return mojom::TransportType::kCached;
+    case net::TransportType::kCachedFromProxy:
+      return mojom::TransportType::kCachedFromProxy;
+  }
+}
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     const ResourceRequest& request,

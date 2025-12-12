@@ -540,8 +540,11 @@ class LNAPermissionURLLoaderNetworkObserver
     : public TestURLLoaderNetworkObserver {
  public:
   void OnLocalNetworkAccessPermissionRequired(
+      mojom::TransportType type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override {
-    std::move(callback).Run(lna_permission_granted);
+    std::move(callback).Run(lna_permission_granted
+                                ? mojom::LocalNetworkAccessResult::kGranted
+                                : mojom::LocalNetworkAccessResult::kDenied);
   }
 
   bool lna_permission_granted = false;

@@ -305,8 +305,9 @@ void NetworkServiceClient::OnAuthRequired(
 }
 
 void NetworkServiceClient::OnLocalNetworkAccessPermissionRequired(
+    network::mojom::TransportType type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
 
 void NetworkServiceClient::OnClearSiteData(

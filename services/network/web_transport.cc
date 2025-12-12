@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 namespace network {
@@ -615,9 +616,12 @@ void WebTransport::OnLocalNetworkAccessCheck(
   if (url_loader_network_observer_ &&
       check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
     url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+        // WebTransport connections are not cached, so just pass kDirect.
+        mojom::TransportType::kDirect,
         base::BindOnce(
             [](base::WeakPtr<WebTransport> weak_self,
-               net::CompletionOnceCallback callback, bool permission_granted) {
+               net::CompletionOnceCallback callback,
+               mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
                 // Checking the weak ptr not to call the `callback` after
                 // `this` is destructed. This is needed because the
@@ -626,7 +630,7 @@ void WebTransport::OnLocalNetworkAccessCheck(
                 return;
               }
               std::move(callback).Run(
-                  permission_granted
+                  result == mojom::LocalNetworkAccessResult::kGranted
                       ? net::OK
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },

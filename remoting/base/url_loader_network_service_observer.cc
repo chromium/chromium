@@ -121,6 +121,7 @@ void UrlLoaderNetworkServiceObserver::OnAuthRequired(
         auth_challenge_responder) {}
 
 void UrlLoaderNetworkServiceObserver::OnLocalNetworkAccessPermissionRequired(
+    network::mojom::TransportType type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {}
 
 void UrlLoaderNetworkServiceObserver::OnClearSiteData(

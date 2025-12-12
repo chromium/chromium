@@ -2196,17 +2196,18 @@ void StoragePartitionImpl::OnAuthRequired(
 }
 
 void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
+    network::mojom::TransportType transport_type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   if (!base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks) &&
       !network::features::kLocalNetworkAccessChecksWarn.Get()) {
     // If LNA checks are not enabled, just allow the request by default.
-    std::move(callback).Run(true);
+    std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kGranted);
     return;
   }
 
   if (url_loader_network_observers_.empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
     return;
   }
   const URLLoaderNetworkContext& context =
@@ -2251,11 +2252,13 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
       switch (request->GetNavigatingFrameType()) {
         case FrameType::kPrimaryMainFrame:
         case FrameType::kGuestMainFrame:
-          std::move(callback).Run(true);
+          std::move(callback).Run(
+              network::mojom::LocalNetworkAccessResult::kGranted);
           return;
         case FrameType::kFencedFrameRoot:
         case FrameType::kPrerenderMainFrame:
-          std::move(callback).Run(false);
+          std::move(callback).Run(
+              network::mojom::LocalNetworkAccessResult::kDenied);
           return;
         case FrameType::kSubframe:
           // Get the document that initiated the navigation. Can be nullptr if
@@ -2289,7 +2292,8 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
       }
     }
     if (!rfh) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kDenied);
       return;
     }
 
@@ -2300,16 +2304,35 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
             CreatePermissionDescriptorForPermissionType(
                 blink::PermissionType::LOCAL_NETWORK_ACCESS),
         rfh);
+
+    // If the request was loaded from cache, prefer retrying over the network
+    // over prompting the user or blocking.
+    // TODO(crbug.com/457969523): Consider only triggering a retry over the
+    // network once per (Document, Subresource) combination, as network changes
+    // during the lifetime of a Document may be sufficiently uncommon and we
+    // could rely on the cached subresource for any further requests during the
+    // document lifetime.
+    if ((transport_type == network::mojom::TransportType::kCached ||
+         transport_type == network::mojom::TransportType::kCachedFromProxy) &&
+        (status == blink::mojom::PermissionStatus::ASK ||
+         status == blink::mojom::PermissionStatus::DENIED)) {
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kRetryDueToCache);
+      return;
+    }
+
     if (status == blink::mojom::PermissionStatus::GRANTED) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kGranted);
       return;
     } else if (status == blink::mojom::PermissionStatus::DENIED) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kDenied);
       return;
     } else {
       // PermissionStatus is ASK, so request the permission. Converts the result
-      // into a boolean to pass back to `callback`, capturing whether the
-      // permission is granted or not.
+      // to pass back to `callback`, capturing whether the permission is granted
+      // or not.
       permission_controller.RequestPermissionFromCurrentDocument(
           rfh,
           PermissionRequestDescription(
@@ -2319,8 +2342,11 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
           base::BindOnce(
               [](OnLocalNetworkAccessPermissionRequiredCallback cb,
                  PermissionResult permission_result) {
-                std::move(cb).Run(permission_result.status ==
-                                  blink::mojom::PermissionStatus::GRANTED);
+                std::move(cb).Run(
+                    permission_result.status ==
+                            blink::mojom::PermissionStatus::GRANTED
+                        ? network::mojom::LocalNetworkAccessResult::kGranted
+                        : network::mojom::LocalNetworkAccessResult::kDenied);
               },
               std::move(callback)));
       return;
@@ -2347,7 +2373,8 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
     // TODO(crbug.com/404887282): Revisit if opaque origins support is needed.
     CHECK(context.worker_origin());
     if (context.worker_origin()->opaque()) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kDenied);
       return;
     }
 
@@ -2359,12 +2386,27 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
                 blink::PermissionType::LOCAL_NETWORK_ACCESS),
         content::RenderProcessHost::FromID(context.process_id()),
         context.worker_origin().value());
-    std::move(callback).Run(status == blink::mojom::PermissionStatus::GRANTED);
+
+    // If the request was loaded from cache, prefer retrying over the network
+    // over prompting the user or blocking.
+    if ((transport_type == network::mojom::TransportType::kCached ||
+         transport_type == network::mojom::TransportType::kCachedFromProxy) &&
+        (status == blink::mojom::PermissionStatus::ASK ||
+         status == blink::mojom::PermissionStatus::DENIED)) {
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kRetryDueToCache);
+      return;
+    }
+
+    std::move(callback).Run(
+        status == blink::mojom::PermissionStatus::GRANTED
+            ? network::mojom::LocalNetworkAccessResult::kGranted
+            : network::mojom::LocalNetworkAccessResult::kDenied);
     return;
   }
 
   // Otherwise default to denying local network access.
-  std::move(callback).Run(false);
+  std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
   return;
 }
 

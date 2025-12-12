@@ -123,6 +123,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/unencoded_digest.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_resource_checker.h"
@@ -1869,15 +1870,17 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSameOrigin) {
 class TestLNAPermissionURLLoaderNetworkObserver
     : public TestURLLoaderNetworkObserver {
  public:
-  explicit TestLNAPermissionURLLoaderNetworkObserver(bool permission_granted)
-      : granted_(permission_granted) {}
+  explicit TestLNAPermissionURLLoaderNetworkObserver(
+      mojom::LocalNetworkAccessResult result)
+      : result_(result) {}
   void OnLocalNetworkAccessPermissionRequired(
+      mojom::TransportType type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override {
-    std::move(callback).Run(granted_);
+    std::move(callback).Run(result_);
   }
 
  private:
-  const bool granted_;
+  const mojom::LocalNetworkAccessResult result_;
 };
 
 TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
@@ -1891,7 +1894,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
 
   // Simulate that the permission request was denied.
   TestLNAPermissionURLLoaderNetworkObserver observer(
-      /*permission_granted=*/false);
+      mojom::LocalNetworkAccessResult::kDenied);
   set_network_observer_for_next_request(&observer);
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
@@ -1915,7 +1918,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
 
   // Simulate that the permission request was granted.
   TestLNAPermissionURLLoaderNetworkObserver observer(
-      /*permission_granted=*/true);
+      mojom::LocalNetworkAccessResult::kGranted);
   set_network_observer_for_next_request(&observer);
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
@@ -1942,7 +1945,7 @@ TEST_F(URLLoaderTest, SecureLocalToLoopbackLNAPermissionNotRequired) {
 
   // Simulate that the permission request was denied.
   TestLNAPermissionURLLoaderNetworkObserver observer(
-      /*permission_granted=*/false);
+      mojom::LocalNetworkAccessResult::kDenied);
   set_network_observer_for_next_request(&observer);
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
@@ -8249,7 +8252,7 @@ TEST_F(URLLoaderFakeTransportInfoTest, LocalNetworkAccessAndAcceptCHFrame) {
 
   // Simulate that the permission request was granted.
   TestLNAPermissionURLLoaderNetworkObserver observer(
-      /*permission_granted=*/true);
+      mojom::LocalNetworkAccessResult::kGranted);
   set_network_observer_for_next_request(&observer);
 
   // Set up ACCEPT_CH frame.
@@ -8428,6 +8431,75 @@ TEST_F(URLLoaderTest, AcceptCHFrameNewHintsCallsObserver) {
   EXPECT_TRUE(accept_ch_frame_observer.called());
   EXPECT_THAT(accept_ch_frame_observer.accept_ch_frame(),
               testing::ElementsAre(mojom::WebClientHintsType::kUAPlatform));
+}
+
+// Tests that for loading a cached local network resource, the kRetryDueToCache
+// LNA permission result is mapped to the correct error code to trigger a retry
+// over the network.
+//
+// This test uses a FakeTransportInfo, which means this does not test the
+// underlying HTTP/cache layers.
+TEST_F(URLLoaderFakeTransportInfoTest,
+       LocalNetworkAccessCachedResourceRetryOverNetwork) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate a cached resource and that the permission request would ask.
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.type = net::TransportType::kCached;
+  auto interceptor = std::make_unique<FakeTransportInfoInterceptor>(info);
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      GURL("http://fake-endpoint"), std::move(interceptor));
+
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      mojom::LocalNetworkAccessResult::kRetryDueToCache);
+  set_network_observer_for_next_request(&observer);
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  // RetryDueToCache should get mapped to the LNA error code that will signal to
+  // the HTTP cache to send the request to the network.
+  EXPECT_EQ(
+      net::ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY,
+      LoadRequest(request));
+}
+
+// Tests that a local network request loaded directly (not cached) should result
+// in a regular LNA error code.
+//
+// This test uses a FakeTransportInfo, which means this does not test the
+// underlying HTTP/cache layers.
+TEST_F(URLLoaderFakeTransportInfoTest,
+       LocalNetworkAccessNonCachedResourceNoRetry) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate a direct network request and that the permission request would be
+  // denied.
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.type = net::TransportType::kDirect;
+  auto interceptor = std::make_unique<FakeTransportInfoInterceptor>(info);
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      GURL("http://fake-endpoint"), std::move(interceptor));
+
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      mojom::LocalNetworkAccessResult::kDenied);
+  set_network_observer_for_next_request(&observer);
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+            LoadRequest(request));
 }
 
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {

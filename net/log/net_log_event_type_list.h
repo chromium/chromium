@@ -4843,6 +4843,11 @@ EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)
 // failed.
 EVENT_TYPE(PRIVATE_NETWORK_ACCESS_CHECK)
 
+// This event is logged when a Local Network Access request is retried due
+// to the resource being cached from a local IP address, in order to bypass
+// the cache and retry over the network.
+EVENT_TYPE(LOCAL_NETWORK_ACCESS_RETRY_DUE_TO_CACHE)
+
 // ------------------------------------------------------------------------
 // Initiator
 // ------------------------------------------------------------------------

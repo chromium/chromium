@@ -233,8 +233,9 @@ void BruschettaNetworkContext::OnAuthRequired(
 }
 
 void BruschettaNetworkContext::OnLocalNetworkAccessPermissionRequired(
+    network::mojom::TransportType type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
 
 void BruschettaNetworkContext::OnClearSiteData(

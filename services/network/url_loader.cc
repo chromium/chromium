@@ -118,6 +118,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/sec_header_helpers.h"
@@ -492,12 +493,18 @@ URLLoader::URLLoader(
                                               options_);
       if (lna_checker.CheckAddressSpace(*url_address_space) ==
           PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+        // This passes in `TransportType::kDirect`, regardless of how the
+        // request may end up being connected -- the cases where we know this
+        // is an LNA request from the URL alone are ones where we have high
+        // confidence in triggering the LNA prompt.
+        //
         // Ignoring the result of the permission here because the point of this
         // call is to get the permission prompt shown if the permission is
         // "prompt". Later LNA checks will check the permission and use the
         // the result.
         url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
-            base::BindOnce([](bool permission_granted) {}));
+            mojom::TransportType::kDirect,
+            base::BindOnce([](mojom::LocalNetworkAccessResult result) {}));
       }
     }
   }

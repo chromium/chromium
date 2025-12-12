@@ -6,13 +6,18 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -297,6 +302,169 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url),
                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                                   content::ISOLATED_WORLD_ID_CONTENT_END));
+}
+
+// ====================
+// CACHE RETRY TESTS
+// ====================
+//
+// These tests verify the behavior of LNA when resources are loaded from cache.
+// The remote IP address of the resource is stored in cache, causing LNA checks
+// to trigger when network state changes.
+
+// Tests that resources:
+//   - which were cached from loopback addresses,
+//   - then loaded from cache in contexts where LNA would apply,
+//   - but the requesting origin does not have the LNA permission granted yet.
+// get retried over the network.
+//
+// See also the test `CachedResourceIsLoadedFromCache` below.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       CachedResourceIsLoadedFromNetwork) {
+  auto https_server = net::test_server::EmbeddedTestServer(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetCertHostnames({"a.com", "b.com"});
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+
+  int request_count = 0;
+  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().GetPath() == "/cacheable") {
+          request_count++;
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("text/plain");
+          http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+          http_response->AddCustomHeader("Cache-Control", "max-age=3600");
+          http_response->set_content("hello");
+          return std::move(http_response);
+        }
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(https_server.Start());
+
+  GURL target_url = https_server.GetURL("b.com", "/cacheable");
+
+  // First, navigate to a local page on a.com and fetch resource from b.com to
+  // get it in the cache.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server.GetURL("a.com", "/local_network_access/no-favicon.html")));
+
+  ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
+
+  // No permission prompt should be shown as this was a loopback -> loopback
+  // connection.
+  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(0, bubble_factory()->show_count());
+
+  // Now, navigate to the same page but it's now considered public and try to
+  // fetch the same resource. The subresource will still be in the `loopback`
+  // address space (as dynamically configuring this for subresources is
+  // challenging in tests), but we can at least check that it wasn't loaded from
+  // cache.
+  //
+  // TODO(crbug.com/40820219): Once we support enterprise policies modifying
+  // the IP address space mappings, we may be able to change this test to
+  // dynamically modify the mappings to make 127.0.0.1 be "public", instead of
+  // relying on the CSP header, giving us a more complete test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server.GetURL(
+          "a.com",
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
+
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
+
+  // The resource should have been re-fetched, rather than loaded from cache.
+  // The prompt will trigger because the subresource is still in the `loopback`
+  // address space.
+  EXPECT_EQ(2, request_count);
+  EXPECT_EQ(1, bubble_factory()->request_count());
+}
+
+// Tests that resources:
+//   - which were cached from loopback addresses,
+//   - then loaded from cache in contexts where LNA would apply,
+//   - but the requesting origin has the LNA permission granted
+// *don't* get retried over the network and are loaded from cache.
+//
+// This is a counterpart to the test `CachedResourceIsLoadedFromNetwork` above.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       CachedResourceIsLoadedFromCache) {
+  auto https_server = net::test_server::EmbeddedTestServer(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetCertHostnames({"a.com", "b.com"});
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+
+  int request_count = 0;
+  https_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().GetPath() == "/cacheable") {
+          request_count++;
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("text/plain");
+          http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+          http_response->AddCustomHeader("Cache-Control", "max-age=3600");
+          http_response->set_content("hello");
+          return std::move(http_response);
+        }
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(https_server.Start());
+
+  GURL target_url = https_server.GetURL("b.com", "/cacheable");
+
+  // Set the LNA permission for a.com to "Allowed".
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(
+          chrome_test_utils::GetProfile(this));
+  host_content_settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURL(https_server.GetURL("a.com", "/")),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW);
+
+  // First, navigate to a local page on a.com and fetch resource from b.com to
+  // get it in the cache.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server.GetURL("a.com", "/local_network_access/no-favicon.html")));
+
+  ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
+
+  // No permission prompt should be shown as this was a loopback -> loopback
+  // connection.
+  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(0, bubble_factory()->show_count());
+
+  // Now, navigate to the same page but it's now considered public and try to
+  // fetch the same resource. The subresource will still be in the `loopback`
+  // address space (as dynamically configuring this for subresources is
+  // challenging in tests), but we can check that the resource was loaded from
+  // cache because a.com has been granted the LNA permission.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server.GetURL(
+          "a.com",
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
+
+  ASSERT_EQ(true, content::EvalJs(web_contents(), FetchScript(target_url)));
+
+  // The resource should have been loaded from cache, and no request should be
+  // seen by the test server. No prompt will trigger because a.com is already
+  // granted the LNA permission.
+  EXPECT_EQ(1, request_count);
+  EXPECT_EQ(0, bubble_factory()->request_count());
 }
 
 }  // namespace local_network_access

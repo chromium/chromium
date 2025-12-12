@@ -16,6 +16,28 @@ import "services/network/public/mojom/shared_storage.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// Result of a Local Network Access permission check.
+enum LocalNetworkAccessResult {
+  kGranted,
+  kDenied,
+  // Used to signal to the network service that the request should be retried
+  // over the network due to cached IP address information.
+  kRetryDueToCache,
+};
+
+// Specifies the type of a network transport over which a resource is loaded.
+// See net/base/transport_info.h
+enum TransportType {
+  // The transport was established directly to a peer.
+  kDirect,
+  // The transport was established to a proxy of some kind.
+  kProxied,
+  // The transport was "established" to a cache entry.
+  kCached,
+  // Same as `kCached`, but the resource was initially loaded through a proxy.
+  kCachedFromProxy,
+};
+
 // Loading info.
 struct LoadInfo {
   mojo_base.mojom.TimeTicks timestamp;
@@ -134,15 +156,15 @@ interface URLLoaderNetworkServiceObserver {
   // Asks the URL loader observer if the caller has permission to connect to
   // devices on the local network.
   //
-  // `permission_granted` is a bool specifying whether the user granted the
-  // local network access permission.
+  // `result` is an enum specifying the result of the permission check.
   //
   // Calling this function may result in a permission prompt being shown. It is
   // okay to call this multiple times, the permissions infrastructure will
   // ensure that multiple permission prompts are not shown at the same time, and
   // that there aren't any race conditions to worry about with respect to the
   // permission value.
-  OnLocalNetworkAccessPermissionRequired() => (bool permission_granted);
+  OnLocalNetworkAccessPermissionRequired(
+      TransportType transport_type) => (LocalNetworkAccessResult result);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.

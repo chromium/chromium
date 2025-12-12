@@ -49,6 +49,7 @@ class TestURLLoaderNetworkObserver
       mojo::PendingRemote<mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
+      mojom::TransportType type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,

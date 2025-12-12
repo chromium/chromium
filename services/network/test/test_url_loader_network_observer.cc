@@ -49,8 +49,9 @@ void TestURLLoaderNetworkObserver::OnAuthRequired(
         auth_challenge_responder) {}
 
 void TestURLLoaderNetworkObserver::OnLocalNetworkAccessPermissionRequired(
+    mojom::TransportType type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(mojom::LocalNetworkAccessResult::kDenied);
 }
 
 void TestURLLoaderNetworkObserver::OnClearSiteData(

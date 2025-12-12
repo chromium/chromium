@@ -56,6 +56,8 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // If the cached entry was blocked by the private network access check
     // without a preflight, we'll start over and attempt to request from the
     // network, so resetting the checker.
+    net_log.AddEvent(
+        net::NetLogEventType::LOCAL_NETWORK_ACCESS_RETRY_DUE_TO_CACHE);
     checker_.ResetForRetry();
     return net::
         ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY;
@@ -104,23 +106,33 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // to either continue the load (if granted) or result in an error (if
     // denied).
     url_loader_network_observer->OnLocalNetworkAccessPermissionRequired(
+        MapTransportTypeToMojomTransportType(info.type),
         base::BindOnce(
             [](base::WeakPtr<PrivateNetworkAccessUrlLoaderInterceptor>
                    weak_self,
+               const net::NetLogWithSource& net_log,
                base::OnceCallback<void(net::Error)> callback,
-               bool permission_granted) {
+               mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
                 // Checking the weak ptr not to call the `callback` after
                 // `this` is destructed. This is needed because the observer's
                 // pipe may outlive `this` and the owner `URLLoader`.
                 return;
               }
+              if (result == mojom::LocalNetworkAccessResult::kRetryDueToCache) {
+                weak_self->checker_.ResetForRetry();
+                std::move(callback).Run(
+                    net::
+                        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY);
+                return;
+              }
               std::move(callback).Run(
-                  permission_granted
+                  result == mojom::LocalNetworkAccessResult::kGranted
                       ? net::OK
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback_getter).Run()));
+            weak_ptr_factory_.GetWeakPtr(), net_log,
+            std::move(callback_getter).Run()));
     return net::ERR_IO_PENDING;
   }
 

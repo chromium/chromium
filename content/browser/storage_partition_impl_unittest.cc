@@ -2592,10 +2592,12 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
       partition->CreateURLLoaderNetworkObserverForFrame(
           process()->GetDeprecatedID(), main_rfh()->GetRoutingID()));
 
-  base::test::TestFuture<bool> grant_permission;
+  base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
-      base::BindOnce(grant_permission.GetCallback()));
-  EXPECT_FALSE(grant_permission.Get());
+      network::mojom::TransportType::kDirect,
+      base::BindOnce(lna_result.GetCallback()));
+  EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
+            lna_result.Get());
 }
 
 // Tests triggering the Local Network Access permission check for a subframe
@@ -2623,10 +2625,12 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
   mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
       partition->CreateURLLoaderNetworkObserverForNavigationRequest(*request));
 
-  base::test::TestFuture<bool> grant_permission;
+  base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
-      base::BindOnce(grant_permission.GetCallback()));
-  EXPECT_FALSE(grant_permission.Get());
+      network::mojom::TransportType::kDirect,
+      base::BindOnce(lna_result.GetCallback()));
+  EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
+            lna_result.Get());
 }
 
 // Tests triggering the Local Network Access permission check for a worker
@@ -2645,10 +2649,12 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
       partition->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
           network::mojom::kBrowserProcessId, worker_origin));
 
-  base::test::TestFuture<bool> grant_permission;
+  base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
-      base::BindOnce(grant_permission.GetCallback()));
-  EXPECT_FALSE(grant_permission.Get());
+      network::mojom::TransportType::kDirect,
+      base::BindOnce(lna_result.GetCallback()));
+  EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
+            lna_result.Get());
 }
 
 TEST_F(StoragePartitionImplTest, ClearDataStorageKeyDeletesPartitionedCookies) {

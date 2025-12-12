@@ -111,6 +111,7 @@ class NetworkServiceClient
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
+      network::mojom::TransportType type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
