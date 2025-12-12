@@ -165,7 +165,7 @@ class FilterGroupTest : public testing::Test,
   float Input(int channel, int frame) {
     DCHECK_LE(channel, source_.data().channels());
     DCHECK_LE(frame, source_.data().frames());
-    return source_.data().channel_span(channel)[frame];
+    return source_.data().channel(channel)[frame];
   }
 
   void AssertPassthrough() {

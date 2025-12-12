@@ -130,8 +130,8 @@ void CompareAudioData(const ::media::AudioBus& expected,
   ASSERT_EQ(expected.channels(), actual.channels());
   ASSERT_EQ(expected.frames(), actual.frames());
   for (int c = 0; c < expected.channels(); ++c) {
-    auto expected_data = expected.channel_span(c);
-    auto actual_data = actual.channel_span(c);
+    auto expected_data = expected.channel(c);
+    auto actual_data = actual.channel(c);
     for (int f = 0; f < expected.frames(); ++f) {
       EXPECT_FLOAT_EQ(expected_data[f], actual_data[f]) << c << " " << f;
     }

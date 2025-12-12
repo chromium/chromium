@@ -97,8 +97,8 @@ TEST(MessageParsingUtilsTest, ValidPlanarFloat) {
       UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
-  auto channel_0 = audio_bus->channel_span(0);
-  auto channel_1 = audio_bus->channel_span(1);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
     EXPECT_FLOAT_EQ(channel_0[f], .0f);
     EXPECT_FLOAT_EQ(channel_1[f], .5f);
@@ -126,8 +126,8 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt16) {
       UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(int16_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
-  auto channel_0 = audio_bus->channel_span(0);
-  auto channel_1 = audio_bus->channel_span(1);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
     EXPECT_FLOAT_EQ(channel_0[f], 1.0f);
     EXPECT_FLOAT_EQ(channel_1[f], -1.0f);
@@ -155,8 +155,8 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt32) {
       UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(int32_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
-  auto channel_0 = audio_bus->channel_span(0);
-  auto channel_1 = audio_bus->channel_span(1);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
     EXPECT_FLOAT_EQ(channel_0[f], -1.0f);
     EXPECT_FLOAT_EQ(channel_1[f], 1.0f);

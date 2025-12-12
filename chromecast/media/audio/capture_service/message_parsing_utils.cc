@@ -104,7 +104,7 @@ bool ConvertPlanarData(int channels,
   for (int c = 0; c < channels; ++c) {
     const typename Traits::ValueType* source =
         UNSAFE_TODO(base_data + c * frames);
-    auto dest = audio->channel_span(c);
+    auto dest = audio->channel(c);
     for (int f = 0; f < frames; ++f) {
       dest[f] = Traits::ToFloat(UNSAFE_TODO(source[f]));
     }
@@ -125,8 +125,7 @@ bool ConvertPlanarFloat(int channels,
   const float* base_data = reinterpret_cast<const float*>(data);
   for (int c = 0; c < channels; ++c) {
     const float* source = UNSAFE_TODO(base_data + c * frames);
-    std::copy(source, UNSAFE_TODO(source + frames),
-              audio->channel_span(c).data());
+    std::copy(source, UNSAFE_TODO(source + frames), audio->channel(c).data());
   }
   return true;
 }

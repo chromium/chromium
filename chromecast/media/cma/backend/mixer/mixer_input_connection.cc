@@ -1078,7 +1078,7 @@ int MixerInputConnection::FillAudioPlaybackFrames(
     float* channels[kMaxChannels];
     for (int c = 0; c < num_channels_; ++c) {
       UNSAFE_TODO(channels[c]) =
-          buffer->channel_span(c).subspan(write_offset).data();
+          buffer->channel(c).subspan(write_offset).data();
     }
     filled += rate_shifter_.FillFrames(num_frames, playback_absolute_timestamp,
                                        channels);

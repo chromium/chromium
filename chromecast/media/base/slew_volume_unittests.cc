@@ -53,7 +53,7 @@ std::vector<float*> GetDataChannels(::media::AudioBus* audio,
   std::vector<float*> data(kNumChannels);
   for (int i = 0; i < kNumChannels; ++i) {
     int source_channel = swapped ? (i + 1) % kNumChannels : i;
-    data[i] = audio->channel_span(source_channel).data();
+    data[i] = audio->channel(source_channel).data();
   }
   return data;
 }

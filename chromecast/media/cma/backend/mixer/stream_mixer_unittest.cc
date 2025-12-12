@@ -284,7 +284,7 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
   auto mixed = ::media::AudioBus::Create(num_channels, read_size);
   for (int c = 0; c < mixed->channels(); ++c) {
     for (int f = 0; f < read_size; ++f) {
-      float* result = UNSAFE_TODO(mixed->channel_span(c).data() + f);
+      float* result = UNSAFE_TODO(mixed->channel(c).data() + f);
 
       // Sum the sample from each input stream, scaling each stream.
       *result = 0.0;
@@ -294,9 +294,9 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
         }
         if (input->data().frames() > f) {
           if (apply_volume) {
-            *result += input->data().channel_span(c)[f] * input->multiplier();
+            *result += input->data().channel(c)[f] * input->multiplier();
           } else {
-            *result += input->data().channel_span(c)[f];
+            *result += input->data().channel(c)[f];
           }
         }
       }
@@ -338,8 +338,8 @@ void CompareAudioData(const ::media::AudioBus& expected,
   ASSERT_EQ(expected.frames(), actual.frames());
 
   for (int c = 0; c < expected.channels(); ++c) {
-    auto expected_data = expected.channel_span(c);
-    auto actual_data = actual.channel_span(c);
+    auto expected_data = expected.channel(c);
+    auto actual_data = actual.channel(c);
     for (int f = 0; f < expected.frames(); ++f) {
       EXPECT_NEAR(expected_data[f], actual_data[f], 0.0000001f)
           << c << " " << f << " " << token;
@@ -768,7 +768,7 @@ TEST_F(StreamMixerTest, OneStream10ChannelInputStereoOutput) {
   auto data = ::media::AudioBus::Create(10, kNumFrames);
   for (int c = 0; c < 10; ++c) {
     for (int f = 0; f < kNumFrames; ++f) {
-      data->channel_span(c)[f] = (c / 10 + f / kNumFrames) / 10;
+      data->channel(c)[f] = (c / 10 + f / kNumFrames) / 10;
     }
   }
   input.SetData(std::move(data));
@@ -815,7 +815,7 @@ TEST_F(StreamMixerTest, OneStream10ChannelInputAndOutput) {
   const int kNumFrames = 32;
   auto data = ::media::AudioBus::Create(10, kNumFrames);
   for (int c = 0; c < 10; ++c) {
-    auto channel_data = data->channel_span(c);
+    auto channel_data = data->channel(c);
     for (int f = 0; f < kNumFrames; ++f) {
       channel_data[f] = (c / 10 + f / kNumFrames) / 10;
     }

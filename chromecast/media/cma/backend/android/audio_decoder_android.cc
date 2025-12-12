@@ -625,7 +625,7 @@ void AudioDecoderAndroid::PushRateShifted() {
           channel_data_size * config_.channel_number)));
   for (int c = 0; c < config_.channel_number; ++c) {
     UNSAFE_TODO(memcpy(output_buffer->writable_data() + c * channel_data_size,
-                       rate_shifter_output_->channel_span(c).data(),
+                       rate_shifter_output_->channel(c).data(),
                        channel_data_size));
   }
   pending_output_frames_ = out_frames;

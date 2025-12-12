@@ -247,7 +247,7 @@ void AudioOutputRedirector::InputImpl::Redirect(::media::AudioBus* const buffer,
 
   float* channels[kMaxChannels];
   for (int c = 0; c < num_output_channels_; ++c) {
-    UNSAFE_TODO(channels[c]) = temp_buffer_->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = temp_buffer_->channel(c).data();
   }
   if (previous_ended_in_silence_) {
     if (!redirected) {
@@ -446,10 +446,10 @@ void AudioOutputRedirector::MixInput(MixerInput* mixer_input,
   for (int c = 0; c < config_.num_output_channels; ++c) {
     float* dest_channel = UNSAFE_TODO(current_mix_data_ + c * next_num_frames_);
     if (config_.apply_volume) {
-      mixer_input->VolumeScaleAccumulate(data->channel_span(c).data(),
-                                         num_frames, dest_channel, c);
+      mixer_input->VolumeScaleAccumulate(data->channel(c).data(), num_frames,
+                                         dest_channel, c);
     } else {
-      auto temp_channel = data->channel_span(c);
+      auto temp_channel = data->channel(c);
       for (int i = 0; i < num_frames; ++i) {
         UNSAFE_TODO(dest_channel[i] += temp_channel[i]);
       }

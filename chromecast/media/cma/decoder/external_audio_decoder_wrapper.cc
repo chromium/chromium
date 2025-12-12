@@ -260,7 +260,7 @@ void ExternalAudioDecoderWrapper::ConvertToS16(DecodedBuffer* buffer) {
   const float* src = reinterpret_cast<const float*>(buffer->data());
   for (int c = 0; c < channels; ++c) {
     std::copy_n(UNSAFE_TODO(src + c * frames), frames,
-                conversion_buffer_->channel_span(c).data());
+                conversion_buffer_->channel(c).data());
   }
 
   int16_t* dest = reinterpret_cast<int16_t*>(buffer->writable_data());

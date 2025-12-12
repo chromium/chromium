@@ -312,7 +312,7 @@ int MixerInput::FillAudioData(int num_frames,
   CHECK_LE(num_channels_, kMaxChannels);
   float* channels[kMaxChannels];
   for (int c = 0; c < num_channels_; ++c) {
-    UNSAFE_TODO(channels[c]) = dest->channel_span(c).data();
+    UNSAFE_TODO(channels[c]) = dest->channel(c).data();
   }
   if (first_buffer_ && redirected) {
     // If the first buffer is redirected, don't provide any data to the mixer
