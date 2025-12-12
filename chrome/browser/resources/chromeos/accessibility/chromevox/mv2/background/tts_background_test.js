@@ -204,19 +204,35 @@ AX_TEST_F(
       assertEquals('A.', preprocess('A.'));
     });
 
-AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PunctuationMode', function() {
-  const PUNCTUATION_ECHO_NONE = '0';
-  const PUNCTUATION_ECHO_SOME = '1';
-  const PUNCTUATION_ECHO_ALL = '2';
+AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PunctuationMode', async function() {
+  const PUNCTUATION_ECHO_NONE = 0;
+  const PUNCTUATION_ECHO_SOME = 1;
+  const PUNCTUATION_ECHO_ALL = 2;
 
-  const updatePunctuationEcho = tts.updatePunctuationEcho.bind(tts);
+  const updatePunctuationEchoFn = tts.updatePunctuationEcho.bind(tts);
+
+  // Helper to wait for punctuation echo to propagate to settings.
+  const updatePunctuationEcho = async (punctuationEcho) => {
+    updatePunctuationEchoFn(punctuationEcho);
+    return new Promise((resolve) => {
+      const pollFunction = () => {
+        if (TtsBackground.primary.getPunctuationEcho() === punctuationEcho) {
+          resolve();
+        } else {
+          setTimeout(pollFunction, 100);
+        }
+      };
+
+      pollFunction();
+    });
+  };
   let lastSpokenTextString = '';
   tts.speakUsingQueue_ = function(utterance, _) {
     lastSpokenTextString = utterance.textString;
   };
 
   // No punctuation.
-  updatePunctuationEcho(PUNCTUATION_ECHO_NONE);
+  await updatePunctuationEcho(PUNCTUATION_ECHO_NONE);
 
   tts.speak(`"That's all, folks!"`);
   assertEquals(`That's all, folks!`, lastSpokenTextString);
@@ -227,7 +243,7 @@ AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PunctuationMode', function() {
       lastSpokenTextString);
 
   // Some punctuation.
-  updatePunctuationEcho(PUNCTUATION_ECHO_SOME);
+  await updatePunctuationEcho(PUNCTUATION_ECHO_SOME);
 
   tts.speak(`"That's all, folks!"`);
   assertEquals(`quote That's all, folks! quote`, lastSpokenTextString);
@@ -239,7 +255,7 @@ AX_TEST_F('ChromeVoxMV2BackgroundTtsTest', 'PunctuationMode', function() {
       lastSpokenTextString);
 
   // All punctuation.
-  updatePunctuationEcho(PUNCTUATION_ECHO_ALL);
+  await updatePunctuationEcho(PUNCTUATION_ECHO_ALL);
 
   tts.speak(`"That's all, folks!"`);
   assertEquals(

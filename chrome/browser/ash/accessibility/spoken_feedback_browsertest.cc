@@ -2335,23 +2335,29 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
 // Tests the keyboard shortcut to cycle the punctuation echo setting,
 // Search+A then P.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TogglePunctuationEcho) {
+  AccessibilityManager::Get()->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityChromeVoxPunctuationEcho, 1);
   chromevox_test_utils()->EnableChromeVox();
   StablizeChromeVoxState();
+  sm()->Call([this]() { chromevox_test_utils()->WaitForPunctuationEcho(1); });
   sm()->Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_A);
     SendKeyPress(ui::VKEY_P);
   });
   sm()->ExpectSpeech("All punctuation");
+  sm()->Call([this]() { chromevox_test_utils()->WaitForPunctuationEcho(2); });
   sm()->Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_A);
     SendKeyPress(ui::VKEY_P);
   });
   sm()->ExpectSpeech("No punctuation");
+  sm()->Call([this]() { chromevox_test_utils()->WaitForPunctuationEcho(0); });
   sm()->Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_A);
     SendKeyPress(ui::VKEY_P);
   });
   sm()->ExpectSpeech("Some punctuation");
+  sm()->Call([this]() { chromevox_test_utils()->WaitForPunctuationEcho(1); });
   sm()->Replay();
 }
 

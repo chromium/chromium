@@ -128,6 +128,26 @@ void ChromeVoxTestUtils::WaitForValidRange() {
   RunJS(script);
 }
 
+void ChromeVoxTestUtils::WaitForPunctuationEcho(int punctuationEcho) {
+  std::string script = base::StringPrintf(R"JS(
+      (async function() {
+        const imports = TestImportManager.getImports();
+        const TtsBackground = imports.TtsBackground;
+        const pollFunction = () => {
+          if (TtsBackground.primary.getPunctuationEcho() !== %d) {
+            setTimeout(pollFunction, 100);
+          } else {
+            chrome.test.sendScriptResult('done');
+          }
+        };
+        setTimeout(pollFunction, 0);
+      })()
+    )JS",
+                                          punctuationEcho);
+
+  RunJS(script);
+}
+
 void ChromeVoxTestUtils::ExecuteCommandHandlerCommand(std::string command) {
   GlobalizeModule("CommandHandlerInterface");
   std::string script =

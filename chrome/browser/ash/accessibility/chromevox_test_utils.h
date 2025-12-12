@@ -40,6 +40,7 @@ class ChromeVoxTestUtils {
   void DisableEarcons();
   void WaitForReady();
   void WaitForValidRange();
+  void WaitForPunctuationEcho(int punctuationEcho);
 
   void ExecuteCommandHandlerCommand(std::string command);
 
