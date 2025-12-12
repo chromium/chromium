@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,7 +57,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
@@ -88,7 +86,6 @@ public class FuseboxMediator {
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
-    private final Supplier<@Nullable TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
 
@@ -104,8 +101,7 @@ public class FuseboxMediator {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
-            SnackbarManager snackbarManager,
-            Supplier<@Nullable TemplateUrlService> templateUrlServiceSupplier) {
+            SnackbarManager snackbarManager) {
         mContext = context;
         mProfile = profile;
         mWindowAndroid = windowAndroid;
@@ -118,7 +114,6 @@ public class FuseboxMediator {
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
-        mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
@@ -299,11 +294,11 @@ public class FuseboxMediator {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         assumeNonNull(tabModelSelector);
         Tab currentTab = assumeNonNull(tabModelSelector.getCurrentTab());
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         boolean tabIsEligible =
-                FuseboxTabUtils.isTabEligibleForAttachment(currentTab, templateUrlService)
+                FuseboxTabUtils.isTabEligibleForAttachment(currentTab)
                         && FuseboxTabUtils.isTabActive(currentTab)
                         && !currentTab.isIncognitoBranded();
+
         if (tabIsEligible) {
             mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
             mModel.set(

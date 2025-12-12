@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
@@ -108,7 +107,6 @@ public class FuseboxMediatorUnitTest {
     @Mock private Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private TemplateUrlService mTemplateUrlService;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -121,7 +119,6 @@ public class FuseboxMediatorUnitTest {
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private ObservableSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
             new ObservableSupplierImpl<>(FuseboxState.DISABLED);
     private boolean mCompactModeEnabled;
@@ -133,7 +130,6 @@ public class FuseboxMediatorUnitTest {
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
         mAutocompleteRequestTypeSupplier =
                 new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
-        mTemplateUrlServiceSupplier = new ObservableSupplierImpl<>(mTemplateUrlService);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         ConstraintLayout viewGroup = new ConstraintLayout(activity);
@@ -161,8 +157,7 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mSnackbarManager,
-                        mTemplateUrlServiceSupplier);
+                        mSnackbarManager);
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
@@ -190,8 +185,7 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mSnackbarManager,
-                        mTemplateUrlServiceSupplier);
+                        mSnackbarManager);
     }
 
     private void addTabAttachment(Tab tab) {
@@ -341,15 +335,6 @@ public class FuseboxMediatorUnitTest {
         doReturn(89L).when(mTab2).getTimestampMillis();
         doReturn(false).when(mPopup).isShowing();
 
-        doReturn(true)
-                .when(mTemplateUrlService)
-                .isSearchResultsPageFromDefaultSearchProvider(any());
-        mMediator.onToggleAttachmentsPopup();
-        assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
-
-        doReturn(false)
-                .when(mTemplateUrlService)
-                .isSearchResultsPageFromDefaultSearchProvider(any());
         mMediator.onToggleAttachmentsPopup();
         assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
         assertNonNull(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON));
@@ -538,8 +523,7 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mSnackbarManager,
-                        mTemplateUrlServiceSupplier);
+                        mSnackbarManager);
 
         // The bridge is not initialized, so no native calls should be made.
         mediator.setToolbarVisible(true);

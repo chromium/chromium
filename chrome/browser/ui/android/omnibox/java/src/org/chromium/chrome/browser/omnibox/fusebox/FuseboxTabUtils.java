@@ -18,7 +18,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.search_engines.TemplateUrlService;
 
 /** Collection of utility methods that operates on Tab for Fusebox. */
 @NullMarked
@@ -28,17 +27,13 @@ public class FuseboxTabUtils {
      * tabs based on specific tab model - including incognito tab model.
      *
      * @param tab The tab to be checked.
-     * @param templateUrlService Used to check if the current url is a search results page.
      */
-    public static boolean isTabEligibleForAttachment(
-            @Nullable Tab tab, @Nullable TemplateUrlService templateUrlService) {
+    public static boolean isTabEligibleForAttachment(@Nullable Tab tab) {
         // TODO: This also has to check the eligibility here:
         // components/optimization_guide/content/browser/page_context_eligibility.h
         return tab != null
                 && (tab.getUrl().getScheme().equals(UrlConstants.HTTP_SCHEME)
-                        || tab.getUrl().getScheme().equals(UrlConstants.HTTPS_SCHEME))
-                && templateUrlService != null
-                && !templateUrlService.isSearchResultsPageFromDefaultSearchProvider(tab.getUrl());
+                        || tab.getUrl().getScheme().equals(UrlConstants.HTTPS_SCHEME));
     }
 
     /**
