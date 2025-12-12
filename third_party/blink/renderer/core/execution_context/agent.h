@@ -9,10 +9,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-microtask-queue.h"
 
@@ -20,8 +20,6 @@ namespace blink {
 
 class ExecutionContext;
 class RejectedPromises;
-class CustomElementReactionStack;
-class MutationObserverAgentData;
 
 // Corresponding spec concept is:
 // https://html.spec.whatwg.org/C#integration-with-the-javascript-agent-formalism
@@ -32,8 +30,14 @@ class MutationObserverAgentData;
 // While an WindowAgentFactory is shared across a group of reachable frames,
 // Agent is shared across a group of reachable and same-site frames.
 class CORE_EXPORT Agent : public GarbageCollected<Agent>,
+                          public Supplementable<Agent, 2>,
                           public scheduler::EventLoop::Delegate {
  public:
+  enum class Supplements {
+    kCustomElementReactionStack = 0,
+    kMutationObserverAgentData = 1,
+  };
+
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
   // WindowAgentFactory::GetAgentForOrigin().
@@ -119,24 +123,6 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
 
   RejectedPromises& GetRejectedPromises();
 
-  CustomElementReactionStack* GetCustomElementReactionStack() const {
-    return custom_element_reaction_stack_;
-  }
-  void SetCustomElementReactionStack(
-      CustomElementReactionStack* custom_element_reaction_stack) {
-    custom_element_reaction_stack_ = custom_element_reaction_stack;
-  }
-
-  ForwardDeclaredMember<MutationObserverAgentData>
-  GetMutationObserverAgentData() const {
-    return mutation_observer_agent_data_;
-  }
-  void SetMutationObserverAgentData(
-      ForwardDeclaredMember<MutationObserverAgentData>
-          mutation_observer_agent_data) {
-    mutation_observer_agent_data_ = mutation_observer_agent_data;
-  }
-
  protected:
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
@@ -147,10 +133,6 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
  private:
   // scheduler::EventLoopDelegate overrides:
   void NotifyRejectedPromises() override;
-
-  Member<CustomElementReactionStack> custom_element_reaction_stack_;
-  ForwardDeclaredMember<MutationObserverAgentData>
-      mutation_observer_agent_data_;
 
   v8::Isolate* isolate_;
   scoped_refptr<RejectedPromises> rejected_promises_;

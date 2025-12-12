@@ -64,22 +64,25 @@ struct MutationObserver::ObserverLessThan {
 
 class MutationObserverAgentData
     : public GarbageCollected<MutationObserverAgentData>,
-      public GarbageCollectedMixin {
+      public Supplement<Agent> {
  public:
-  explicit MutationObserverAgentData(Agent& agent) : agent_(agent) {}
+  static constexpr auto kSupplementIndex =
+      Agent::Supplements::kMutationObserverAgentData;
+
+  explicit MutationObserverAgentData(Agent& agent) : Supplement<Agent>(agent) {}
 
   static MutationObserverAgentData& From(Agent& agent) {
     MutationObserverAgentData* supplement =
-        agent.GetMutationObserverAgentData();
+        Supplement<Agent>::From<MutationObserverAgentData>(agent);
     if (!supplement) {
       supplement = MakeGarbageCollected<MutationObserverAgentData>(agent);
-      agent.SetMutationObserverAgentData(supplement);
+      ProvideTo(agent, supplement);
     }
     return *supplement;
   }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(agent_);
+    Supplement<Agent>::Trace(visitor);
     visitor->Trace(active_mutation_observers_);
     visitor->Trace(active_slot_change_list_);
     visitor->Trace(pending_patches_);
@@ -129,7 +132,7 @@ class MutationObserverAgentData
   void EnsureEnqueueMicrotask() {
     if (active_mutation_observers_.empty() &&
         active_slot_change_list_.empty()) {
-      agent_->event_loop()->EnqueueMicrotask(
+      GetSupplementable()->event_loop()->EnqueueMicrotask(
           BindOnce(&MutationObserverAgentData::DeliverMutations,
                    WrapWeakPersistent(this)));
     }
@@ -159,7 +162,6 @@ class MutationObserverAgentData
   }
 
  private:
-  Member<Agent> agent_;
   // For MutationObserver.
   MutationObserverSet active_mutation_observers_;
   SlotChangeList active_slot_change_list_;
