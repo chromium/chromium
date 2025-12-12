@@ -205,7 +205,7 @@ public class MiniOriginBarController implements Observer {
                                     : MiniOriginEvent.KEYBOARD_DISAPPEARED);
                 };
 
-        mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
+        mIsFormFieldFocusedSupplier.getObservable().addObserver(mIsFormFieldFocusedObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityObserver);
 
         mTouchEventObserver =
@@ -333,7 +333,7 @@ public class MiniOriginBarController implements Observer {
 
     public void destroy() {
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityObserver);
-        mIsFormFieldFocusedSupplier.removeObserver(mIsFormFieldFocusedObserver);
+        mIsFormFieldFocusedSupplier.getObservable().removeObserver(mIsFormFieldFocusedObserver);
         mIsKeyboardAccessorySheetShowing.removeObserver(mAccessorySheetShowingObserver);
         mBrowserControlsSizer.removeObserver(this);
         mInsetObserver.removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
@@ -362,7 +362,7 @@ public class MiniOriginBarController implements Observer {
     private @MiniOriginState int getNewMiniOriginState(@MiniOriginEvent int miniOriginEvent) {
         switch (mMiniOriginBarState) {
             case MiniOriginState.NOT_READY -> {
-                if (mIsFormFieldFocusedSupplier.getAsBoolean()
+                if (mIsFormFieldFocusedSupplier.get()
                         && mBrowserControlsSizer.getControlsPosition() == ControlsPosition.BOTTOM
                         && !mIsOmniboxFocusedSupplier.getAsBoolean()) {
                     return isKeyboardShowing() ? MiniOriginState.SHOWING : MiniOriginState.READY;
@@ -404,19 +404,20 @@ public class MiniOriginBarController implements Observer {
             }
             case MiniOriginState.SHOWING -> {
                 return switch (miniOriginEvent) {
-                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED -> MiniOriginState
-                            .SHOWING_WITH_ACCESSORY_SHEET;
-                    case MiniOriginEvent.FORM_FIELD_LOST_FOCUS -> isKeyboardShowing()
-                            ? MiniOriginState.SHOWING
-                            : MiniOriginState.NOT_READY;
+                    case MiniOriginEvent.ACCESSORY_SHEET_APPEARED ->
+                            MiniOriginState.SHOWING_WITH_ACCESSORY_SHEET;
+                    case MiniOriginEvent.FORM_FIELD_LOST_FOCUS ->
+                            isKeyboardShowing()
+                                    ? MiniOriginState.SHOWING
+                                    : MiniOriginState.NOT_READY;
                     case MiniOriginEvent.CONTROLS_POSITION_BECAME_TOP -> MiniOriginState.NOT_READY;
                     case MiniOriginEvent.KEYBOARD_ANIMATION_PREPARED -> MiniOriginState.ANIMATING;
                     case MiniOriginEvent.KEYBOARD_DISAPPEARED ->
-                    // Skip our animation if we get a keyboard disappearance event before the
-                    // animation prepare signal.
-                    mIsFormFieldFocusedSupplier.getAsBoolean()
-                            ? MiniOriginState.READY
-                            : MiniOriginState.NOT_READY;
+                            // Skip our animation if we get a keyboard disappearance event before
+                            // the animation prepare signal.
+                            mIsFormFieldFocusedSupplier.get()
+                                    ? MiniOriginState.READY
+                                    : MiniOriginState.NOT_READY;
                     default -> MiniOriginState.SHOWING;
                 };
             }

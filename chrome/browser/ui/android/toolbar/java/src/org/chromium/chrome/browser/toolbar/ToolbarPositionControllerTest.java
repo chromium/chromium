@@ -365,7 +365,7 @@ public class ToolbarPositionControllerTest {
                         mIsIncognitoNtpShowing,
                         mIsTabSwitcherShowing,
                         mIsOmniboxFocused,
-                        mIsFormFieldFocused,
+                        mIsFormFieldFocused.getObservable(),
                         mIsFindInPageShowing,
                         mKeyboardAccessoryHeightSupplier,
                         mKeyboardVisibilityDelegate,

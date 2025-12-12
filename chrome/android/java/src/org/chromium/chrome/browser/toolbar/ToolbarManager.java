@@ -1872,7 +1872,7 @@ public class ToolbarManager
                         mIsIncognitoNtpShowingSupplier,
                         mIsTabSwitcherFinishedShowingSupplier,
                         mOmniboxFocusStateSupplier,
-                        mFormFieldFocusedSupplier,
+                        mFormFieldFocusedSupplier.getObservable(),
                         mFindInPageShowingSupplier,
                         keyboardAccessoryStateSupplier.getInsetSupplier(),
                         mWindowAndroid.getKeyboardDelegate(),
