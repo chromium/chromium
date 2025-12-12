@@ -165,7 +165,7 @@ std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
   // Append all `decoded_audio_packets`, channel per channel.
   for (const auto& packet : decoded_audio_packets) {
     for (size_t ch = 0; ch < number_of_channels; ++ch) {
-      dest_channels[ch].Write(packet->channel_span(ch));
+      dest_channels[ch].Write(packet->channel(ch));
     }
   }
 
