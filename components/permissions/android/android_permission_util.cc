@@ -72,12 +72,14 @@ bool HasRequiredAndroidPermissionsForContentSetting(
 PermissionRepromptState ShouldRepromptUserForPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types) {
-  if (!web_contents)
+  if (!web_contents) {
     return PermissionRepromptState::kCannotShow;
+  }
 
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return PermissionRepromptState::kCannotShow;
+  }
 
   for (ContentSettingsType content_settings_type : content_settings_types) {
     if (!HasRequiredAndroidPermissionsForContentSetting(

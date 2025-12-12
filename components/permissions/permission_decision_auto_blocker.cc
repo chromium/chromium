@@ -351,11 +351,13 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
 
   std::vector<ContentSettingsType> filtered_content_types;
   for (ContentSettingsType content_type : content_types) {
-    if (IsEnabledForContentSetting(content_type))
+    if (IsEnabledForContentSetting(content_type)) {
       filtered_content_types.emplace_back(content_type);
+    }
   }
-  if (filtered_content_types.empty())
+  if (filtered_content_types.empty()) {
     return std::set<GURL>();
+  }
 
   std::set<GURL> origins;
   for (const auto& e : settings_map_->GetSettingsForOneType(
@@ -438,7 +440,8 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
 
   int ignores_before_block = kDefaultIgnoresBeforeBlock;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(permissions::kPermissionsAndroidClapperLoud)) {
+  if (base::FeatureList::IsEnabled(
+          permissions::kPermissionsAndroidClapperLoud)) {
     ignores_before_block = kClapperIgnoresBeforeBlock;
   }
 #endif
@@ -471,8 +474,9 @@ bool PermissionDecisionAutoBlocker::RecordDisplayAndEmbargo(
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     const GURL& url,
     ContentSettingsType permission) {
-  if (!IsEnabledForContentSetting(permission))
+  if (!IsEnabledForContentSetting(permission)) {
     return;
+  }
 
   base::Value::Dict dict = GetOriginAutoBlockerData(settings_map_, url);
 
@@ -536,8 +540,9 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
 void PermissionDecisionAutoBlocker::NotifyEmbargoStarted(
     const GURL& origin,
     ContentSettingsType content_setting) {
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnEmbargoStarted(origin, content_setting);
+  }
 }
 
 void PermissionDecisionAutoBlocker::SetClockForTesting(base::Clock* clock) {
