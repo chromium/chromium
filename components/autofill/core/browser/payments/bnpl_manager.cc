@@ -315,24 +315,33 @@ void BnplManager::OnAmountExtractionReturned(
 }
 
 void BnplManager::OnAmountExtractionReturnedFromAi(
-    const std::optional<int64_t>& extracted_amount_in_micros,
-    bool timeout_reached) {
-  if (timeout_reached || !extracted_amount_in_micros.has_value()) {
-    // If an invalid response is received from `AmountExtractionManager`, BNPL
-    // flow will close the current dialog and show the error dialog.
+    const AiAmountExtractionResult::ResultType result) {
+  if (!result.has_value()) {
     payments_autofill_client()
         .GetBnplUiDelegate()
         ->RemoveSelectBnplIssuerOrProgressUi();
 
-    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
-        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/false));
+    switch (result.error()) {
+      case AiAmountExtractionResult::Error::kFailureToGenerateApc:
+      case AiAmountExtractionResult::Error::kMissingServerResponse:
+      case AiAmountExtractionResult::Error::kInvalidAmount:
+      case AiAmountExtractionResult::Error::kMissingCurrency:
+        // TODO(crbug.com/467418149): Replace this general error dialog with a
+        // more specific error dialog for the non-USD currency case.
+      case AiAmountExtractionResult::Error::kUnsupportedCurrency:
+      case AiAmountExtractionResult::Error::kTimeout:
+        payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/false));
+        break;
+    }
 
     Reset();
     return;
   }
 
-  ongoing_flow_state_->final_checkout_amount = extracted_amount_in_micros;
+  const std::pair<int64_t, std::string>& amount_and_currency = result.value();
+  ongoing_flow_state_->final_checkout_amount = amount_and_currency.first;
 
   if (IssuerSelectedAndCheckoutAmountWithinRange()) {
     // If the selected issuer is eligible, continue the BNPL flow with this
@@ -340,8 +349,6 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     OnIssuerSelectedAndCheckoutAmountAvailable();
   } else {
     // If the selected issuer is not eligible, update UI.
-    // This handles both "issuer selected but ineligible" and
-    // "no issuer selected yet" cases.
     CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
         .UpdateBnplIssuerDialogUi(GetSortedBnplIssuerContext());
   }

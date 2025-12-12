@@ -16,6 +16,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -153,11 +154,14 @@ class AmountExtractionManagerTest
 
   void FakeCheckoutAmountReceivedFromAi(
       const std::double_t& final_checkout_amount,
-      const std::string& currency,
-      const bool is_successful) {
+      const std::optional<std::string> currency,
+      const bool is_successful,
+      const bool is_mocking_empty_result = false) {
     optimization_guide::proto::AmountExtractionResponse response;
     response.set_final_checkout_amount(final_checkout_amount);
-    response.set_currency(currency);
+    if (currency.has_value()) {
+      response.set_currency(*currency);
+    }
     response.set_is_successful(is_successful);
     std::string serialized_metadata;
     response.SerializeToString(&serialized_metadata);
@@ -167,8 +171,10 @@ class AmountExtractionManagerTest
     any_result.set_value(serialized_metadata);
 
     amount_extraction_manager_->OnCheckoutAmountReceivedFromAi(
-        optimization_guide::OptimizationGuideModelExecutionResult(any_result,
-                                                                  nullptr),
+        is_mocking_empty_result
+            ? optimization_guide::OptimizationGuideModelExecutionResult()
+            : optimization_guide::OptimizationGuideModelExecutionResult(
+                  any_result, nullptr),
         nullptr);
   }
 
@@ -590,82 +596,109 @@ TEST_F(AmountExtractionManagerTest, AmountParser_OverflowValue) {
             std::nullopt);
 }
 
-TEST_F(AmountExtractionManagerTest, ValidResponse) {
+TEST_F(AmountExtractionManagerTest, ValidateResponse_ValidResponse) {
   optimization_guide::proto::AmountExtractionResponse response;
   response.set_final_checkout_amount(123.45);
   response.set_currency("USD");
   response.set_is_successful(true);
 
-  EXPECT_TRUE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().first, 123450000);
+  EXPECT_EQ(result.value().second, "USD");
 }
 
-TEST_F(AmountExtractionManagerTest, ValidResponseZeroAmount) {
+TEST_F(AmountExtractionManagerTest, ValidateResponse_ZeroAmount) {
   optimization_guide::proto::AmountExtractionResponse response;
   response.set_final_checkout_amount(0.0);
-  response.set_currency("EUR");
-  EXPECT_TRUE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+  response.set_currency("USD");
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().first, 0);
 }
 
-TEST_F(AmountExtractionManagerTest, MissingAmount) {
+TEST_F(AmountExtractionManagerTest, ValidateResponse_UnsupportedCurrency) {
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_final_checkout_amount(100.0);
+  // Unsupported currency is returned.
+  response.set_currency("GBP");
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            AiAmountExtractionResult::Error::kUnsupportedCurrency);
+}
+
+TEST_F(AmountExtractionManagerTest, ValidateResponse_MissingCurrency) {
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_final_checkout_amount(123.45);
+  // No currency set
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kMissingCurrency);
+}
+
+TEST_F(AmountExtractionManagerTest, ValidateResponse_MissingAmount) {
   optimization_guide::proto::AmountExtractionResponse response;
   response.set_currency("USD");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+  // No amount set
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kInvalidAmount);
 }
 
-TEST_F(AmountExtractionManagerTest, NegativeAmount) {
+TEST_F(AmountExtractionManagerTest, ValidateResponse_NegativeAmount) {
   optimization_guide::proto::AmountExtractionResponse response;
+  // Invalid amount is returned.
   response.set_final_checkout_amount(-10.50);
   response.set_currency("USD");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kInvalidAmount);
 }
 
-TEST_F(AmountExtractionManagerTest, MissingCurrency) {
+TEST_F(AmountExtractionManagerTest,
+       ValidateResponse_InvalidAmountOverridesCurrencyErrors) {
   optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+  // Invalid amount is returned.
+  response.set_final_checkout_amount(-50.00);
+  // Unsupported currency is returned.
+  response.set_currency("GBP");
+
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
+
+  ASSERT_FALSE(result.has_value());
+  // Invalid amount has higher priority.
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kInvalidAmount);
 }
 
-TEST_F(AmountExtractionManagerTest, NonAsciiCurrency) {
+TEST_F(AmountExtractionManagerTest, ValidateResponse_EmptyResponse) {
   optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  response.set_currency("USĐ");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
-}
+  // Neither currency or amount is set.
 
-TEST_F(AmountExtractionManagerTest, CurrencyTooShort) {
-  optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  response.set_currency("US");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
-}
+  AiAmountExtractionResult::ResultType result =
+      amount_extraction_manager_->ValidateAmountExtractionResponse(response);
 
-TEST_F(AmountExtractionManagerTest, CurrencyTooLong) {
-  optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  response.set_currency("USDD");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
-}
-
-TEST_F(AmountExtractionManagerTest, CurrencyWithLowerCase) {
-  optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  response.set_currency("UsD");
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
-}
-
-TEST_F(AmountExtractionManagerTest, EmptyResponse) {
-  optimization_guide::proto::AmountExtractionResponse response;
-  EXPECT_FALSE(
-      amount_extraction_manager_->IsValidAmountExtractionResponse(response));
+  ASSERT_FALSE(result.has_value());
+  // Missing amount has higher priority.
+  EXPECT_EQ(result.error(), AiAmountExtractionResult::Error::kInvalidAmount);
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -1201,29 +1234,61 @@ TEST_F(AmountExtractionManagerTest,
   FakeAmountExtractionTimeout();
 }
 
-// This test checks that `BnplManager::OnAmountExtractionReturned` will not be
-// invoked when an invalid amount extraction result is received from the
-// server-side AI.
 TEST_F(AmountExtractionManagerTest,
-       OnCheckoutAmountReceivedFromAi_InvalidResult) {
+       OnCheckoutAmountReceivedFromAi_InvalidAmount) {
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(std::optional<int64_t>(), false))
-      .Times(1);
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kInvalidAmount))));
 
-  FakeCheckoutAmountReceivedFromAi(123.45, "InvalidCurrency", true);
+  FakeCheckoutAmountReceivedFromAi(-123.45, "USD", true);
 }
 
-// This test checks that `BnplManager::OnAmountExtractionReturned` will be
-// invoked when a valid amount extraction result is received from the
-// server-side AI.
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceivedFromAi_InvalidCurrency) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kMissingCurrency))));
+
+  FakeCheckoutAmountReceivedFromAi(123.45, std::nullopt, true);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceivedFromAi_InvalidAmountAndInvalidCurrency) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kInvalidAmount))));
+
+  FakeCheckoutAmountReceivedFromAi(-123.45, std::nullopt, true);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceivedFromAi_NonUsdCurrency) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kUnsupportedCurrency))));
+
+  FakeCheckoutAmountReceivedFromAi(123.45, "GBP", true);
+}
+
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_ValidResult) {
+  AiAmountExtractionResult::ResultType expected_success =
+      std::make_pair(123'450'000, "USD");
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(
-                  std::optional<int64_t>(123'450'000LL), false))
-      .Times(1);
+              OnAmountExtractionReturnedFromAi(Eq(expected_success)));
 
   FakeCheckoutAmountReceivedFromAi(123.45, "USD", true);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       OnCheckoutAmountReceivedFromAi_MissingServerResponse) {
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kMissingServerResponse))));
+
+  // Pass an empty model execution response to mock the server returned nothing.
+  FakeCheckoutAmountReceivedFromAi(123.45, "USD", true, true);
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -1259,10 +1324,12 @@ TEST_F(AmountExtractionManagerTest,
   std::move(fetch_callback).Run(std::make_optional(test_proto));
 
   ASSERT_TRUE(model_callback);
+
+  AiAmountExtractionResult::ResultType expected_success =
+      std::make_pair(100'000'000, "USD");
+
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(
-                  testing::Optional(100 * kMicrosPerDollar),
-                  /*timeout_reached=*/false));
+              OnAmountExtractionReturnedFromAi(expected_success));
 
   // Construct response
   optimization_guide::proto::AmountExtractionResponse response_proto;
@@ -1289,8 +1356,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_TimeoutDuringFetch) {
   amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
 
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
-                                               /*timeout_reached=*/true));
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kTimeout))));
 
   // Fast forward past the timeout limit.
   task_environment_.FastForwardBy(
@@ -1337,8 +1404,8 @@ TEST_F(AmountExtractionManagerTest,
 
   ASSERT_TRUE(model_callback);
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
-                                               /*timeout_reached=*/true));
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kTimeout))));
 
   // Fast forward past the timeout limit.
   task_environment_.FastForwardBy(
@@ -1373,8 +1440,8 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_FetchReturnsEmpty) {
   amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
 
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
-                                               /*timeout_reached=*/false));
+              OnAmountExtractionReturnedFromAi(Eq(base::unexpected(
+                  AiAmountExtractionResult::Error::kFailureToGenerateApc))));
 
   EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
   ASSERT_TRUE(fetch_callback);

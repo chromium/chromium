@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -39,6 +40,26 @@ struct OptimizationGuideModelExecutionResult;
 }  // namespace optimization_guide
 
 namespace autofill::payments {
+
+// Encapsulates the result of the AI-based amount extraction process.
+// This uses base::expected to enforce explicit handling of both the success
+// path (valid amount and currency) and specific failure cases. This
+// distinguishs between a total failure to find an amount and a specific issue
+// with the currency.
+struct AiAmountExtractionResult {
+  using AmountAndCurrency = std::pair<int64_t, std::string>;
+
+  enum class Error {
+    kFailureToGenerateApc = 0,
+    kMissingServerResponse = 1,
+    kInvalidAmount = 2,
+    kMissingCurrency = 3,
+    kUnsupportedCurrency = 4,
+    kTimeout = 5,
+  };
+
+  using ResultType = base::expected<AmountAndCurrency, Error>;
+};
 
 // Owned by `BrowserAutofillManager`. This class manages the flow of the
 // checkout amount extraction. The amount extraction flow starts from
@@ -93,10 +114,9 @@ class AmountExtractionManager {
 
   // Validates the AmountExtractionResponse returned from the server-side AI.
   // A valid response should be with a non-negative value for the field of
-  // `final_checkout_amount` and the field of `currency` should be from the
-  // standard ISO 4217 currency code.
-  bool IsValidAmountExtractionResponse(
-      const AmountExtractionResponse& response);
+  // `final_checkout_amount` and the field of `currency` should be "USD".
+  AiAmountExtractionResult::ResultType ValidateAmountExtractionResponse(
+      const optimization_guide::proto::AmountExtractionResponse& response);
 
   // Returns the set of all eligible features that depend on amount extraction
   // result when:

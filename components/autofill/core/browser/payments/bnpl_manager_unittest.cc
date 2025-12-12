@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -1289,8 +1290,8 @@ TEST_F(BnplManagerTest, ValidAmountReturnedInTimeUpdateUi) {
 
   EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerDialogUi);
 
-  bnpl_manager_->OnAmountExtractionReturnedFromAi(test_amount,
-                                                  /*timeout_reached=*/false);
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(test_amount, "USD"));
 }
 
 // Tests that update suggestions callback is called when suggestions are shown
@@ -2266,7 +2267,7 @@ TEST_F(BnplManagerTest,
   test_api(*bnpl_manager_).OnIssuerSelected(test::GetTestUnlinkedBnplIssuer());
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
-      /*extracted_amount_in_micros=*/1'000'000, /*timeout_reached=*/false);
+      std::make_pair(1'000'000, "USD"));
 }
 
 TEST_F(BnplManagerTest,
@@ -2283,8 +2284,7 @@ TEST_F(BnplManagerTest,
                       /*is_permanent_error=*/false)));
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
-      /*extracted_amount_in_micros=*/std::nullopt,
-      /*timeout_reached=*/false);
+      base::unexpected(AiAmountExtractionResult::Error::kInvalidAmount));
 }
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Timeout_ShowsErrorUi) {
@@ -2300,8 +2300,24 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Timeout_ShowsErrorUi) {
                       /*is_permanent_error=*/false)));
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
-      /*extracted_amount_in_micros=*/std::nullopt,
-      /*timeout_reached=*/true);
+      base::unexpected(AiAmountExtractionResult::Error::kTimeout));
+}
+
+TEST_F(BnplManagerTest,
+       OnAmountExtractionReturnedFromAi_NonUsdCurrency_ShowsErrorUi) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+
+  InSequence s;
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi);
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowAutofillErrorUi(
+                  AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                      /*is_permanent_error=*/false)));
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      base::unexpected(AiAmountExtractionResult::Error::kUnsupportedCurrency));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
