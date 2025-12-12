@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <errno.h>
@@ -32,6 +27,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
@@ -365,7 +361,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
     // replaced this signal handler upon entry, but we want to stay
     // installed. Thus, we reinstall ourselves before returning.
     struct sigaction action;
-    memset(&action, 0, sizeof(action));
+    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
     action.sa_flags = static_cast<int>(SA_RESETHAND | SA_SIGINFO);
     action.sa_sigaction = &StackDumpSignalHandler;
     sigemptyset(&action.sa_mask);
@@ -552,7 +548,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // Set an alarm to trigger in case the default handler does not terminate
   // the process. See 'AlarmSignalHandler' for more details.
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   action.sa_flags = static_cast<int>(SA_RESETHAND);
   action.sa_sigaction = &AlarmSignalHandler;
   sigemptyset(&action.sa_mask);
@@ -709,7 +705,7 @@ class SandboxSymbolizeHelper {
       // base::ScopedFD> does not allocate dynamic memory, hence it is
       // async-signal-safe.
       for (const auto& filepath_fd : modules_) {
-        if (strcmp(filepath_fd.first.c_str(), file_path) == 0) {
+        if (UNSAFE_TODO(strcmp(filepath_fd.first.c_str(), file_path)) == 0) {
           // POSIX.1-2004 requires an implementation to guarantee that dup()
           // is async-signal-safe.
           fd = HANDLE_EINTR(dup(filepath_fd.second.get()));
@@ -836,7 +832,7 @@ class SandboxSymbolizeHelper {
       static_assert(SELFMAG <= sizeof(ElfW(Ehdr)), "SELFMAG too large");
       if ((r.permissions & MappedMemoryRegion::READ) &&
           safe_memcpy(&ehdr, r.start, sizeof(ElfW(Ehdr))) &&
-          memcmp(ehdr.e_ident, ELFMAG, SELFMAG) == 0) {
+          UNSAFE_TODO(memcmp(ehdr.e_ident, ELFMAG, SELFMAG)) == 0) {
         switch (ehdr.e_type) {
           case ET_EXEC:
             cur_base = 0;
@@ -990,7 +986,7 @@ bool EnableInProcessStackDumping() {
   // to be ignored.  Therefore, when testing that same code, it should run
   // with SIGPIPE ignored as well.
   struct sigaction sigpipe_action;
-  memset(&sigpipe_action, 0, sizeof(sigpipe_action));
+  UNSAFE_TODO(memset(&sigpipe_action, 0, sizeof(sigpipe_action)));
   sigpipe_action.sa_handler = SIG_IGN;
   sigemptyset(&sigpipe_action.sa_mask);
   bool success = (sigaction(SIGPIPE, &sigpipe_action, nullptr) == 0);
@@ -999,7 +995,7 @@ bool EnableInProcessStackDumping() {
   WarmUpBacktrace();
 
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   action.sa_flags = static_cast<int>(SA_RESETHAND | SA_SIGINFO);
   action.sa_sigaction = &StackDumpSignalHandler;
   sigemptyset(&action.sa_mask);

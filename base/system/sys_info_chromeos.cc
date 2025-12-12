@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/system/sys_info.h"
 
 #include <stddef.h>
@@ -137,7 +132,7 @@ class ChromeOSVersionInfo {
     // Parse the version from the first matching recognized version key.
     std::string version;
     for (size_t i = 0; i < std::size(kLinuxStandardBaseVersionKeys); ++i) {
-      std::string key = kLinuxStandardBaseVersionKeys[i];
+      std::string key = UNSAFE_TODO(kLinuxStandardBaseVersionKeys[i]);
       if (GetLsbReleaseValue(key, &version) && !version.empty()) {
         break;
       }
@@ -157,7 +152,7 @@ class ChromeOSVersionInfo {
     std::string release_name;
     if (GetLsbReleaseValue(kChromeOsReleaseNameKey, &release_name)) {
       for (size_t i = 0; i < std::size(kChromeOsReleaseNames); ++i) {
-        if (release_name == kChromeOsReleaseNames[i]) {
+        if (release_name == UNSAFE_TODO(kChromeOsReleaseNames[i])) {
           is_running_on_chromeos_ = true;
           break;
         }

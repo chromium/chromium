@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/rand_util.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/allocator/partition_alloc_support.h"
 
 #include <algorithm>
 #include <array>
@@ -18,11 +14,11 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/debug/dump_without_crashing.h"
@@ -40,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/pending_task.h"
+#include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock_impl.h"
@@ -113,10 +110,10 @@ BootloaderOverride GetBootloaderOverride() {
       "persist.device_config.runtime_native_boot.bootloader_override",
       bootloader_override_str);
 
-  if (strcmp(bootloader_override_str, "force_on") == 0) {
+  if (UNSAFE_TODO(strcmp(bootloader_override_str, "force_on")) == 0) {
     return BootloaderOverride::kForceOn;
   }
-  if (strcmp(bootloader_override_str, "force_off") == 0) {
+  if (UNSAFE_TODO(strcmp(bootloader_override_str, "force_off")) == 0) {
     return BootloaderOverride::kForceOff;
   }
   return BootloaderOverride::kDefault;
@@ -696,9 +693,10 @@ void CheckDanglingRawPtrBufferEmpty() {
       LOG(ERROR) << debug::StackTrace(
                         // This call truncates the `nullptr` tail of the stack
                         // trace (see the `is_partitioned` CHECK above).
-                        span(raw_stack_trace.begin(),
-                             std::ranges::partition_point(
-                                 raw_stack_trace, is_frame_ptr_not_null)))
+                        UNSAFE_TODO(
+                            span(raw_stack_trace.begin(),
+                                 std::ranges::partition_point(
+                                     raw_stack_trace, is_frame_ptr_not_null))))
                  << "\n";
     }
 #else

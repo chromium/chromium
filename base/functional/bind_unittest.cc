@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/functional/bind.h"
 
 #include <functional>
@@ -17,6 +12,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -274,7 +270,7 @@ int Identity(int n) {
 }
 
 int ArrayGet(const int array[], int n) {
-  return array[n];
+  return UNSAFE_TODO(array[n]);
 }
 
 int Sum(int a, int b, int c, int d, int e, int f) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/debug/proc_maps_linux.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -35,7 +31,8 @@ bool IsSmapsRollupSupported() {
   }
 
   int major, minor, patch;
-  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+  if (UNSAFE_TODO(sscanf(info.release, "%d.%d.%d", &major, &minor, &patch)) <
+      3) {
     NOTREACHED();
   }
 

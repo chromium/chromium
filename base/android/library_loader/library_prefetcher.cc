@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/android/library_loader/library_prefetcher.h"
 
 #include <sys/mman.h>
@@ -23,6 +18,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -73,7 +69,8 @@ void Prefetch(size_t start, size_t end) {
   // It's possible that using kBinaryPageSize instead of page_size (or some
   // other value) is a bit arbitrary for the read stepping here. In practice,
   // disk readahead is greater than either, so probably doesn't matter too much.
-  for (unsigned char* ptr = start_ptr; ptr < end_ptr; ptr += kBinaryPageSize) {
+  for (unsigned char* ptr = start_ptr; ptr < end_ptr;
+       UNSAFE_TODO(ptr += kBinaryPageSize)) {
     // Volatile is required to prevent the compiler from eliminating this
     // loop.
     dummy ^= *static_cast<volatile unsigned char*>(ptr);

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/asan_service.h"
+
+#include "base/compiler_specific.h"
 
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
@@ -63,7 +60,7 @@ void TaskTraceErrorCallback(const char* reason,
     char buffer[4096] = {};
     void* address = const_cast<void*>(addresses[i]);
     __sanitizer_symbolize_pc(address, "%p %F %L", buffer, sizeof(buffer));
-    for (char* ptr = buffer; *ptr != 0; ptr += strlen(ptr)) {
+    for (char* ptr = buffer; *ptr != 0; UNSAFE_TODO(ptr += strlen(ptr))) {
       AsanService::GetInstance()->Log("    #%i %s", frame_index++, ptr);
     }
   }

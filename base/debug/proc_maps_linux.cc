@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/proc_maps_linux.h"
 
 #include <fcntl.h>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -139,9 +135,10 @@ bool ParseProcMaps(std::string_view input,
     // The final %n term captures the offset in the input string, which is used
     // to determine the path name. It *does not* increment the return value.
     // Refer to man 3 sscanf for details.
-    if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %n",
-               &region.start, &region.end, permissions, &region.offset,
-               &dev_major, &dev_minor, &inode, &path_index) < 7) {
+    if (UNSAFE_TODO(
+            sscanf(line, "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %n",
+                   &region.start, &region.end, permissions, &region.offset,
+                   &dev_major, &dev_minor, &inode, &path_index)) < 7) {
       DPLOG(WARNING) << "sscanf failed for line: " << line;
       return false;
     }
@@ -179,7 +176,7 @@ bool ParseProcMaps(std::string_view input,
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);
-    regions.back().path.assign(line + path_index);
+    regions.back().path.assign(UNSAFE_TODO(line + path_index));
   }
 
   regions_out->swap(regions);
@@ -197,7 +194,8 @@ std::optional<SmapsRollup> ParseSmapsRollup(const std::string& buffer) {
     std::string key;
     key.resize(100);
     size_t val;
-    if (sscanf(line.c_str(), "%99s %" PRIuS " kB", key.data(), &val) == 2) {
+    if (UNSAFE_TODO(sscanf(line.c_str(), "%99s %" PRIuS " kB", key.data(),
+                           &val)) == 2) {
       // sscanf writes a nul-byte at the end of the result, so |strlen| is safe
       // here. |resize| does not count the length of the nul-byte, and we want
       // to trim off the trailing colon at the end, so we use |strlen - 1| here.

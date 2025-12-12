@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/elf_reader.h"
 
 #include <dlfcn.h>
@@ -15,6 +10,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/debug/test_elf_image_builder.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/native_library.h"
@@ -193,7 +189,7 @@ TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
 
   EXPECT_EQ(kExpectedBuildIdStringLength, build_id_size);
   for (size_t i = 0; i < build_id_size; ++i) {
-    char c = build_id[i];
+    char c = UNSAFE_TODO(build_id[i]);
     EXPECT_TRUE(IsHexDigit(c));
     EXPECT_FALSE(IsAsciiLower(c));
   }
