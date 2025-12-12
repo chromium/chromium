@@ -5,11 +5,11 @@
 #ifndef UI_GL_GL_CONTEXT_H_
 #define UI_GL_GL_CONTEXT_H_
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -337,7 +337,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext> {
 
   void MarkContextLost();
 
-  static base::subtle::Atomic32 total_gl_contexts_;
+  static std::atomic<int32_t> total_gl_contexts_;
 
   static bool switchable_gpus_supported_;
 

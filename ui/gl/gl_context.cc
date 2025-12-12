@@ -52,7 +52,7 @@ constinit thread_local GLContext* current_real_context = nullptr;
 }  // namespace
 
 // static
-base::subtle::Atomic32 GLContext::total_gl_contexts_ = 0;
+std::atomic<int32_t> GLContext::total_gl_contexts_ = 0;
 // static
 bool GLContext::switchable_gpus_supported_ = false;
 
@@ -82,7 +82,7 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
   if (!share_group_.get())
     share_group_ = new gl::GLShareGroup();
   share_group_->AddContext(this);
-  base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, 1);
+  total_gl_contexts_.fetch_add(1, std::memory_order_relaxed);
 }
 
 GLContext::~GLContext() {
@@ -92,15 +92,14 @@ GLContext::~GLContext() {
     SetCurrent(nullptr);
     SetThreadLocalCurrentGL(nullptr);
   }
-  base::subtle::Atomic32 after_value =
-      base::subtle::NoBarrier_AtomicIncrement(&total_gl_contexts_, -1);
+  int32_t after_value =
+      total_gl_contexts_.fetch_add(-1, std::memory_order_relaxed);
   DCHECK(after_value >= 0);
 }
 
 // static
 int32_t GLContext::TotalGLContexts() {
-  return static_cast<int32_t>(
-      base::subtle::NoBarrier_Load(&total_gl_contexts_));
+  return total_gl_contexts_.load(std::memory_order_relaxed);
 }
 
 // static
