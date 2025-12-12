@@ -30,7 +30,7 @@ export function getHtml(this: ComposeboxElement) {
   <search-animated-glow
       animation-state="${this.animationState}"
       .entrypointName="${this.entrypointName}"
-      .requiresVoice="${this.shouldShowVoiceSearch_()}"
+      .requiresVoice="${this.shouldShowVoiceSearchAnimation_()}"
       .transcript="${this.transcript_}"
       .receivedSpeech="${this.receivedSpeech_}"
       exportparts="composebox-background">

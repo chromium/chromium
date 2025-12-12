@@ -12,6 +12,7 @@ export function getHtml(this: OmniboxAimAppElement) {
 <div id="content">
   <cr-composebox id="composebox" ntp-realbox-next-enabled
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
+      ?disable-voice-search-animation="${true}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}"
       @close-composebox="${this.onCloseComposebox_}"
       @composebox-submit="${this.onComposeboxSubmit_}"
