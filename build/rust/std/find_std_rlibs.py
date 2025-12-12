@@ -51,7 +51,15 @@ def main():
   if args.target:
     rustc_args.extend(["--target", args.target])
   rustlib_dir = subprocess.check_output(rustc_args).rstrip().decode()
-  rustlib_dir = os.path.relpath(rustlib_dir)
+  # crbug.com/467351944 - rustc --print target-libdir loses Windows subst paths
+  # due to calling GetFinalPathNameByHandle() during canonicalization. This
+  # dereferences the subst path to the final underlying path, potentially
+  # breaking any relative path computations if the roots for os.curdir
+  # (default argument for os.path.relpath) and rustlib_dir are different. The
+  # workaround is also dereference os.curdir so that the roots are the same for
+  # relative path determination.
+  rustlib_dir = os.path.relpath(rustlib_dir, os.path.realpath(os.curdir))
+
 
   # Copy the rlibs to a predictable location. Whilst we're doing so,
   # also write a .d file so that ninja knows it doesn't need to do this
