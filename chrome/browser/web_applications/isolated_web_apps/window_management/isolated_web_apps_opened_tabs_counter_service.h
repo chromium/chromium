@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_WINDOW_OPEN_PERMISSION_SERVICE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_WINDOW_OPEN_PERMISSION_SERVICE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -48,15 +48,15 @@ namespace web_app {
 //    tabs opened by the app or manage its "Pop-ups and Redirects" permission.
 // 5. When a tracked `WebContents` is destroyed, its timestamp is removed. The
 //    notification remains visible
-class IsolatedWebAppsWindowOpenPermissionService : public KeyedService {
+class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
  public:
   using NotificationAcknowledgedCallback =
       base::RepeatingCallback<void(const webapps::AppId&)>;
   using CloseNotificationCallback =
       base::RepeatingCallback<void(const webapps::AppId&)>;
 
-  explicit IsolatedWebAppsWindowOpenPermissionService(Profile* profile);
-  ~IsolatedWebAppsWindowOpenPermissionService() override;
+  explicit IsolatedWebAppsOpenedTabsCounterService(Profile* profile);
+  ~IsolatedWebAppsOpenedTabsCounterService() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -95,10 +95,10 @@ class IsolatedWebAppsWindowOpenPermissionService : public KeyedService {
   // Set of AppIds for which a notification is currently active.
   base::flat_set<webapps::AppId> apps_with_active_notifications_;
 
-  base::WeakPtrFactory<IsolatedWebAppsWindowOpenPermissionService>
+  base::WeakPtrFactory<IsolatedWebAppsOpenedTabsCounterService>
       weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_WINDOW_OPEN_PERMISSION_SERVICE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_

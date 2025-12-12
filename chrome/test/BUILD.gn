@@ -5334,7 +5334,7 @@ if (!is_android) {
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/lens:browser_tests" ]
       if (use_aura) {
-        sources += [ "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_browsertest.cc" ]
+        sources += [ "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_browsertest.cc" ]
         deps += [ "//ui/aura:test_support" ]
       }
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -27,44 +27,43 @@ BASE_FEATURE(kIsolatedWebAppsWindowOpenPermissionServiceNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
-IsolatedWebAppsWindowOpenPermissionServiceFactory*
-IsolatedWebAppsWindowOpenPermissionServiceFactory::GetInstance() {
-  static base::NoDestructor<IsolatedWebAppsWindowOpenPermissionServiceFactory>
+IsolatedWebAppsOpenedTabsCounterServiceFactory*
+IsolatedWebAppsOpenedTabsCounterServiceFactory::GetInstance() {
+  static base::NoDestructor<IsolatedWebAppsOpenedTabsCounterServiceFactory>
       instance;
   return instance.get();
 }
 
 // static
-IsolatedWebAppsWindowOpenPermissionService*
-IsolatedWebAppsWindowOpenPermissionServiceFactory::GetForProfile(
+IsolatedWebAppsOpenedTabsCounterService*
+IsolatedWebAppsOpenedTabsCounterServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<IsolatedWebAppsWindowOpenPermissionService*>(
+  return static_cast<IsolatedWebAppsOpenedTabsCounterService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-IsolatedWebAppsWindowOpenPermissionServiceFactory::
-    IsolatedWebAppsWindowOpenPermissionServiceFactory()
+IsolatedWebAppsOpenedTabsCounterServiceFactory::
+    IsolatedWebAppsOpenedTabsCounterServiceFactory()
     : IsolatedWebAppBrowserContextServiceFactory(
-          "IsolatedWebAppsWindowOpenPermissionService") {
+          "IsolatedWebAppsOpenedTabsCounterService") {
   DependsOn(WebAppProviderFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
-bool IsolatedWebAppsWindowOpenPermissionServiceFactory::
+bool IsolatedWebAppsOpenedTabsCounterServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
   // TODO(crbug.com/428672473): switch to lazy service initialization.
   return true;
 }
 
-std::unique_ptr<KeyedService>
-IsolatedWebAppsWindowOpenPermissionServiceFactory::
+std::unique_ptr<KeyedService> IsolatedWebAppsOpenedTabsCounterServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* browser_context) const {
   if (!base::FeatureList::IsEnabled(
           kIsolatedWebAppsWindowOpenPermissionServiceNotification)) {
     return nullptr;
   }
-  return std::make_unique<IsolatedWebAppsWindowOpenPermissionService>(
+  return std::make_unique<IsolatedWebAppsOpenedTabsCounterService>(
       Profile::FromBrowserContext(browser_context));
 }
 

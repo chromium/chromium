@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
 
 #include <optional>
 #include <string>
@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -62,10 +62,10 @@ ReadIwaNotificationStateWithLock(const webapps::AppId& app_id,
 
 }  // namespace
 
-class IsolatedWebAppsWindowOpenPermissionServiceBrowserTest
+class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppsWindowOpenPermissionServiceBrowserTest() = default;
+  IsolatedWebAppsOpenedTabsCounterServiceBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
@@ -76,13 +76,13 @@ class IsolatedWebAppsWindowOpenPermissionServiceBrowserTest
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
 
-    isolated_web_apps_window_open_permission_service_ =
-        IsolatedWebAppsWindowOpenPermissionServiceFactory::GetForProfile(
+    isolated_web_apps_opened_tabs_counter_service_ =
+        IsolatedWebAppsOpenedTabsCounterServiceFactory::GetForProfile(
             profile());
   }
 
   void TearDownOnMainThread() override {
-    isolated_web_apps_window_open_permission_service_ = nullptr;
+    isolated_web_apps_opened_tabs_counter_service_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -199,16 +199,16 @@ class IsolatedWebAppsWindowOpenPermissionServiceBrowserTest
 
  protected:
   std::string GetNotificationIdForApp(const webapps::AppId& app_id) {
-    return "isolated_web_apps_window_open_permission_notification_" + app_id;
+    return "isolated_web_apps_opened_tabs_counter_notification_" + app_id;
   }
 
-  raw_ptr<IsolatedWebAppsWindowOpenPermissionService>
-      isolated_web_apps_window_open_permission_service_;
+  raw_ptr<IsolatedWebAppsOpenedTabsCounterService>
+      isolated_web_apps_opened_tabs_counter_service_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(
-    IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+    IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
     SingleIwaIsolatedWebAppsWindowOpenPermissionServiceNotification) {
   webapps::AppId app_id = InstallIsolatedWebApp();
   content::WebContents* iwa_opener_web_contents =
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(notification_added_future.IsReady());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        MultipleOpenerMultipleNotifiations) {
   webapps::AppId app1_id = InstallIsolatedWebApp();
   webapps::AppId app2_id = InstallIsolatedWebApp(kIsolatedApp2DefaultName);
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   EXPECT_EQ(2u, GetNotificationCount());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        ShowNotificationPerIwaAtMostThreeTimes) {
   webapps::AppId app_id = InstallIsolatedWebApp();
   content::WebContents* iwa_opener_web_contents =
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        PRE_TimesShownCounterPersistence) {
   webapps::AppId app_id = InstallIsolatedWebApp(
       "IWA1", web_package::test::GetDefaultEd25519KeyPair());
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   ASSERT_TRUE(notification_added_future.Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        TimesShownCounterPersistence) {
   webapps::AppId app_id = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                               web_package::test::GetDefaultEd25519WebBundleId())
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        PRE_AcknowledgedFieldPersistence) {
   webapps::AppId app_id = InstallIsolatedWebApp(
       "IWA1", web_package::test::GetDefaultEd25519KeyPair());
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
   EXPECT_FALSE(display_service_tester_->GetNotification(notification_id));
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        AcknowledgedFieldPersistence) {
   webapps::AppId app_id = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                               web_package::test::GetDefaultEd25519WebBundleId())
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
                         /*expected_acknowledged=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        NoopenerArgumentDoesNotAffectCounters) {
   webapps::AppId app_id = InstallIsolatedWebApp();
   content::WebContents* iwa_opener_web_contents =
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
       notification_added_future, kIsolatedApp1DefaultName);
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        SelfTargetIsCountedAsOpenedByIwa) {
   webapps::AppId app_id = InstallIsolatedWebApp();
 
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
       notification_added_future, kIsolatedApp1DefaultName);
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppsWindowOpenPermissionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                        ForceInstalledIwaNeverShowsNotification) {
   webapps::AppId app_id = ForceInstallIsolatedWebApp();
 

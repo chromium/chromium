@@ -107,7 +107,7 @@ message IsolationData {
     optional uint32 times_shown = 2;
   }
 
-  // Count of how many times IsolatedWebAppsWindowOpenPermissionService
+  // Count of how many times IsolatedWebAppsOpenedTabsCounterService
   // notification has been shown for the app.
   optional OpenedTabsCounterNotificationState
       opened_tabs_counter_notification_state = 10;

@@ -172,10 +172,9 @@ class NavigationCapturingProcess
       const NavigateParams& params);
 
   // Checks if a newly created `WebContents` was programmatically opened by an
-  // Isolated Web App and notifies the
-  // `IsolatedWebAppsWindowOpenPermissionService` so it can be tracked. The
-  // opener is identified via the opener chain or the navigation's initiator
-  // origin. Standard link clicks are ignored.
+  // Isolated Web App and notifies the `IsolatedWebAppsOpenedTabsCounterService`
+  // so it can be tracked. The opener is identified via the opener chain or the
+  // navigation's initiator origin. Standard link clicks are ignored.
   void MaybeNotifyIwaTabCounterService(
       content::WebContents& web_contents,
       content::NavigationHandle* navigation_handle);
