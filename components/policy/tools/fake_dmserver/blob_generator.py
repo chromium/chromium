@@ -157,11 +157,14 @@ def apply_extension_install_policies(policies, policy_blobs):
         policy.reasons.append(dm.ExtensionInstallPolicy.REASON_RISK_SCORE)
       else:
         raise ValueError(f"Invalid reason: {reason}.")
-    encoded_policy = base64.b64encode(
-        policy.SerializeToString()).decode("utf-8")
+    policies = dm.ExtensionInstallPolicies()
+    policies.policies.append(policy)
+    encoded_policies = base64.b64encode(
+        policies.SerializeToString()).decode("utf-8")
     policy_blobs.append({
-        "policy_type": f"google/chrome/machine-level-extension-install/{key}",
-        "value": encoded_policy
+        "policy_type": f"google/chrome/machine-level-extension-install",
+        "entity_id": key,
+        "value": encoded_policies,
     })
 
 
@@ -289,6 +292,11 @@ please refer to the README.md in this directory.""",
           "policy_type": "google/chrome/user",
           "value": encoded_policy
       })
+
+    if "user-level-extension-install" in simple_policies:
+      apply_extension_install_policies(
+          simple_policies["user-level-extension-install"],
+          policy_blob["policies"])
 
     if "machine-level-user" in simple_policies:
       browser_settings = chrome_settings_pb2.ChromeSettingsProto()
