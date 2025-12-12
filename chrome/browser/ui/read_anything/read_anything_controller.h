@@ -88,10 +88,16 @@ class ReadAnythingController : public TabStripModelObserver {
   ReadAnythingController& operator=(const ReadAnythingController&) = delete;
   ~ReadAnythingController() override;
 
+  // Represents who owns the Reading Mode WebUI
   enum class PresentationState {
-    kInactive,
-    kInSidePanel,
-    kInImmersiveOverlay,
+    kUndefined,  // The WebUI doesn't exist yet.
+    kInactive,  // The WebUI exists but is hosted by the ReadAnythingController,
+                // not by a view.
+    kInSidePanel,  // The WebUI is hosted by the Side Panel. Does not mean that
+                   // it's necessarily showing yet in the Side Panel.
+    kInImmersiveOverlay,  // The WebUI is hosted by the ImmersiveOverlay. Does
+                          // not mean that it's necessarily showing yet in the
+                          // overlay.
   };
 
   ReadAnythingController(tabs::TabInterface* tab,
@@ -123,14 +129,17 @@ class ReadAnythingController : public TabStripModelObserver {
 
   int GetNavCounterForTesting() const;
 
-  // Returns the current presentation state of the Reading Mode feature.
+  // Returns the current presentation_state_ of the Reading Mode feature. This
+  // refers to the current host of the WebUI, but does not guarantee that the
+  // feature is necessarily showing by the host.
   PresentationState GetPresentationState() const;
 
   // Lazily creates and returns the WebUIContentsWrapper for the
   // Reading Mode WebUI. Transfers ownership of the WebUIContentsWrapper to the
-  // caller.
+  // caller, and the caller passes in the presentation that the webui will be
+  // presented in (e.g. kInSidePanel, kInImmersiveOverlay)
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-  GetOrCreateWebUIWrapper();
+  GetOrCreateWebUIWrapper(PresentationState web_ui_new_presentation_state);
 
   // Getter for has_shown_ui_. This is used by RM host views to
   // determine if the Reading Mode is ready to be shown, or if it should wait
@@ -201,6 +210,8 @@ class ReadAnythingController : public TabStripModelObserver {
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  PresentationState presentation_state_ = PresentationState::kUndefined;
 
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };

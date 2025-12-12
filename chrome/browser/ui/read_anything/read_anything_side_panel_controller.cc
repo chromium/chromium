@@ -281,7 +281,8 @@ ReadAnythingSidePanelController::CreateContainerView(
   if (features::IsImmersiveReadAnythingEnabled()) {
     web_view = std::make_unique<ReadAnythingSidePanelWebView>(
         tab_->GetBrowserWindowInterface()->GetProfile(), scope,
-        ReadAnythingController::From(tab_)->GetOrCreateWebUIWrapper());
+        ReadAnythingController::From(tab_)->GetOrCreateWebUIWrapper(
+            ReadAnythingController::PresentationState::kInSidePanel));
   } else {
     web_view = std::make_unique<ReadAnythingSidePanelWebView>(
         tab_->GetBrowserWindowInterface()->GetProfile(), scope);

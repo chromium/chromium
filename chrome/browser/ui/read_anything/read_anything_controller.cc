@@ -175,7 +175,9 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
 
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-ReadAnythingController::GetOrCreateWebUIWrapper() {
+ReadAnythingController::GetOrCreateWebUIWrapper(
+    PresentationState web_ui_new_presentation_state) {
+  presentation_state_ = web_ui_new_presentation_state;
   if (!web_ui_wrapper_) {
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
     web_ui_wrapper_ =
@@ -208,6 +210,7 @@ void ReadAnythingController::TransferWebUiOwnership(
         web_ui_wrapper) {
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);
+  presentation_state_ = PresentationState::kInactive;
 }
 
 // TODO(crbug.com/447418049): Open immersive reading mode via this
@@ -235,17 +238,7 @@ void ReadAnythingController::ToggleReadAnythingSidePanel(
 // TODO(crbug.com/458335664): Add logic to check if IRM SidePanel is showing
 ReadAnythingController::PresentationState
 ReadAnythingController::GetPresentationState() const {
-  if (tab_ && tab_->GetBrowserWindowInterface()) {
-    SidePanelUI* side_panel_ui =
-        tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
-
-    if (side_panel_ui &&
-        side_panel_ui->IsSidePanelEntryShowing(
-            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
-      return PresentationState::kInSidePanel;
-    }
-  }
-  return PresentationState::kInactive;
+  return presentation_state_;
 }
 
 void ReadAnythingController::OnMainPagePrimaryPageChanged() {

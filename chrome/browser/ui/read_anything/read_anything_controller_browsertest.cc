@@ -144,7 +144,38 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
+}
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       GetOrCreateWebUIWrapper_SetsState) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kUndefined);
+
+  // The wrapper is moved to the caller, so we must keep it alive.
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
+      controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInSidePanel);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       TransferWebUiOwnership_ResetsState) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  auto wrapper = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+
+  controller->TransferWebUiOwnership(std::move(wrapper));
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInactive);
 }
@@ -172,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(controller);
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper();
+      controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInactive);
   EXPECT_TRUE(wrapper);
   EXPECT_TRUE(wrapper->web_contents());
   EXPECT_TRUE(wrapper->web_contents()->GetWebUI());
@@ -187,7 +219,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Create the WebUI contents and get a pointer to it.
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper();
+      controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInactive);
   content::WebContents* controller_web_contents = wrapper->web_contents();
   ASSERT_TRUE(controller_web_contents);
 
@@ -331,7 +364,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Ensure the WebUI is now owned by the controller.
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
-      controller->GetOrCreateWebUIWrapper();
+      controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInactive);
   ASSERT_TRUE(wrapper->web_contents());
   // Return the wrapper to the controller so it can be passed to the side panel.
   controller->SetWebUIWrapperForTest(std::move(wrapper));
