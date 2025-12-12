@@ -32,7 +32,7 @@ getRootAXNode for main frame:
             }
         ]
         type : computedString
-        value :
+        value : 
     }
     nodeId : <string>
     properties : <object>

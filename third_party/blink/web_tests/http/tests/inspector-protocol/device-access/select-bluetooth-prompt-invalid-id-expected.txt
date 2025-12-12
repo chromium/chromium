@@ -3,7 +3,7 @@ deviceRequestPrompted: {
     devices : [
         [0] : {
             id : <string>
-            name :
+            name : 
         }
     ]
     id : <string>

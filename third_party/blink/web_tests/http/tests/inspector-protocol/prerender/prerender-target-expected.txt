@@ -1,5 +1,5 @@
 Test that prerender navigations receives the target updates
-Events (in order) [
+Events (in order)[
     [0] : {
         method : Preload.prerenderStatusUpdated
         params : {
@@ -23,9 +23,9 @@ Events (in order) [
                 canAccessOpener : false
                 subtype : prerender
                 targetId : <string>
-                title :
+                title : 
                 type : page
-                url :
+                url : 
             }
             waitingForDebugger : false
         }

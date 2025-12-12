@@ -12,7 +12,7 @@ Nodes:
             nodeId : <number>
             nodeName : ::backdrop
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : backdrop
         }
     }
@@ -26,7 +26,7 @@ Nodes:
                 [0] : id
                 [1] : dialog1
                 [2] : open
-                [3] :
+                [3] : 
             ]
             backendNodeId : <number>
             childNodeCount : 1
@@ -34,7 +34,7 @@ Nodes:
             nodeId : <number>
             nodeName : DIALOG
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElements : [
                 [0] : {
                     attributes : [
@@ -45,7 +45,7 @@ Nodes:
                     nodeId : <number>
                     nodeName : ::backdrop
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     pseudoType : backdrop
                 }
             ]
@@ -65,7 +65,7 @@ Nodes:
             nodeId : <number>
             nodeName : ::backdrop
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : backdrop
         }
     }
@@ -79,7 +79,7 @@ Nodes:
                 [0] : id
                 [1] : dialog2
                 [2] : open
-                [3] :
+                [3] : 
             ]
             backendNodeId : <number>
             childNodeCount : 0
@@ -87,7 +87,7 @@ Nodes:
             nodeId : <number>
             nodeName : DIALOG
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElements : [
                 [0] : {
                     attributes : [
@@ -98,7 +98,7 @@ Nodes:
                     nodeId : <number>
                     nodeName : ::backdrop
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     pseudoType : backdrop
                 }
             ]
@@ -118,7 +118,7 @@ Nodes:
             nodeId : <number>
             nodeName : ::backdrop
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : backdrop
         }
     }
@@ -132,7 +132,7 @@ Nodes:
                 [0] : id
                 [1] : iframeDialog
                 [2] : open
-                [3] :
+                [3] : 
             ]
             backendNodeId : <number>
             childNodeCount : 0
@@ -140,7 +140,7 @@ Nodes:
             nodeId : <number>
             nodeName : DIALOG
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElements : [
                 [0] : {
                     attributes : [
@@ -151,7 +151,7 @@ Nodes:
                     nodeId : <number>
                     nodeName : ::backdrop
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     pseudoType : backdrop
                 }
             ]

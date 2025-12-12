@@ -2,14 +2,14 @@ Tests that `Page.frameSubtreeWillBeDetached` event is emitted before the frame s
 ... creating and navigating iframe http://127.0.0.1:8000/inspector-protocol/resources/same_origin_iframe.html
 ... iframe created and navigated
 ... removing the frame
-Received event {
+Received event{
     method : Page.frameSubtreeWillBeDetached
     params : {
         frameId : <string 0>
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 1>
@@ -17,7 +17,7 @@ Received event {
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 0>
@@ -29,14 +29,14 @@ Received event {
 ... creating and navigating iframe http://127.0.0.1:8000/inspector-protocol/resources/cross_origin_iframe.html
 ... iframe created and navigated
 ... removing the frame
-Received event {
+Received event{
     method : Page.frameSubtreeWillBeDetached
     params : {
         frameId : <string 2>
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 3>
@@ -44,7 +44,7 @@ Received event {
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 2>
@@ -56,14 +56,14 @@ Received event {
 ... creating and navigating iframe http://oopif.test:8000/inspector-protocol/resources/cross_origin_iframe.html
 ... iframe created and navigated
 ... removing the frame
-Received event {
+Received event{
     method : Page.frameSubtreeWillBeDetached
     params : {
         frameId : <string 4>
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 4>
@@ -75,14 +75,14 @@ Received event {
 ... creating and navigating iframe http://devtools.test:8000/inspector-protocol/resources/cross_origin_iframe.html
 ... iframe created and navigated
 ... removing the frame
-Received event {
+Received event{
     method : Page.frameSubtreeWillBeDetached
     params : {
         frameId : <string 5>
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 6>
@@ -90,7 +90,7 @@ Received event {
     }
     sessionId : <string>
 }
-Received event {
+Received event{
     method : Page.frameDetached
     params : {
         frameId : <string 5>

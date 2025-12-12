@@ -9,17 +9,17 @@ Attached frame {
             callFrames : [
                 [0] : {
                     columnNumber : 18
-                    functionName :
+                    functionName : 
                     lineNumber : 3
                     scriptId : 4
-                    url :
+                    url : 
                 }
             ]
         }
     }
     sessionId : <string>
 }
-Detached frame (swap) {
+Detached frame (swap){
     method : Page.frameDetached
     params : {
         frameId : <string>
@@ -43,7 +43,7 @@ Destroyed target {
     }
     sessionId : <string>
 }
-Events (in order) [
+Events (in order)[
     [0] : {
         method : Page.frameAttached
         params : {
@@ -53,10 +53,10 @@ Events (in order) [
                 callFrames : [
                     [0] : {
                         columnNumber : 18
-                        functionName :
+                        functionName : 
                         lineNumber : 3
                         scriptId : 4
-                        url :
+                        url : 
                     }
                 ]
             }

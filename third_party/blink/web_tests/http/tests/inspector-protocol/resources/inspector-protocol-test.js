@@ -102,19 +102,13 @@ var TestRunner = class {
         else
           dumpProperties(value, prefix, prefixWithName);
       } else {
-        const valueStr = String(value).replace(/\n/g, ' ');
-        if (valueStr.length)
-          prefixWithName += ' ';
-        lines.push(prefixWithName + valueStr);
+        lines.push(prefixWithName + String(value).replace(/\n/g, ' '));
       }
     }
 
     function dumpProperties(object, prefix, firstLinePrefix) {
       prefix = prefix || '';
       firstLinePrefix = firstLinePrefix || prefix;
-      if (/\S$/.test(firstLinePrefix)) {
-        firstLinePrefix += ' ';
-      }
       lines.push(firstLinePrefix + '{');
 
       var propertyNames = Object.keys(object);
@@ -123,7 +117,7 @@ var TestRunner = class {
         var name = propertyNames[i];
         if (!object.hasOwnProperty(name))
           continue;
-        var prefixWithName = '    ' + prefix + name + ' :';
+        var prefixWithName = '    ' + prefix + name + ' : ';
         var value = object[name];
         if (stabilizeValues && stabilizeValues.includes(name)) {
           if (!stableValues.has(value)) {
@@ -141,12 +135,9 @@ var TestRunner = class {
     function dumpItems(object, prefix, firstLinePrefix) {
       prefix = prefix || '';
       firstLinePrefix = firstLinePrefix || prefix;
-      if (/\S$/.test(firstLinePrefix)) {
-        firstLinePrefix += ' ';
-      }
       lines.push(firstLinePrefix + '[');
       for (var i = 0; i < object.length; ++i)
-        dumpValue(object[i], '    ' + prefix, '    ' + prefix + '[' + i + '] :');
+        dumpValue(object[i], '    ' + prefix, '    ' + prefix + '[' + i + '] : ');
       lines.push(prefix + ']');
     }
 

@@ -1,6 +1,6 @@
 Verifies that cookies blocked for a request of a subdomain of the cookie's domain are included in the blocked cookies of Network.RequestWillBeSentExtraInfo events.
 
-requestWillBeSentExtraInfo blocked cookies: [
+requestWillBeSentExtraInfo blocked cookies:[
     [0] : {
         blockedReasons : [
             [0] : DomainMismatch

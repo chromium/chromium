@@ -1,5 +1,5 @@
 Tests that appropriate Network domain events are dispatched during speculation rules prefetch while following redirects
-Network.requestWillBeSent {
+Network.requestWillBeSent{
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -29,7 +29,7 @@ Network.requestWillBeSent {
     type : Document
     wallTime : <number>
 }
-Network.requestWillBeSentExtraInfo {
+Network.requestWillBeSentExtraInfo{
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -52,14 +52,14 @@ Network.requestWillBeSentExtraInfo {
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.responseReceived {
+Network.responseReceived{
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset :
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : <number>
@@ -92,7 +92,7 @@ Network.responseReceived {
     timestamp : <number>
     type : Document
 }
-Network.responseReceivedExtraInfo {
+Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -115,15 +115,15 @@ Network.responseReceivedExtraInfo {
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Loopback
+    resourceIPAddressSpace : Local
     statusCode : 200
 }
-Network.loadingFinished {
+Network.loadingFinished{
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
-Network.requestWillBeSent {
+Network.requestWillBeSent{
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -138,7 +138,6 @@ Network.requestWillBeSent {
             Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
             Sec-Purpose : prefetch
-            Sec-Speculation-Tags : null
             Upgrade-Insecure-Requests : 1
             sec-ch-ua : "content_shell";v="999"
             sec-ch-ua-mobile : ?0
@@ -154,7 +153,7 @@ Network.requestWillBeSent {
     type : Prefetch
     wallTime : <number>
 }
-Network.requestWillBeSentExtraInfo {
+Network.requestWillBeSentExtraInfo{
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -169,7 +168,6 @@ Network.requestWillBeSentExtraInfo {
         Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
-        Sec-Speculation-Tags : null
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
         sec-ch-ua : "content_shell";v="999"
@@ -179,7 +177,7 @@ Network.requestWillBeSentExtraInfo {
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.requestWillBeSent {
+Network.requestWillBeSent{
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -191,7 +189,7 @@ Network.requestWillBeSent {
     redirectHasExtraInfo : true
     redirectResponse : {
         alternateProtocolUsage : unspecifiedReason
-        charset :
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : <number>
@@ -225,7 +223,6 @@ Network.requestWillBeSent {
             Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?url=%2Fresources%2Fredirect.php%3Furl%3D%252Fresources%252Fblank.html
             Sec-Purpose : prefetch
-            Sec-Speculation-Tags : null
             Upgrade-Insecure-Requests : 1
             sec-ch-ua : "content_shell";v="999"
             sec-ch-ua-mobile : ?0
@@ -241,7 +238,7 @@ Network.requestWillBeSent {
     type : Prefetch
     wallTime : <number>
 }
-Network.responseReceivedExtraInfo {
+Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -263,10 +260,10 @@ Network.responseReceivedExtraInfo {
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Loopback
+    resourceIPAddressSpace : Local
     statusCode : 302
 }
-Network.requestWillBeSentExtraInfo {
+Network.requestWillBeSentExtraInfo{
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -281,7 +278,6 @@ Network.requestWillBeSentExtraInfo {
         Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
-        Sec-Speculation-Tags : null
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
         sec-ch-ua : "content_shell";v="999"
@@ -291,14 +287,14 @@ Network.requestWillBeSentExtraInfo {
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.responseReceived {
+Network.responseReceived{
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset :
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : <number>
@@ -331,7 +327,7 @@ Network.responseReceived {
     timestamp : <number>
     type : Prefetch
 }
-Network.responseReceivedExtraInfo {
+Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -354,15 +350,15 @@ Network.responseReceivedExtraInfo {
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Loopback
+    resourceIPAddressSpace : Local
     statusCode : 200
 }
-Network.loadingFinished {
+Network.loadingFinished{
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
-Unable to get prefetch response body {
+Unable to get prefetch response body{
     code : -32000
     message : No resource with given identifier found
 }

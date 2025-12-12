@@ -1,18 +1,18 @@
 Tests that Page.getLayoutMetrics returns reasonable values.
 # initial metrics
-cssLayoutViewport {
+cssLayoutViewport{
     clientHeight : 585
     clientWidth : 785
     pageX : 0
     pageY : 0
 }
-cssContentSize {
+cssContentSize{
     height : 10016
     width : 10008
     x : 0
     y : 0
 }
-cssVisualViewport {
+cssVisualViewport{
     clientHeight : 585
     clientWidth : 785
     offsetX : 0
@@ -23,19 +23,19 @@ cssVisualViewport {
     zoom : 1
 }
 # scroll (100, 100)
-cssLayoutViewport {
+cssLayoutViewport{
     clientHeight : 585
     clientWidth : 785
     pageX : 100
     pageY : 100
 }
-cssContentSize {
+cssContentSize{
     height : 10016
     width : 10008
     x : 0
     y : 0
 }
-cssVisualViewport {
+cssVisualViewport{
     clientHeight : 585
     clientWidth : 785
     offsetX : 0
@@ -46,19 +46,19 @@ cssVisualViewport {
     zoom : 1
 }
 # internals.setPageScaleFactor(2)
-cssLayoutViewport {
+cssLayoutViewport{
     clientHeight : 285
     clientWidth : 385
     pageX : 100
     pageY : 100
 }
-cssContentSize {
+cssContentSize{
     height : 10016
     width : 10008
     x : 0
     y : 0
 }
-cssVisualViewport {
+cssVisualViewport{
     clientHeight : 292.5
     clientWidth : 392.5
     offsetX : 0
@@ -69,19 +69,19 @@ cssVisualViewport {
     zoom : 1
 }
 # internals.setPageScaleFactor(0.5)
-cssLayoutViewport {
+cssLayoutViewport{
     clientHeight : 1185
     clientWidth : 1585
     pageX : 100
     pageY : 100
 }
-cssContentSize {
+cssContentSize{
     height : 10016
     width : 10008
     x : 0
     y : 0
 }
-cssVisualViewport {
+cssVisualViewport{
     clientHeight : 1170
     clientWidth : 1570
     offsetX : 0

@@ -1,5 +1,5 @@
 Tests overridden headers don't stick across redirects
-Redirected request headers: {
+Redirected request headers:{
     Accept : */*
     Accept-Language : en-us,en;q=0.9
     Referer : http://google.com/

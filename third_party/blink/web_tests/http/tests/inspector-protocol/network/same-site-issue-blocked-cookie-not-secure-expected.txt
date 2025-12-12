@@ -1,6 +1,6 @@
 Verifies that setting a cookie with SameSite=None and without Secure triggers an inspector issue.
 
-Inspector issue: {
+Inspector issue:{
     issue : {
         code : CookieIssue
         details : {

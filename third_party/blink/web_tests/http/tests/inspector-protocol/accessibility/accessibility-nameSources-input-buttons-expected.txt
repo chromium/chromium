@@ -34,7 +34,7 @@ Tests name sources in input[type=button].
             }
         ]
         type : computedString
-        value :
+        value : 
     }
     nodeId : <string>
     parentId : <string>

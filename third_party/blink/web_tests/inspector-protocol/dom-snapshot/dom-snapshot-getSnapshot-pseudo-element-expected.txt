@@ -51,7 +51,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 0
             nodeName : #document
             nodeType : 9
-            nodeValue :
+            nodeValue : 
             scrollOffsetX : 0
             scrollOffsetY : 0
         }
@@ -65,7 +65,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 1
             nodeName : HTML
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [2] : {
             backendNodeId : <number>
@@ -77,7 +77,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [3] : {
             backendNodeId : <number>
@@ -86,7 +86,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [4] : {
             backendNodeId : <number>
@@ -110,7 +110,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             backendNodeId : <number>
             nodeName : SCRIPT
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [7] : {
             backendNodeId : <number>
@@ -134,7 +134,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 2
             nodeName : BODY
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [9] : {
             backendNodeId : <number>
@@ -156,7 +156,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 3
             nodeName : P
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElementIndexes : [
                 [0] : 11
             ]
@@ -166,7 +166,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 5
             nodeName : ::first-letter
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : first-letter
         }
         [12] : {
@@ -196,7 +196,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 7
             nodeName : P
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElementIndexes : [
                 [0] : 15
             ]
@@ -206,7 +206,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 9
             nodeName : ::first-letter
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : first-letter
         }
         [16] : {
@@ -217,7 +217,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 10
             nodeName : SPAN
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [17] : {
             backendNodeId : <number>
@@ -246,7 +246,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 12
             nodeName : P
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoElementIndexes : [
                 [0] : 20
                 [1] : 21
@@ -257,7 +257,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 14
             nodeName : ::first-letter
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : first-letter
         }
         [21] : {
@@ -265,7 +265,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 19
             nodeName : ::before
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             pseudoType : before
         }
         [22] : {
@@ -292,7 +292,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 21
             nodeName : UL
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [25] : {
             backendNodeId : <number>
@@ -302,7 +302,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 22
             nodeName : LI
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [26] : {
             backendNodeId : <number>
@@ -319,7 +319,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 24
             nodeName : LI
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [28] : {
             backendNodeId : <number>
@@ -336,7 +336,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 26
             nodeName : LI
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [30] : {
             backendNodeId : <number>
@@ -353,7 +353,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
             layoutNodeIndex : 28
             nodeName : LI
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [32] : {
             backendNodeId : <number>

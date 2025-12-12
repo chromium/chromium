@@ -13,10 +13,10 @@ From session1:
                 callFrames : [
                     [0] : {
                         columnNumber : 9
-                        functionName :
+                        functionName : 
                         lineNumber : 0
                         scriptId : <string>
-                        url :
+                        url : 
                     }
                 ]
             }
@@ -40,10 +40,10 @@ From session1:
                 callFrames : [
                     [0] : {
                         columnNumber : 9
-                        functionName :
+                        functionName : 
                         lineNumber : 0
                         scriptId : <string>
-                        url :
+                        url : 
                     }
                 ]
             }
@@ -65,10 +65,10 @@ From session2:
                 callFrames : [
                     [0] : {
                         columnNumber : 9
-                        functionName :
+                        functionName : 
                         lineNumber : 0
                         scriptId : <string>
-                        url :
+                        url : 
                     }
                 ]
             }
@@ -92,10 +92,10 @@ From session2:
                 callFrames : [
                     [0] : {
                         columnNumber : 9
-                        functionName :
+                        functionName : 
                         lineNumber : 0
                         scriptId : <string>
-                        url :
+                        url : 
                     }
                 ]
             }

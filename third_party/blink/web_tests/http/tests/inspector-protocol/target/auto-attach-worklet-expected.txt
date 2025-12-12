@@ -1,5 +1,5 @@
 Tests auto-attach of worklets.
-Attached to worklet {
+Attached to worklet{
     sessionId : <string>
     targetInfo : {
         attached : true

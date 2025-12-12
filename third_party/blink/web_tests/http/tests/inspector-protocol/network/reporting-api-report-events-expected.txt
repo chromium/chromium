@@ -9,8 +9,8 @@ Report added:
         effectiveDirective : script-src-elem
         lineNumber : 9
         originalPolicy : script-src 'none'; object-src 'none'; report-to csp
-        referrer :
-        sample :
+        referrer : 
+        sample : 
         sourceFile : http://localhost:8080/inspector-protocol/network/resources/generate-report.php
         statusCode : 200
     }
@@ -32,8 +32,8 @@ Report updated:
         effectiveDirective : script-src-elem
         lineNumber : 9
         originalPolicy : script-src 'none'; object-src 'none'; report-to csp
-        referrer :
-        sample :
+        referrer : 
+        sample : 
         sourceFile : http://localhost:8080/inspector-protocol/network/resources/generate-report.php
         statusCode : 200
     }
@@ -55,8 +55,8 @@ Report updated:
         effectiveDirective : script-src-elem
         lineNumber : 9
         originalPolicy : script-src 'none'; object-src 'none'; report-to csp
-        referrer :
-        sample :
+        referrer : 
+        sample : 
         sourceFile : http://localhost:8080/inspector-protocol/network/resources/generate-report.php
         statusCode : 200
     }

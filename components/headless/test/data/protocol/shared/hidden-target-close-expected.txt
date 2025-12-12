@@ -7,7 +7,7 @@ Filtered targets via browser session: [
     }
 ]
 Close hidden target
-DetachedFromTarget {
+DetachedFromTarget{
     method : Target.detachedFromTarget
     params : {
         sessionId : <string 1>

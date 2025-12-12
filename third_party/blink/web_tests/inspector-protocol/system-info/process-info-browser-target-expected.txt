@@ -1,10 +1,10 @@
 Tests ProcessInfo retrieval from browser target
-Process: {
+Process:{
     cpuTime : <number>
     id : <number>
     type : browser
 }
-Process: {
+Process:{
     cpuTime : <number>
     id : <number>
     type : renderer

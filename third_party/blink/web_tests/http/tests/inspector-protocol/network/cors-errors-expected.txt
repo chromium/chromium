@@ -14,7 +14,7 @@ Test to make sure CORS errors are correctly reported.
     canceled : false
     corsErrorStatus : {
         corsError : MissingAllowOriginHeader
-        failedParameter :
+        failedParameter : 
     }
     errorText : net::ERR_FAILED
     requestId : <string>

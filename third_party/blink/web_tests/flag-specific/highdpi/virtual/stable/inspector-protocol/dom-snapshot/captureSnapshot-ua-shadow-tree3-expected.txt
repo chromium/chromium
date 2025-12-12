@@ -201,9 +201,9 @@ Tests that DOMSnapshot properly descends into the shadow tree
         }
     ]
     strings : [
-        [0] :
+        [0] : 
         [1] : windows-1252
-        [2] :
+        [2] : 
         [3] : #document
         [4] : HTML
         [5] : HEAD

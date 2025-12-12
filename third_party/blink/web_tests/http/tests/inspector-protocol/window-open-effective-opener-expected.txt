@@ -8,9 +8,9 @@ Opening without new browsing context
     openerFrameId : <string>
     openerId : <string>
     targetId : <string>
-    title :
+    title : 
     type : page
-    url :
+    url : 
 }
 PASS: Correct openerFrameId
 PASS: Correct openerId
@@ -36,9 +36,9 @@ Opening with new browsing context
     openerFrameId : <string>
     openerId : <string>
     targetId : <string>
-    title :
+    title : 
     type : page
-    url :
+    url : 
 }
 PASS: Correct openerFrameId
 PASS: Correct openerId
@@ -64,9 +64,9 @@ Opening with COOP header
     openerFrameId : <string>
     openerId : <string>
     targetId : <string>
-    title :
+    title : 
     type : page
-    url :
+    url : 
 }
 PASS: Correct openerFrameId
 PASS: Correct openerId

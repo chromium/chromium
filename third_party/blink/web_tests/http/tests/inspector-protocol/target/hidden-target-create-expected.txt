@@ -14,28 +14,28 @@ Filtered targets via browser session: [
     }
 ]
 Disconnect the parent session
-DetachedFromTarget {
+DetachedFromTarget{
     method : Target.detachedFromTarget
     params : {
         sessionId : <string 1>
         targetId : <string 2>
     }
 }
-DetachedFromTarget {
+DetachedFromTarget{
     method : Target.detachedFromTarget
     params : {
         sessionId : <string 3>
         targetId : <string 0>
     }
 }
-DetachedFromTarget {
+DetachedFromTarget{
     method : Target.detachedFromTarget
     params : {
         sessionId : <string 4>
         targetId : <string 0>
     }
 }
-TargetDestroyed {
+TargetDestroyed{
     method : Target.targetDestroyed
     params : {
         targetId : <string 0>

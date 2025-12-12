@@ -1,16 +1,16 @@
 Tests that requestData can query both object stores and indices
 Object store data entries
-key {
+key{
     description : 1
     type : number
     value : 1
 }
-primaryKey {
+primaryKey{
     description : 1
     type : number
     value : 1
 }
-value {
+value{
     className : Object
     description : Object
     objectId : <string>
@@ -33,17 +33,17 @@ value {
     }
     type : object
 }
-key {
+key{
     description : 4
     type : number
     value : 4
 }
-primaryKey {
+primaryKey{
     description : 4
     type : number
     value : 4
 }
-value {
+value{
     className : Object
     description : Object
     objectId : <string>
@@ -67,17 +67,17 @@ value {
     type : object
 }
 Index data entries
-key {
+key{
     description : 2
     type : number
     value : 2
 }
-primaryKey {
+primaryKey{
     description : 4
     type : number
     value : 4
 }
-value {
+value{
     className : Object
     description : Object
     objectId : <string>
@@ -100,17 +100,17 @@ value {
     }
     type : object
 }
-key {
+key{
     description : 3
     type : number
     value : 3
 }
-primaryKey {
+primaryKey{
     description : 1
     type : number
     value : 1
 }
-value {
+value{
     className : Object
     description : Object
     objectId : <string>

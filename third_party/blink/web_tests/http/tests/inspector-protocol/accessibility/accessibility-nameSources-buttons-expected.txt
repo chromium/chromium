@@ -30,7 +30,7 @@ Tests name sources in buttons.
             }
         ]
         type : computedString
-        value :
+        value : 
     }
     nodeId : <string>
     parentId : <string>
@@ -147,7 +147,7 @@ Tests name sources in buttons.
             }
         ]
         type : computedString
-        value :
+        value : 
     }
     nodeId : <string>
     parentId : <string>

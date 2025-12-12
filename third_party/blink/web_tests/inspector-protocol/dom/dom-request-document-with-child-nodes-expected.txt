@@ -24,7 +24,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                             nodeId : <number>
                             nodeName : HEAD
                             nodeType : 1
-                            nodeValue :
+                            nodeValue : 
                             parentId : <number>
                         }
                         [1] : {
@@ -88,7 +88,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                 nodeId : <number>
                                                                                 nodeName : HEAD
                                                                                 nodeType : 1
-                                                                                nodeValue :
+                                                                                nodeValue : 
                                                                                 parentId : <number>
                                                                             }
                                                                             [1] : {
@@ -112,7 +112,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                         nodeId : <number>
                                                                                         nodeName : DIV
                                                                                         nodeType : 1
-                                                                                        nodeValue :
+                                                                                        nodeValue : 
                                                                                         parentId : <number>
                                                                                         shadowRoots : [
                                                                                             [0] : {
@@ -135,7 +135,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                                                 children : [
                                                                                                                     [0] : {
                                                                                                                         backendNodeId : <number>
-                                                                                                                        localName :
+                                                                                                                        localName : 
                                                                                                                         nodeId : <number>
                                                                                                                         nodeName : #text
                                                                                                                         nodeType : 3
@@ -147,7 +147,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                                                 nodeId : <number>
                                                                                                                 nodeName : H1
                                                                                                                 nodeType : 1
-                                                                                                                nodeValue :
+                                                                                                                nodeValue : 
                                                                                                                 parentId : <number>
                                                                                                             }
                                                                                                         ]
@@ -155,15 +155,15 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                                         nodeId : <number>
                                                                                                         nodeName : DIV
                                                                                                         nodeType : 1
-                                                                                                        nodeValue :
+                                                                                                        nodeValue : 
                                                                                                         parentId : <number>
                                                                                                     }
                                                                                                 ]
-                                                                                                localName :
+                                                                                                localName : 
                                                                                                 nodeId : <number>
                                                                                                 nodeName : #document-fragment
                                                                                                 nodeType : 11
-                                                                                                nodeValue :
+                                                                                                nodeValue : 
                                                                                                 shadowRootType : open
                                                                                             }
                                                                                         ]
@@ -176,7 +176,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                         children : [
                                                                                             [0] : {
                                                                                                 backendNodeId : <number>
-                                                                                                localName :
+                                                                                                localName : 
                                                                                                 nodeId : <number>
                                                                                                 nodeName : #text
                                                                                                 nodeType : 3
@@ -188,7 +188,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                         nodeId : <number>
                                                                                         nodeName : SCRIPT
                                                                                         nodeType : 1
-                                                                                        nodeValue :
+                                                                                        nodeValue : 
                                                                                         parentId : <number>
                                                                                     }
                                                                                 ]
@@ -196,7 +196,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                 nodeId : <number>
                                                                                 nodeName : BODY
                                                                                 nodeType : 1
-                                                                                nodeValue :
+                                                                                nodeValue : 
                                                                                 parentId : <number>
                                                                             }
                                                                         ]
@@ -205,25 +205,25 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                         nodeId : <number>
                                                                         nodeName : HTML
                                                                         nodeType : 1
-                                                                        nodeValue :
+                                                                        nodeValue : 
                                                                         parentId : <number>
                                                                     }
                                                                 ]
                                                                 compatibilityMode : QuirksMode
                                                                 documentURL : <string>
-                                                                localName :
+                                                                localName : 
                                                                 nodeId : <number>
                                                                 nodeName : #document
                                                                 nodeType : 9
-                                                                nodeValue :
-                                                                xmlVersion :
+                                                                nodeValue : 
+                                                                xmlVersion : 
                                                             }
                                                             frameId : <string>
                                                             localName : iframe
                                                             nodeId : <number>
                                                             nodeName : IFRAME
                                                             nodeType : 1
-                                                            nodeValue :
+                                                            nodeValue : 
                                                             parentId : <number>
                                                         }
                                                     ]
@@ -231,7 +231,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                     nodeId : <number>
                                                     nodeName : DIV
                                                     nodeType : 1
-                                                    nodeValue :
+                                                    nodeValue : 
                                                     parentId : <number>
                                                 }
                                             ]
@@ -239,7 +239,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                             nodeId : <number>
                                             nodeName : DIV
                                             nodeType : 1
-                                            nodeValue :
+                                            nodeValue : 
                                             parentId : <number>
                                         }
                                         [1] : {
@@ -255,7 +255,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                             nodeId : <number>
                                             nodeName : DIV
                                             nodeType : 1
-                                            nodeValue :
+                                            nodeValue : 
                                             parentId : <number>
                                         }
                                     ]
@@ -263,7 +263,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                     nodeId : <number>
                                     nodeName : DIV
                                     nodeType : 1
-                                    nodeValue :
+                                    nodeValue : 
                                     parentId : <number>
                                 }
                             ]
@@ -271,7 +271,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                             nodeId : <number>
                             nodeName : BODY
                             nodeType : 1
-                            nodeValue :
+                            nodeValue : 
                             parentId : <number>
                         }
                     ]
@@ -280,18 +280,18 @@ Tests how DOM.getDocument reports all child nodes when asked.
                     nodeId : <number>
                     nodeName : HTML
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                 }
             ]
             compatibilityMode : QuirksMode
             documentURL : <string>
-            localName :
+            localName : 
             nodeId : <number>
             nodeName : #document
             nodeType : 9
-            nodeValue :
-            xmlVersion :
+            nodeValue : 
+            xmlVersion : 
         }
     }
     sessionId : <string>

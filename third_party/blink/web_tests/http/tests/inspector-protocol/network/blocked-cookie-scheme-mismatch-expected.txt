@@ -1,6 +1,6 @@
 Verifies that Cookie blocks when schemes do not match.
 
-Cookie schemes do not match: [
+Cookie schemes do not match:[
     [0] : {
         blockedReasons : [
             [0] : SchemeMismatch

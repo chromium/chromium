@@ -1,7 +1,7 @@
 Tests frameStartedNavigating events when navigation is initiated by cdp command
 
 Prepare
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -13,7 +13,7 @@ frameStartedNavigating {
 }
 
 Create an iframe
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -25,7 +25,7 @@ frameStartedNavigating {
 }
 
 Navigate iframe
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>

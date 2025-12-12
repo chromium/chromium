@@ -1,7 +1,7 @@
 Tests that requesting data works for IndexedDB with storage bucket
 
 Open database, object store and add some values for default bucket
-values added [
+values added[
     [0] : test-data0
     [1] : test-data1
     [2] : test-data2
@@ -10,13 +10,13 @@ values added [
 ]
 
 Request data for storage key
-data key values equal [
+data key values equal[
     [0] : test-data1
     [1] : test-data2
     [2] : test-data3
 ]
 Open database, object store and add some values for test-bucket bucket
-values added [
+values added[
     [0] : test-data0
     [1] : test-data1
     [2] : test-data2
@@ -25,7 +25,7 @@ values added [
 ]
 
 Request data for storage key
-data key values equal [
+data key values equal[
     [0] : test-data1
     [1] : test-data2
     [2] : test-data3

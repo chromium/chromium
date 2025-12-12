@@ -14,17 +14,17 @@ Node: {
     nodeId : <number>
     nodeName : INPUT
     nodeType : 1
-    nodeValue :
+    nodeValue : 
     parentId : <number>
     shadowRoots : [
         [0] : {
             backendNodeId : <number>
             childNodeCount : 1
-            localName :
+            localName : 
             nodeId : <number>
             nodeName : #document-fragment
             nodeType : 11
-            nodeValue :
+            nodeValue : 
             shadowRootType : user-agent
         }
     ]

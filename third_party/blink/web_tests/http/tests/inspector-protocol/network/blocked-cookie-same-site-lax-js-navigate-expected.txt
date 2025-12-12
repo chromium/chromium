@@ -1,6 +1,6 @@
 Verifies that making cross origin requests with SameSite=Lax cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding blocked cookies.
 
-Browser initiated navigation blocked cookies: [
+Browser initiated navigation blocked cookies:[
     [0] : {
         blockedReasons : [
         ]
@@ -23,7 +23,7 @@ Browser initiated navigation blocked cookies: [
         exemptionReason : None
     }
 ]
-Javascript initiated navigation blocked cookies: [
+Javascript initiated navigation blocked cookies:[
     [0] : {
         blockedReasons : [
         ]
@@ -46,7 +46,7 @@ Javascript initiated navigation blocked cookies: [
         exemptionReason : None
     }
 ]
-Javascript initiated subresource blocked cookies: [
+Javascript initiated subresource blocked cookies:[
     [0] : {
         blockedReasons : [
             [0] : SameSiteLax

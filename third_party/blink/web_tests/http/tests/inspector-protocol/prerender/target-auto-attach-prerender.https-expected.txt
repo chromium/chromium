@@ -7,9 +7,9 @@ Tests that prerender targets get auto-attached properly.
         canAccessOpener : false
         subtype : prerender
         targetId : <string>
-        title :
+        title : 
         type : page
-        url :
+        url : 
     }
     waitingForDebugger : true
 }

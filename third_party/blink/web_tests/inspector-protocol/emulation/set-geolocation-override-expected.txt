@@ -31,6 +31,6 @@ Geolocation data: {
 Set empty geolocation override
 Geolocation data: {
     code : 2
-    message :
+    message : 
 }
 

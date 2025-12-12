@@ -5,7 +5,7 @@ Metadata: {
     length : 4
     remainingBudget : 12
 }
-Entries: [
+Entries:[
     [0] : {
         key : key0-set-from-document
         value : value0
@@ -25,7 +25,7 @@ Entries: [
 ]
 Clear entries
 undefined
-Entries: [
+Entries:[
 ]
 Events: [
     [0] : {

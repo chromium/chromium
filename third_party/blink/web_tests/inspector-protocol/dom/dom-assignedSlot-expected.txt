@@ -15,6 +15,6 @@ Tests DOM.desctibeNode method.
     nodeId : <number>
     nodeName : H1
     nodeType : 1
-    nodeValue :
+    nodeValue : 
 }
 

@@ -9,11 +9,11 @@ Tests how DOM.getDocument reports limited quirks mode.
             children : [
                 [0] : {
                     backendNodeId : <number>
-                    localName :
+                    localName : 
                     nodeId : <number>
                     nodeName : html
                     nodeType : 10
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                     publicId : -//W3C//DTD HTML 4.01 Transitional//EN
                     systemId : http://www.w3.org/TR/html4/loose.dtd
@@ -28,18 +28,18 @@ Tests how DOM.getDocument reports limited quirks mode.
                     nodeId : <number>
                     nodeName : HTML
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                 }
             ]
             compatibilityMode : LimitedQuirksMode
             documentURL : <string>
-            localName :
+            localName : 
             nodeId : <number>
             nodeName : #document
             nodeType : 9
-            nodeValue :
-            xmlVersion :
+            nodeValue : 
+            xmlVersion : 
         }
     }
     sessionId : <string>

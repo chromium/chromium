@@ -8,7 +8,7 @@ Attached to the tab target: {
             browserContextId : <string>
             canAccessOpener : false
             targetId : <string>
-            title :
+            title : 
             type : tab
             url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
         }

@@ -1,5 +1,5 @@
 Verifies Browser.getWindowForTarget method.
-Response {
+Response{
     bounds : {
         height : <number>
         left : <number>

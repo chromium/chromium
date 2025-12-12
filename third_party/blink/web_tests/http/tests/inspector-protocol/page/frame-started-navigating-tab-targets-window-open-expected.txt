@@ -1,5 +1,5 @@
 Tests frameStartedNavigating events with tab targets and user action opening a new page
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string 0>

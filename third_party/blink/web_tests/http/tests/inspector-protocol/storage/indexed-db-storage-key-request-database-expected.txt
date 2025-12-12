@@ -4,7 +4,7 @@ Open database, some object stores and add a value for default bucket
 database, object stores created and value added
 
 Request database for storage key
-database object store names [
+database object store names[
     [0] : test-store
     [1] : another-test-store
 ]
@@ -12,7 +12,7 @@ Open database, some object stores and add a value for test-bucket bucket
 database, object stores created and value added
 
 Request database for storage key
-database object store names [
+database object store names[
     [0] : test-store
     [1] : another-test-store
 ]

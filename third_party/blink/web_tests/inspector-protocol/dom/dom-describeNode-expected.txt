@@ -1,5 +1,5 @@
 Tests DOM.desctibeNode method.
-DIV {
+DIV{
     attributes : [
         [0] : id
         [1] : div
@@ -10,9 +10,9 @@ DIV {
     nodeId : <number>
     nodeName : DIV
     nodeType : 1
-    nodeValue :
+    nodeValue : 
 }
-BODY {
+BODY{
     attributes : [
     ]
     backendNodeId : <number>
@@ -21,9 +21,9 @@ BODY {
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue :
+    nodeValue : 
 }
-BODY DEEP {
+BODY DEEP{
     attributes : [
     ]
     backendNodeId : <number>
@@ -45,7 +45,7 @@ BODY DEEP {
                     children : [
                         [0] : {
                             backendNodeId : <number>
-                            localName :
+                            localName : 
                             nodeId : <number>
                             nodeName : #text
                             nodeType : 3
@@ -57,7 +57,7 @@ BODY DEEP {
                     nodeId : <number>
                     nodeName : SPAN
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                 }
             ]
@@ -65,7 +65,7 @@ BODY DEEP {
             nodeId : <number>
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             parentId : <number>
         }
     ]
@@ -73,6 +73,6 @@ BODY DEEP {
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue :
+    nodeValue : 
 }
 

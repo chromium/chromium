@@ -1,7 +1,7 @@
 Tests frameStartedNavigating on frameset
 
 Prepare
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -11,7 +11,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -21,7 +21,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -33,7 +33,7 @@ frameStartedNavigating {
 }
 
 Fragment navigation
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -43,7 +43,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -53,7 +53,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -63,7 +63,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -75,7 +75,7 @@ frameStartedNavigating {
 }
 
 Cross-document navigation
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -85,7 +85,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -95,7 +95,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -107,7 +107,7 @@ frameStartedNavigating {
 }
 
 Reload
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -117,7 +117,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -127,7 +127,7 @@ frameStartedNavigating {
     }
     sessionId : <string>
 }
-frameStartedNavigating {
+frameStartedNavigating{
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>

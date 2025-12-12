@@ -1015,9 +1015,9 @@ Tests DOMSnapshot.captureSnapshot exports layout tree nodes associated with pseu
         }
     ]
     strings : [
-        [0] :
+        [0] : 
         [1] : windows-1252
-        [2] :
+        [2] : 
         [3] : #document
         [4] : HTML
         [5] : 400

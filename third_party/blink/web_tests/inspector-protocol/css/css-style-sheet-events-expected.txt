@@ -13,11 +13,11 @@ The test verifies events fire for adding, changing, and removing CSSStyleSheets.
             length : <number>
             origin : regular
             ownerNode : <number>
-            sourceURL :
+            sourceURL : 
             startColumn : 0
             startLine : 0
             styleSheetId : <string>
-            title :
+            title : 
         }
     }
     sessionId : <string>
@@ -43,11 +43,11 @@ The test verifies events fire for adding, changing, and removing CSSStyleSheets.
             length : <number>
             origin : regular
             ownerNode : <number>
-            sourceURL :
+            sourceURL : 
             startColumn : 0
             startLine : 0
             styleSheetId : <string>
-            title :
+            title : 
         }
     }
     sessionId : <string>

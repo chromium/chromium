@@ -7,7 +7,6 @@ Test that prerender navigations receives the failure status updates
             loaderId : <string>
             url : http://127.0.0.1:8000/echo?status=204
         }
-        pipelineId : <string>
         status : Pending
     }
     sessionId : <string>
@@ -20,7 +19,6 @@ Test that prerender navigations receives the failure status updates
             loaderId : <string>
             url : http://127.0.0.1:8000/echo?status=204
         }
-        pipelineId : <string>
         status : Running
     }
     sessionId : <string>
@@ -33,8 +31,7 @@ Test that prerender navigations receives the failure status updates
             loaderId : <string>
             url : http://127.0.0.1:8000/echo?status=204
         }
-        pipelineId : <string>
-        prerenderStatus : PrerenderFailedDuringPrefetch
+        prerenderStatus : NavigationBadHttpStatus
         status : Failure
     }
     sessionId : <string>

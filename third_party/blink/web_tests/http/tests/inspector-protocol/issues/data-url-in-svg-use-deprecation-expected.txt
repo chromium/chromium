@@ -11,7 +11,7 @@ Inspector issue: {
                     columnNumber : 63
                     lineNumber : 0
                     scriptId : <string>
-                    url :
+                    url : 
                 }
                 type : DataUrlInSvgUse
             }

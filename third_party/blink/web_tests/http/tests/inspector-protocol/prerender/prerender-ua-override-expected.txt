@@ -10,7 +10,6 @@ got: sec-ch-ua-mobile: ?1
             loaderId : <string>
             url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/echo-headers-and-broadcast.php
         }
-        pipelineId : <string>
         status : Success
     }
     sessionId : <string>

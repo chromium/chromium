@@ -19,7 +19,7 @@ Tests basic functionality of tab target.
         url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/tab-target.js
     }
 ]
-Tab target info, as obtained from target {
+Tab target info, as obtained from target{
     id : <number>
     result : {
         targetInfo : {
@@ -50,7 +50,7 @@ Auto-attached targets (there should be exactly 1): [
     }
 ]
 Attached to page http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
-Auto-attached subframe target {
+Auto-attached subframe target{
     method : Target.attachedToTarget
     params : {
         sessionId : <string>
@@ -60,9 +60,9 @@ Auto-attached subframe target {
             canAccessOpener : false
             parentFrameId : <string>
             targetId : <string>
-            title :
+            title : 
             type : iframe
-            url :
+            url : 
         }
         waitingForDebugger : false
     }

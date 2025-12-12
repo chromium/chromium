@@ -668,7 +668,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 0
             nodeName : #document
             nodeType : 9
-            nodeValue :
+            nodeValue : 
             scrollOffsetX : 0
             scrollOffsetY : 0
         }
@@ -683,7 +683,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 1
             nodeName : HTML
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [2] : {
             backendNodeId : <number>
@@ -695,7 +695,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [3] : {
             backendNodeId : <number>
@@ -710,7 +710,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [5] : {
             backendNodeId : <number>
@@ -758,7 +758,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 2
             nodeName : BODY
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [10] : {
             backendNodeId : <number>
@@ -778,7 +778,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 3
             nodeName : IMG
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [12] : {
             backendNodeId : <number>
@@ -813,7 +813,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 5
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [14] : {
             backendNodeId : <number>
@@ -835,7 +835,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 6
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [16] : {
             backendNodeId : <number>
@@ -885,7 +885,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 9
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [19] : {
             backendNodeId : <number>
@@ -901,7 +901,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 10
             nodeName : P
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [21] : {
             backendNodeId : <number>
@@ -934,7 +934,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 12
             nodeName : UL
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [24] : {
             backendNodeId : <number>
@@ -953,7 +953,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 13
             nodeName : LI
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [26] : {
             backendNodeId : <number>
@@ -987,7 +987,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 14
             nodeName : SPAN
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [28] : {
             backendNodeId : <number>
@@ -1046,7 +1046,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 18
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [33] : {
             backendNodeId : <number>
@@ -1082,7 +1082,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 20
             nodeName : IFRAME
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [36] : {
             backendNodeId : <number>
@@ -1096,7 +1096,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 21
             nodeName : #document
             nodeType : 9
-            nodeValue :
+            nodeValue : 
             scrollOffsetX : 0
             scrollOffsetY : 0
         }
@@ -1111,7 +1111,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 22
             nodeName : HTML
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [38] : {
             backendNodeId : <number>
@@ -1122,7 +1122,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [39] : {
             backendNodeId : <number>
@@ -1137,7 +1137,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [41] : {
             backendNodeId : <number>
@@ -1167,7 +1167,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 23
             nodeName : BODY
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [45] : {
             backendNodeId : <number>
@@ -1189,7 +1189,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 24
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [47] : {
             backendNodeId : <number>
@@ -1229,7 +1229,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 27
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [51] : {
             backendNodeId : <number>
@@ -1245,7 +1245,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             shadowRootType : open
         }
         [53] : {
@@ -1276,7 +1276,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 28
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             shadowRootType : open
         }
         [56] : {
@@ -1287,7 +1287,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 29
             nodeName : H1
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             shadowRootType : open
         }
         [57] : {
@@ -1326,7 +1326,7 @@ Tests DOMSnapshot.getSnapshot method.
             layoutNodeIndex : 31
             nodeName : A
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [61] : {
             backendNodeId : <number>
@@ -1362,7 +1362,7 @@ Tests DOMSnapshot.getSnapshot method.
             backendNodeId : <number>
             nodeName : META
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [65] : {
             backendNodeId : <number>
@@ -1377,7 +1377,7 @@ Tests DOMSnapshot.getSnapshot method.
             ]
             nodeName : SCRIPT
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [67] : {
             backendNodeId : <number>

@@ -18,7 +18,7 @@ Emulating device: 600x600x1
             layoutNodeIndex : 0
             nodeName : #document
             nodeType : 9
-            nodeValue :
+            nodeValue : 
             scrollOffsetX : 0
             scrollOffsetY : 0
         }
@@ -26,9 +26,9 @@ Emulating device: 600x600x1
             backendNodeId : <number>
             nodeName : html
             nodeType : 10
-            nodeValue :
-            publicId :
-            systemId :
+            nodeValue : 
+            publicId : 
+            systemId : 
         }
         [2] : {
             backendNodeId : <number>
@@ -46,7 +46,7 @@ Emulating device: 600x600x1
             layoutNodeIndex : 1
             nodeName : HTML
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [4] : {
             backendNodeId : <number>
@@ -62,7 +62,7 @@ Emulating device: 600x600x1
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [5] : {
             attributes : [
@@ -78,7 +78,7 @@ Emulating device: 600x600x1
             backendNodeId : <number>
             nodeName : META
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [6] : {
             backendNodeId : <number>
@@ -93,7 +93,7 @@ Emulating device: 600x600x1
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [8] : {
             backendNodeId : <number>
@@ -114,7 +114,7 @@ Emulating device: 600x600x1
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [11] : {
             backendNodeId : <number>
@@ -149,7 +149,7 @@ Emulating device: 600x600x1
             layoutNodeIndex : 2
             nodeName : BODY
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [16] : {
             attributes : [
@@ -169,7 +169,7 @@ Emulating device: 600x600x1
             layoutNodeIndex : 3
             nodeName : DIV
             nodeType : 1
-            nodeValue :
+            nodeValue : 
         }
         [17] : {
             backendNodeId : <number>

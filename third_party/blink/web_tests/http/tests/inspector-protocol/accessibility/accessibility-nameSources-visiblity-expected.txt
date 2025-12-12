@@ -887,7 +887,7 @@ Tests name sources in invisible nodes.
                     relatedNodes : [
                         [0] : {
                             backendDOMNodeId : <number>
-                            text :
+                            text : 
                         }
                     ]
                     type : nodeList
@@ -895,7 +895,7 @@ Tests name sources in invisible nodes.
                 type : relatedElement
                 value : {
                     type : computedString
-                    value :
+                    value : 
                 }
             }
             [3] : {
@@ -920,7 +920,7 @@ Tests name sources in invisible nodes.
             }
         ]
         type : computedString
-        value :
+        value : 
     }
     nodeId : <string>
     parentId : <string>
@@ -980,7 +980,7 @@ Tests name sources in invisible nodes.
                 relatedNodes : [
                     [0] : {
                         nodeResult : label
-                        text :
+                        text : 
                     }
                 ]
                 type : nodeList

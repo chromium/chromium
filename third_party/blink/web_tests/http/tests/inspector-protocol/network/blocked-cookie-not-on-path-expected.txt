@@ -1,6 +1,6 @@
 Verifies that cookies not within the current path of the request to a domain send Network.*ExtraInfo events with corresponding blocked cookies.
 
-requestWillBeSentExtraInfo blocked cookies: [
+requestWillBeSentExtraInfo blocked cookies:[
     [0] : {
         blockedReasons : [
             [0] : NotOnPath

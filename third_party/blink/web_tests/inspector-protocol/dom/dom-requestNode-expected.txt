@@ -14,7 +14,7 @@ Running test: requestTargetAfterTraversal
     nodeId : <number>
     nodeName : DIV
     nodeType : 1
-    nodeValue :
+    nodeValue : 
     parentId : <number>
 }
 {
@@ -52,7 +52,7 @@ Running test: requestTargetBeforeTraversal
     nodeId : <number>
     nodeName : DIV
     nodeType : 1
-    nodeValue :
+    nodeValue : 
     parentId : <number>
 }
 requested === targeted: true
@@ -79,14 +79,14 @@ Running test: requestNodeInIframeByObjectId
     children : [
         [0] : {
             backendNodeId : <number>
-            localName :
+            localName : 
             nodeId : <number>
             nodeName : html
             nodeType : 10
-            nodeValue :
+            nodeValue : 
             parentId : <number>
-            publicId :
-            systemId :
+            publicId : 
+            systemId : 
         }
         [1] : {
             attributes : [
@@ -108,7 +108,7 @@ Running test: requestNodeInIframeByObjectId
                             children : [
                                 [0] : {
                                     backendNodeId : <number>
-                                    localName :
+                                    localName : 
                                     nodeId : <number>
                                     nodeName : #text
                                     nodeType : 3
@@ -120,7 +120,7 @@ Running test: requestNodeInIframeByObjectId
                             nodeId : <number>
                             nodeName : TITLE
                             nodeType : 1
-                            nodeValue :
+                            nodeValue : 
                             parentId : <number>
                         }
                     ]
@@ -128,7 +128,7 @@ Running test: requestNodeInIframeByObjectId
                     nodeId : <number>
                     nodeName : HEAD
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                 }
                 [1] : {
@@ -147,7 +147,7 @@ Running test: requestNodeInIframeByObjectId
                             children : [
                                 [0] : {
                                     backendNodeId : <number>
-                                    localName :
+                                    localName : 
                                     nodeId : <number>
                                     nodeName : #text
                                     nodeType : 3
@@ -159,7 +159,7 @@ Running test: requestNodeInIframeByObjectId
                             nodeId : <number>
                             nodeName : P
                             nodeType : 1
-                            nodeValue :
+                            nodeValue : 
                             parentId : <number>
                         }
                     ]
@@ -167,7 +167,7 @@ Running test: requestNodeInIframeByObjectId
                     nodeId : <number>
                     nodeName : BODY
                     nodeType : 1
-                    nodeValue :
+                    nodeValue : 
                     parentId : <number>
                 }
             ]
@@ -176,18 +176,18 @@ Running test: requestNodeInIframeByObjectId
             nodeId : <number>
             nodeName : HTML
             nodeType : 1
-            nodeValue :
+            nodeValue : 
             parentId : <number>
         }
     ]
     compatibilityMode : NoQuirksMode
     documentURL : <string>
-    localName :
+    localName : 
     nodeId : <number>
     nodeName : #document
     nodeType : 9
-    nodeValue :
-    xmlVersion :
+    nodeValue : 
+    xmlVersion : 
 }
 {
     attributes : [
@@ -199,7 +199,7 @@ Running test: requestNodeInIframeByObjectId
     children : [
         [0] : {
             backendNodeId : <number>
-            localName :
+            localName : 
             nodeId : <number>
             nodeName : #text
             nodeType : 3
@@ -211,7 +211,7 @@ Running test: requestNodeInIframeByObjectId
     nodeId : <number>
     nodeName : P
     nodeType : 1
-    nodeValue :
+    nodeValue : 
     parentId : <number>
 }
 {

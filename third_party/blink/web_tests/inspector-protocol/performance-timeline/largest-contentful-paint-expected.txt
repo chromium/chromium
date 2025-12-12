@@ -9,7 +9,7 @@ Basic test for LargestContentfulPaint support in PerformanceTimeline
             renderTime : <number>
             size : 48000
         }
-        name :
+        name : 
         time : <number>
         type : largest-contentful-paint
     }
@@ -23,7 +23,7 @@ Basic test for LargestContentfulPaint support in PerformanceTimeline
             size : 65536
             url : .../images/resources/green-256x256.jpg
         }
-        name :
+        name : 
         time : <number>
         type : largest-contentful-paint
     }
