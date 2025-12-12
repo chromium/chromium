@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -126,6 +127,7 @@ class LocationBarMediator
                 VoiceRecognitionHandler.Observer,
                 UrlBarDelegate,
                 OnKeyListener,
+                FuseboxAttachmentChangeListener,
                 ComponentCallbacks,
                 TemplateUrlService.TemplateUrlServiceObserver,
                 BackPressHandler,
@@ -343,10 +345,7 @@ class LocationBarMediator
                 .getFuseboxStateSupplier()
                 .addObserver(
                         mCallbackController.makeCancelable(s -> updateNavigateButtonVisibility()));
-        mFuseboxCoordinator
-                .getAttachmentsPresentSupplier()
-                .addObserver(
-                        mCallbackController.makeCancelable(b -> updateNavigateButtonVisibility()));
+        mFuseboxCoordinator.addAttachmentChangeListener(this);
     }
 
     /**
@@ -373,6 +372,7 @@ class LocationBarMediator
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
         mCallbackController.destroy();
+        mFuseboxCoordinator.removeAttachmentChangeListener(this);
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
@@ -1404,6 +1404,14 @@ class LocationBarMediator
 
     private void updateDeleteButtonVisibility() {
         mLocationBarLayout.setDeleteButtonVisibility(isUrlBarFocusedWithUserInput());
+    }
+
+    /**
+     * @see FuseboxAttachmentChangeListener#onAttachmentsListChanged()
+     */
+    @Override
+    public void onAttachmentListChanged() {
+        updateNavigateButtonVisibility();
     }
 
     private void updateNavigateButtonVisibility() {

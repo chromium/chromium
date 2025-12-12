@@ -9,6 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.text.TextUtils;
 import android.util.ArraySet;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,11 +40,49 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
     static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObserverList<FuseboxAttachmentChangeListener> mAttachmentChangeListeners =
+            new ObserverList<>();
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
     private @Nullable Runnable mAttachmentUploadFailedListener;
+    private int mBatchEditDepth;
+    private boolean mListModified;
 
-    public FuseboxAttachmentModelList(
+    /**
+     * Listener invoked whenever attachments list is modified. Any changes to attachments result in
+     * notification being issued, including cases where attachments are reselected.
+     */
+    public interface FuseboxAttachmentChangeListener {
+        /** Invoked whenever attachments list is changed. */
+        default void onAttachmentListChanged() {}
+
+        /** Invoked whenever attachments upload status is changed. */
+        default void onAttachmentUploadStatusChanged() {}
+    }
+
+    /**
+     * Batch edit guard for try-with-resources. Ensures that when batch edit completes appropriate
+     * events are emitted.
+     */
+    /* package */ final class BatchEditToken implements AutoCloseable {
+        private BatchEditToken() {
+            mBatchEditDepth++;
+        }
+
+        @Override
+        public void close() {
+            mBatchEditDepth--;
+            if (mBatchEditDepth > 0) return;
+            maybeEmitListChangedEvent(/* asResultOfChange= */ false);
+        }
+    }
+
+    /**
+     * Constructor for {@link FuseboxAttachmentModelList}.
+     *
+     * @param tabModelSelectorSupplier The supplier for the {@link TabModelSelector}.
+     */
+    /* package */ FuseboxAttachmentModelList(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
@@ -60,6 +101,47 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.setFileUploadObserver(this);
         }
+    }
+
+    /**
+     * Create a new batch edit token.
+     *
+     * <p>This method is intended to be used in a try-with-resources block to group multiple list
+     * modifications. On exiting the block the token will be closed, and if any modifications were
+     * made, a single change event will be emitted.
+     *
+     * @return A new batch edit token.
+     */
+    @MustBeClosed
+    public BatchEditToken beginBatchEdit() {
+        return new BatchEditToken();
+    }
+
+    /**
+     * (Schedule a) broadcast notification informing listeners that the attachments list was
+     * changed.
+     *
+     * <p>This method should be called from any mutator. In the event a broader set of changes are
+     * expected (e.g. multiple attachments are added/removed) the change should be wrapped in a
+     * try-with-resources block - see beginBatchEdit().
+     *
+     * @param asResultOfChange Whether the call is made because the list was changed (true), or as
+     *     result of a batch edit finalization (false).
+     */
+    private void maybeEmitListChangedEvent(boolean asResultOfChange) {
+        mListModified |= asResultOfChange;
+
+        if (mBatchEditDepth > 0) {
+            return;
+        }
+
+        if (mListModified) {
+            for (var listener : mAttachmentChangeListeners) {
+                listener.onAttachmentListChanged();
+            }
+        }
+
+        mListModified = false;
     }
 
     public void setAttachmentUploadFailedListener(
@@ -110,6 +192,8 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         attachment.model.set(FuseboxAttachmentProperties.COLOR_SCHEME, mBrandedColorScheme);
         attachment.setOnRemoveCallback(() -> remove(attachment));
         super.add(attachment);
+
+        maybeEmitListChangedEvent(/* asResultOfChange= */ true);
         return true;
     }
 
@@ -138,6 +222,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         if (isEmpty()) {
             assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         }
+        maybeEmitListChangedEvent(/* asResultOfChange= */ true);
     }
 
     /**
@@ -190,6 +275,7 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
 
         assumeNonNull(mComposeBoxQueryControllerBridge).notifySessionAbandoned();
         super.clear();
+        maybeEmitListChangedEvent(/* asResultOfChange= */ true);
     }
 
     /**
@@ -236,6 +322,15 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
                 notifyItemChanged(indexOf(pendingAttachment));
                 break;
         }
+
+        // Emit upload status changed when all attachments have been resolved.
+        for (int i = 0; i < size(); i++) {
+            if (!get(i).isUploadComplete()) return;
+        }
+
+        for (var listener : mAttachmentChangeListeners) {
+            listener.onAttachmentUploadStatusChanged();
+        }
     }
 
     private @Nullable FuseboxAttachment findAttachmentWithToken(String token) {
@@ -262,5 +357,15 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         if (mAttachmentUploadFailedListener != null) {
             mAttachmentUploadFailedListener.run();
         }
+    }
+
+    /** Registers the listener notified whenever attachments list is changed. */
+    public void addAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
+        mAttachmentChangeListeners.addObserver(listener);
+    }
+
+    /** Unregisters the listener from being notified that attachments list has been changed. */
+    public void removeAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
+        mAttachmentChangeListeners.removeObserver(listener);
     }
 }

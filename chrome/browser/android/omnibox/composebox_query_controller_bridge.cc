@@ -273,13 +273,6 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     lens::MimeType mime_type,
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
-  if (file_upload_status ==
-      contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady) {
-    if (lens_signals_ready_callback_) {
-      lens_signals_ready_callback_.Run();
-    }
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ComposeBoxQueryControllerBridge_onFileUploadStatusChanged(
       env, java_obj_,

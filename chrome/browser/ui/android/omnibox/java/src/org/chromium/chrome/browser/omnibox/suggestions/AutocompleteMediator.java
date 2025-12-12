@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -85,6 +86,7 @@ class AutocompleteMediator
                 OmniboxSuggestionsDropdownScrollListener,
                 TopResumedActivityChangedObserver,
                 PauseResumeWithNativeObserver,
+                FuseboxAttachmentChangeListener,
                 SuggestionHost {
 
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
@@ -236,6 +238,7 @@ class AutocompleteMediator
 
         mAnimationDriver = initializeAnimationDriver();
 
+        mFuseboxCoordinator.addAttachmentChangeListener(this);
         mFuseboxCoordinator
                 .getAutocompleteRequestTypeSupplier()
                 .addSyncObserver(mOnAutocompleteRequestTypeChanged);
@@ -279,6 +282,7 @@ class AutocompleteMediator
         if (mNativeInitialized) {
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
+        mFuseboxCoordinator.removeAttachmentChangeListener(this);
         mFuseboxCoordinator
                 .getAutocompleteRequestTypeSupplier()
                 .removeObserver(mOnAutocompleteRequestTypeChanged);
@@ -481,7 +485,7 @@ class AutocompleteMediator
             OmniboxMetrics.recordOmniboxFocusResultedInNavigation(
                     mAutocompleteInput.getRequestType(),
                     mOmniboxFocusResultedInNavigation,
-                    mFuseboxCoordinator.getAttachmentsPresentSupplier().get());
+                    mFuseboxCoordinator.getAttachmentsCount() > 0);
             OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
             OmniboxMetrics.recordSuggestionsListScrolled(
                     mAutocompleteInput.getPageClassification(), mSuggestionsListScrolled);
@@ -1529,6 +1533,32 @@ class AutocompleteMediator
     /** Returns the current Animation Driver instance. */
     SuggestionsListAnimationDriver getAnimationDriverForTesting() {
         return mAnimationDriver;
+    }
+
+    /**
+     * @see FuseboxAttachmentChangeListener#onAttachmentListChanged()
+     */
+    @Override
+    public void onAttachmentListChanged() {
+        if (!isActive()) return;
+
+        // Re-request ZPS in the event of attachments being removed/replaced.
+        onTextChanged(
+                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                /* isOnFocusContext= */ false);
+    }
+
+    /**
+     * @see FuseboxAttachmentChangeListener#onAttachmentUploadStatusChanged()
+     */
+    @Override
+    public void onAttachmentUploadStatusChanged() {
+        if (!isActive()) return;
+
+        // Re-request ZPS in the event of new attachments being uploaded.
+        onTextChanged(
+                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                /* isOnFocusContext= */ false);
     }
 
     @Override

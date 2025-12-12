@@ -55,7 +55,6 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +91,6 @@ public class FuseboxMediator {
     private final Supplier<@Nullable TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
-    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier;
 
     FuseboxMediator(
             Context context,
@@ -106,7 +104,6 @@ public class FuseboxMediator {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
-            ObservableSupplierImpl<Boolean> attachmentsPresentSupplier,
             SnackbarManager snackbarManager,
             Supplier<@Nullable TemplateUrlService> templateUrlServiceSupplier) {
         mContext = context;
@@ -120,7 +117,6 @@ public class FuseboxMediator {
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
         mFuseboxStateSupplier = fuseboxStateSupplier;
-        mAttachmentsPresentSupplier = attachmentsPresentSupplier;
         mSnackbarManager = snackbarManager;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
 
@@ -336,7 +332,6 @@ public class FuseboxMediator {
     }
 
     private void onAttachmentsChanged() {
-        mAttachmentsPresentSupplier.set(!mModelList.isEmpty());
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
@@ -419,26 +414,29 @@ public class FuseboxMediator {
     public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
-        mModelList.removeIf(
-                item -> {
-                    if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
-                    FuseboxAttachment attachment =
-                            item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
-                    Integer tabId = assumeNonNull(attachment).tabId;
-                    return !newlySelectedTabIds.contains(tabId);
-                });
 
-        for (int id : newlySelectedTabIds) {
-            if (!currentAttachedIds.contains(id)) {
-                Tab tab = tabModelSelector.getTabById(id);
-                boolean addFailed =
-                        !mModelList.add(
-                                FuseboxAttachment.forTab(
-                                        assumeNonNull(tab), mContext.getResources()));
-                if (addFailed) {
-                    warnForMaxAttachments();
-                    break;
+        Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
+        try (var batchToken = mModelList.beginBatchEdit()) {
+            mModelList.removeIf(
+                    item -> {
+                        if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
+                        FuseboxAttachment attachment =
+                                item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
+                        Integer tabId = assumeNonNull(attachment).tabId;
+                        return !newlySelectedTabIds.contains(tabId);
+                    });
+
+            for (int id : newlySelectedTabIds) {
+                if (!currentAttachedIds.contains(id)) {
+                    Tab tab = tabModelSelector.getTabById(id);
+                    boolean addFailed =
+                            !mModelList.add(
+                                    FuseboxAttachment.forTab(
+                                            assumeNonNull(tab), mContext.getResources()));
+                    if (addFailed) {
+                        warnForMaxAttachments();
+                        break;
+                    }
                 }
             }
         }
@@ -542,12 +540,14 @@ public class FuseboxMediator {
                 (resultCode, data) -> {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
-                    var uris = extractUrisFromResult(data);
-                    for (var uri : uris) {
-                        fetchAttachmentDetails(
-                                uri,
-                                FuseboxAttachmentType.ATTACHMENT_IMAGE,
-                                this::uploadAndAddAttachment);
+                    try (var batchToken = mModelList.beginBatchEdit()) {
+                        var uris = extractUrisFromResult(data);
+                        for (var uri : uris) {
+                            fetchAttachmentDetails(
+                                    uri,
+                                    FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                                    this::uploadAndAddAttachment);
+                        }
                     }
                 },
                 R.string.low_memory_error);
@@ -575,12 +575,14 @@ public class FuseboxMediator {
                 (resultCode, data) -> {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 
-                    var uris = extractUrisFromResult(data);
-                    for (var uri : uris) {
-                        fetchAttachmentDetails(
-                                uri,
-                                FuseboxAttachmentType.ATTACHMENT_FILE,
-                                this::uploadAndAddAttachment);
+                    try (var batchToken = mModelList.beginBatchEdit()) {
+                        var uris = extractUrisFromResult(data);
+                        for (var uri : uris) {
+                            fetchAttachmentDetails(
+                                    uri,
+                                    FuseboxAttachmentType.ATTACHMENT_FILE,
+                                    this::uploadAndAddAttachment);
+                        }
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
@@ -663,20 +665,6 @@ public class FuseboxMediator {
             if (single != null) out.add(single);
         }
         return out;
-    }
-
-    /**
-     * @return List of attachment tokens, empty if no attachments.
-     */
-    public List<String> getAttachmentTokens() {
-        if (mModelList.size() == 0) return Collections.emptyList();
-        List<String> tokens = new ArrayList<>();
-        for (int i = 0; i < mModelList.size(); i++) {
-            PropertyModel model = mModelList.get(i).model;
-            var attachment = model.get(FuseboxAttachmentProperties.ATTACHMENT);
-            tokens.add(attachment.getToken());
-        }
-        return tokens;
     }
 
     void setUseCompactUi(boolean useCompactUi) {

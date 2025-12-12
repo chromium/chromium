@@ -254,6 +254,7 @@ android_library("java") {
     "//components/user_prefs/android:java",
     "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
