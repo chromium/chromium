@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -237,6 +238,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
+                       E2E_ENABLED(ShouldCrashAwaitQuiescenceForE2ETest)) {
+  ASSERT_TRUE(SetupSync());
+  EXPECT_CHECK_DEATH_WITH(
+      { EXPECT_TRUE(AwaitQuiescence()); },
+      "AwaitQuiescence is not supported for E2E tests.");
+}
 
 class SingleClientGetUnsyncedTypesTest : public SingleClientCommonSyncTest {
  public:
