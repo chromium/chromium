@@ -11,7 +11,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {ModuleInstance, ModuleWrapperElement} from 'module_wrapper.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {recordBoolean, recordOccurrence, recordSmallCount, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
@@ -21,6 +20,7 @@ import {WindowProxy} from '../window_proxy.js';
 
 import type {Module} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
+import type {ModuleInstance, ModuleWrapperElement} from './module_wrapper.js';
 import {getCss} from './modules.css.js';
 import {getHtml} from './modules.html.js';
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PostMessageRequestSender} from 'glic_api_impl/post_message_transport.js';
-import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, RequestRequestType, WebClientRequestTypes} from 'glic_api_impl/request_types.js';
+import type {PostMessageRequestSender} from '../post_message_transport.js';
+import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, RequestRequestType, WebClientRequestTypes} from '../request_types.js';
 
 interface QueuedMessage {
   order: number;
