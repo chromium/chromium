@@ -450,6 +450,9 @@ class SharedImageInterfaceProvider;
 namespace vr {
 class VrShell;
 }
+namespace webnn {
+class WebNNTensorImpl;
+}
 namespace web {
 class WebMainLoop;
 }  // namespace web
@@ -794,6 +797,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class updater::SystemctlLauncherScopedAllowBaseSyncPrimitives;
+  friend class webnn::WebNNTensorImpl;
 
   // Usage that should be fixed:
   // Sorted by class name (with namespace).

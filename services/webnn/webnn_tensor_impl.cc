@@ -6,6 +6,7 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/threading/thread_restrictions.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -14,33 +15,6 @@
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
-
-namespace {
-
-// Helper that runs a closure synchronously on a different sequence.
-// The caller blocks but the target sequence never blocks.
-// It is important the task does not post back to the current sequence, to
-// prevent deadlocks.
-void RunOrPostTaskAndWaitOnSequence(
-    scoped_refptr<base::SequencedTaskRunner> target,
-    base::OnceClosure task) {
-  if (target->RunsTasksInCurrentSequence()) {
-    std::move(task).Run();
-    return;
-  }
-
-  base::WaitableEvent done;
-  target->PostTask(FROM_HERE, base::BindOnce(
-                                  [](base::OnceClosure inner_callback,
-                                     base::WaitableEvent* done) {
-                                    std::move(inner_callback).Run();
-                                    done->Signal();
-                                  },
-                                  std::move(task), &done));
-  done.Wait();
-}
-
-}  // namespace
 
 WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -257,6 +231,27 @@ bool WebNNTensorImpl::ImportTensorOnMainThread() {
   }
 
   return ImportTensorImpl(std::move(access));
+}
+
+// static
+void WebNNTensorImpl::RunOrPostTaskAndWaitOnSequence(
+    scoped_refptr<base::SequencedTaskRunner> target,
+    base::OnceClosure task) {
+  if (target->RunsTasksInCurrentSequence()) {
+    std::move(task).Run();
+    return;
+  }
+
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  base::WaitableEvent done;
+  target->PostTask(FROM_HERE, base::BindOnce(
+                                  [](base::OnceClosure inner_callback,
+                                     base::WaitableEvent* done) {
+                                    std::move(inner_callback).Run();
+                                    done->Signal();
+                                  },
+                                  std::move(task), &done));
+  done.Wait();
 }
 
 }  // namespace webnn
