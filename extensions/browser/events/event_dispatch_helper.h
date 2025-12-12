@@ -196,6 +196,7 @@ class EventDispatchHelper {
 
   std::set<LazyContextId> dispatched_ids_;
   std::set<ActiveContextId> dispatched_active_ids_;
+  std::set<LazyContextId> contexts_pending_dispatch_;
 };
 
 }  // namespace extensions
