@@ -723,6 +723,15 @@ public class AccessibilityNodeInfoBuilder {
     }
 
     @CalledByNative
+    protected void clearAccessibilityNodeInfoExtendedSelectionAttrs(
+            AccessibilityNodeInfoCompat node) {
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate != null) {
+            aconfigFlaggedApiDelegate.clearSelection(node);
+        }
+    }
+
+    @CalledByNative
     protected void setAccessibilityNodeInfoImageData(
             AccessibilityNodeInfoCompat info, byte[] imageData) {
         info.getExtras().putByteArray(EXTRAS_KEY_IMAGE_DATA, imageData);

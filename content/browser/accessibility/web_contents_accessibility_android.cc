@@ -526,6 +526,12 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
 
 // Calculates the number of characters from the beginning of the first leaf
 // descendent of the `ancestor` to the beginning of `descendent`.
+// TODO(crbug.com/443078007): Refactor to perform all the tree walking and
+// offset recomputation using AXPosition. The node should be adjusted downward
+// to the last leaf node (not the first) and add more test coverage. e.g. where
+// the selection lands on ignored nodes at the anchor, focus, or both, and line
+// break nodes, inline vs block, etc. Also, perhaps a more deeply nested ignored
+// structure.
 int CalculateOffsetInAncestor(ui::BrowserAccessibility* ancestor,
                               ui::BrowserAccessibility* descendent) {
   // Expected to be called only when ancestor and node are different.
@@ -1714,51 +1720,44 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
   }
 
   ui::AXSelection selection = root_manager->ax_tree()->GetUnignoredSelection();
-  ui::AXNodeID anchor_id = ui::kAXAndroidInvalidViewId;
-  ui::AXNodeID focus_id = ui::kAXAndroidInvalidViewId;
+
+  ui::BrowserAccessibility* anchor_node =
+      root_manager->GetFromID(selection.anchor_object_id);
+  ui::BrowserAccessibility* focus_node =
+      root_manager->GetFromID(selection.focus_object_id);
+
+  if (!anchor_node || !focus_node) {
+    Java_AccessibilityNodeInfoBuilder_clearAccessibilityNodeInfoExtendedSelectionAttrs(
+        env, obj, info);
+    return;
+  }
+
   int anchor_offset = selection.anchor_offset;
   int focus_offset = selection.focus_offset;
 
-  if (selection.anchor_object_id != ui::kInvalidAXNodeID &&
-      selection.focus_object_id != ui::kInvalidAXNodeID) {
-    ui::BrowserAccessibility* anchor_node =
-        root_manager->GetFromID(selection.anchor_object_id);
-    ui::BrowserAccessibility* focus_node =
-        root_manager->GetFromID(selection.focus_object_id);
-
-    if (!anchor_node || !focus_node) {
-      return;
-    }
-
-    // Update nodes if they don't exist in Android accessibility tree.
-    // TODO(crbug.com/443078007): Ensure nodes have actual text before trying to
-    // update offset.
-    ui::BrowserAccessibility* platform_ancestor =
-        anchor_node->PlatformGetLowestPlatformAncestor();
-    if (platform_ancestor != anchor_node) {
-      anchor_offset +=
-          CalculateOffsetInAncestor(platform_ancestor, anchor_node);
-      anchor_node = platform_ancestor;
-    }
-
-    // TODO(crbug.com/443078007): Adjust the node downward to the last leaf node
-    // (not the first) and add more test coverage. e.g. where the selection
-    // lands on ignored nodes at the anchor, focus, or both. Also, perhaps a
-    // more deeply nested ignored structure.
-    platform_ancestor = focus_node->PlatformGetLowestPlatformAncestor();
-    if (platform_ancestor != focus_node) {
-      focus_offset += CalculateOffsetInAncestor(platform_ancestor, focus_node);
-      focus_node = platform_ancestor;
-    }
-
-    anchor_id =
-        static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
-    focus_id =
-        static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
+  // Update nodes if they don't exist in Android accessibility tree.
+  // TODO(crbug.com/443078007): Ensure nodes have actual text before trying to
+  // update offset.
+  ui::BrowserAccessibility* platform_ancestor =
+      anchor_node->PlatformGetLowestPlatformAncestor();
+  if (platform_ancestor != anchor_node) {
+    anchor_offset += CalculateOffsetInAncestor(platform_ancestor, anchor_node);
+    anchor_node = platform_ancestor;
   }
 
+  platform_ancestor = focus_node->PlatformGetLowestPlatformAncestor();
+  if (platform_ancestor != focus_node) {
+    focus_offset += CalculateOffsetInAncestor(platform_ancestor, focus_node);
+    focus_node = platform_ancestor;
+  }
+
+  int anchor_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
+  int focus_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
-      env, obj, info, anchor_id, anchor_offset, focus_id, focus_offset);
+      env, obj, info, anchor_unique_id, anchor_offset, focus_unique_id,
+      focus_offset);
 }
 
 jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(

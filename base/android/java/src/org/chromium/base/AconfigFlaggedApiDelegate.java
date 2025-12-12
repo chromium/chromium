@@ -246,16 +246,14 @@ public interface AconfigFlaggedApiDelegate {
      * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#setSelection(@Nullable
      * SelectionCompat selection)} if supported.
      *
-     * @param info The node to which the selection is assigned.
+     * @param info The node to which the extended selection is assigned.
      * @param view The view whose virtual descendant is associated with the selection position.
      * @param startVirtualDescendantId The ID of the virtual descendant within {@code view}'s
-     *     virtual subtree that contains the start selection position. Passing {@code View.NO_ID}
-     *     will clear the selection.
+     *     virtual subtree that contains the start selection position.
      * @param startOffset The offset for a selection position within the start virtual descendant's
      *     text content.
      * @param endVirtualDescendantId The ID of the virtual descendant within {@code view}'s virtual
-     *     subtree that contains the end selection position. Passing {@code View.NO_ID} will clear
-     *     the selection.
+     *     subtree that contains the end selection position.
      * @param endOffset The offset for a selection position within the end virtual descendant's text
      *     content.
      */
@@ -266,6 +264,14 @@ public interface AconfigFlaggedApiDelegate {
             int startOffset,
             int endVirtualDescendantId,
             int endOffset) {}
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#setSelection(@Nullable
+     * SelectionCompat selection)} if supported.
+     *
+     * @param info The node whose extended selection is cleared.
+     */
+    default void clearSelection(AccessibilityNodeInfoCompat info) {}
 
     /** Checks if {@link android.content.pm.webapp.WebAppManager} service is available. */
     default boolean isWebAppServiceEnabled() {
