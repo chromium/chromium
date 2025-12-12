@@ -504,11 +504,8 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     @Restriction(DeviceFormFactor.PHONE)
     public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarTop() throws Exception {
-        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
-        verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
-
-        View view = mActivityTestRule.getActivity().findViewById(android.R.id.content);
-        mRenderTestRule.render(view, "incognito_ntp_omnibox_autofocus_toolbar_top");
+        loadAndRenderIncognitoNtpWithOmniboxAutofocus(
+                "incognito_ntp_omnibox_autofocus_toolbar_top");
     }
 
     @Test
@@ -520,11 +517,26 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     })
     @Restriction(DeviceFormFactor.PHONE)
     public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarBottom() throws Exception {
+        loadAndRenderIncognitoNtpWithOmniboxAutofocus(
+                "incognito_ntp_omnibox_autofocus_toolbar_bottom");
+    }
+
+    private void loadAndRenderIncognitoNtpWithOmniboxAutofocus(String goldenId) throws Exception {
         final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
         verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
 
+        // Disable scrollbar to avoid screenshot diffs due to fading animation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View ntpScrollView =
+                            mActivityTestRule.getActivity().findViewById(R.id.ntp_scrollview);
+                    if (ntpScrollView != null) {
+                        ntpScrollView.setVerticalScrollBarEnabled(false);
+                    }
+                });
+
         View view = mActivityTestRule.getActivity().findViewById(android.R.id.content);
-        mRenderTestRule.render(view, "incognito_ntp_omnibox_autofocus_toolbar_bottom");
+        mRenderTestRule.render(view, goldenId);
     }
 
     private void verifyPhoneOmniboxFocusAndKeyboardVisibility(boolean enabled, @Nullable Tab tab) {
