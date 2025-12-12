@@ -138,7 +138,6 @@ GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml) {
 
   perf_info->vram_mb = device_heap_mb;
 
-  // Devices with low RAM are considered very low perf.
   if (device_heap_mb < GetLowRamThresholdMb()) {
     LogVeryLowReason(VeryLowPerformanceReason::kLowRAM);
     perf_info->performance_class =
@@ -146,18 +145,13 @@ GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml) {
     return std::make_pair(std::move(perf_info), std::move(device_info));
   }
 
-  // Devices that output less than 6 tk/s are considered very low perf.
   if (output_speed < kLowOutputThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowOutput);
     perf_info->performance_class =
         on_device_model::mojom::PerformanceClass::kVeryLow;
     return std::make_pair(std::move(perf_info), std::move(device_info));
   }
-  // VeryLow:  [0, 50)
-  // Low:      [50, 100)
-  // Medium:   [100, 250)
-  // High:     [250, 750)
-  // VeryHigh: [750, inf)
+
   if (input_speed < kLowThreshold.Get()) {
     LogVeryLowReason(VeryLowPerformanceReason::kSlowInput);
     perf_info->performance_class =
