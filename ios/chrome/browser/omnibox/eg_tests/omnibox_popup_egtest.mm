@@ -37,10 +37,13 @@ namespace {
 /// Returns the popup row containing the `url` as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   NSString* urlString = [NSString cr_fromString:url.GetContent()];
+  // Lower to visibility threshold for the visibility of the element, because
+  // it can be overlaid by a blur effect view, which isn't considered
+  // translucent by EG.
   id<GREYMatcher> URLMatcher = grey_allOf(
       grey_descendant(
           chrome_test_util::StaticTextWithAccessibilityLabel(urlString)),
-      grey_sufficientlyVisible(), nil);
+      grey_minimumVisiblePercent(0.7), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
@@ -216,9 +219,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
-
   [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_not(grey_interactable())];
 }
