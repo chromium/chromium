@@ -556,21 +556,19 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
               *browser, browser);
     }
 
-    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-      if (browser_view) {
-        split_tab_highlight_controller_ =
-            std::make_unique<split_tabs::SplitTabHighlightController>(
-                browser_view);
-      }
+    if (browser_view) {
+      split_tab_highlight_controller_ =
+          std::make_unique<split_tabs::SplitTabHighlightController>(
+              browser_view);
+    }
 
-      if (base::FeatureList::IsEnabled(
-              feature_engagement::kIPHSideBySidePinnableFeature) ||
-          base::FeatureList::IsEnabled(
-              feature_engagement::kIPHSideBySideTabSwitchFeature)) {
-        split_view_iph_controller_ =
-            GetUserDataFactory().CreateInstance<SplitViewIphController>(
-                *browser, browser);
-      }
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHSideBySidePinnableFeature) ||
+        base::FeatureList::IsEnabled(
+            feature_engagement::kIPHSideBySideTabSwitchFeature)) {
+      split_view_iph_controller_ =
+          GetUserDataFactory().CreateInstance<SplitViewIphController>(*browser,
+                                                                      browser);
     }
   }
 

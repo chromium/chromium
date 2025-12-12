@@ -163,8 +163,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (loadTimeData.getBoolean('splitViewEnabled') && bookmarkCount === 1 &&
-        this.bookmarks_[0].url) {
+    if (bookmarkCount === 1 && this.bookmarks_[0].url) {
       menuItems.push({
         id: MenuItemId.OPEN_SPLIT_VIEW,
         label: loadTimeData.getString('menuOpenSplitView'),

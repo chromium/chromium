@@ -495,9 +495,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(IS_ANDROID)
       nullptr;
 #else
-      base::FeatureList::IsEnabled(features::kSideBySide)
-          ? tabs::TabInterface::MaybeGetFromContents(web_contents)
-          : nullptr;
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
   permissions::PermissionRequestManager::CreateForWebContents(
       web_contents, desktop_tab_interface);

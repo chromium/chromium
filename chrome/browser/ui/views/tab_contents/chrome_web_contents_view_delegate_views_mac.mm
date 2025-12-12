@@ -65,14 +65,11 @@ void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // MacOS doesn't activate the `WebContents` on click by default so it must be
-  // manually configured. This is tied to the `kSideBySide` experiment because
-  // it is common to right click an inactive `WebContents` in split view.
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    tabs::TabInterface* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents_);
-    if (tab_interface && !tab_interface->IsActivated()) {
-      web_contents_->Focus();
-    }
+  // manually configured.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (tab_interface && !tab_interface->IsActivated()) {
+    web_contents_->Focus();
   }
 
   ShowMenu(BuildMenu(

@@ -315,8 +315,7 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest,
                                      public testing::WithParamInterface<bool> {
  public:
   InfoBarContainerSplitTabTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kSideBySide};
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsPrioritizationEnabled()) {

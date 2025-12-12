@@ -58,8 +58,6 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
-  source->AddBoolean("splitViewEnabled",
-                     base::FeatureList::IsEnabled(features::kSideBySide));
 
   // Localized strings (alphabetical order).
   static constexpr webui::LocalizedString kStrings[] = {

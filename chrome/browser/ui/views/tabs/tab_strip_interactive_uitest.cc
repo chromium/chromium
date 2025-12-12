@@ -83,7 +83,7 @@ class TestNewTabButtonContextMenu : public TabStripInteractiveUiTest {
  public:
   TestNewTabButtonContextMenu() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints, features::kSideBySide}, {});
+        {features::kTabGroupMenuMoreEntryPoints}, {});
   }
 
   TabStrip* tabstrip() {
@@ -207,33 +207,6 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                 ->tab_count();
           },
           2));
-}
-
-class TestNewTabButtonContextMenuSideBySideDisabled
-    : public TabStripInteractiveUiTest {
- public:
-  TestNewTabButtonContextMenuSideBySideDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints}, {features::kSideBySide});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenuSideBySideDisabled,
-                       VerifyNewTabButtonContextMenuSplitViewNotPresent) {
-  RunTestSequence(
-      FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          EnsurePresent(NewTabButtonMenuModel::kNewTab),
-          EnsurePresent(NewTabButtonMenuModel::kNewTabInGroup),
-          EnsurePresent(NewTabButtonMenuModel::kCreateNewTabGroup),
-          EnsureNotPresent(NewTabButtonMenuModel::kNewSplitView),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

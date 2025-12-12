@@ -72,15 +72,11 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    if (loadTimeData.getBoolean('splitViewEnabled')) {
-      this.apiProxy_.getIsSplit().then(({isSplit}) => {
-        if (!isSplit) {
-          this.redirectToNtp_();
-        }
-      });
-    } else {
-      this.redirectToNtp_();
-    }
+    this.apiProxy_.getIsSplit().then(({isSplit}) => {
+      if (!isSplit) {
+        this.redirectToNtp_();
+      }
+    });
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(

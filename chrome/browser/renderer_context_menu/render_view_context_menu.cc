@@ -1740,8 +1740,7 @@ void RenderViewContextMenu::AppendLinkItems() {
       // constraints as opening a link in a new tab since a split view tab is a
       // new tab that is then joined with the current active tab.
       Browser* const browser = GetBrowser();
-      if (base::FeatureList::IsEnabled(features::kSideBySide) && browser &&
-          browser->is_type_normal()) {
+      if (browser && browser->is_type_normal()) {
         int string_id = IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW;
         tabs::TabInterface* tab =
             tabs::TabInterface::MaybeGetFromContents(GetWebContents());

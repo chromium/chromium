@@ -158,7 +158,6 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenSplitView:
-      // What's new module is gated on the kSideBySide flag already.
       can_execute = true;
       break;
   }

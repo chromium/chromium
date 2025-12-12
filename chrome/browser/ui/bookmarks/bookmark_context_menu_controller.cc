@@ -230,10 +230,8 @@ void BookmarkContextMenuController::BuildMenu() {
             IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             IDS_BOOKMARK_BAR_OPEN_INCOGNITO);
-    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-      AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW,
-              IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
-    }
+    AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW,
+            IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
   } else {
     int count = bookmarks::OpenCount(selection_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
@@ -620,7 +618,6 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       tabs::TabInterface* active_tab =
           browser_ ? browser_->GetActiveTabInterface() : nullptr;
       return bookmarks::HasBookmarkURLs(selection_) &&
-             base::FeatureList::IsEnabled(features::kSideBySide) &&
              active_tab && !active_tab->IsSplit();
     }
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:

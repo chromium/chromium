@@ -238,13 +238,6 @@ export class SettingsAppearancePageElement extends
         value: false,
       },
 
-      showSplitViewDragAndDropSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showSplitViewDragAndDropSetting');
-        },
-      },
-
       showResetPinnedActionsButton_: {
         type: Boolean,
         value: false,
@@ -299,7 +292,6 @@ export class SettingsAppearancePageElement extends
   declare private isForcedTheme_: boolean;
   declare private showHoverCardImagesOption_: boolean;
   declare private showResetPinnedActionsButton_: boolean;
-  declare private showSplitViewDragAndDropSetting_: boolean;
 
   // <if expr="is_linux">
   declare private showCustomChromeFrame_: boolean;

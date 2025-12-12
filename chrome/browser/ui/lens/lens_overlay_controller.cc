@@ -1583,16 +1583,11 @@ void LensOverlayController::ShowOverlay() {
   // TODO(crbug.com/443102583): Remove this block if overlay_view_ ends up
   // getting reparented such that it always shares a parent with
   // contents_web_view.
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    // When split view is enabled, there are two additional layers of
-    // hierarchy:
-    // BrowserView->MultiContentsView->ContentsContainerView->ContentsWebView
-    // vs.
-    // BrowserView->ContentsWebView
-    // Since the overlay view is parented by BrowserView, to properly pass the
-    // check below, we should only compare direct children of BrowserView.
-    child_contents_view = child_contents_view->parent()->parent();
-  }
+  // The hierarchy to access the contents web view is:
+  // BrowserView->MultiContentsView->ContentsContainerView->ContentsWebView
+  // Since the overlay view is parented by BrowserView, to properly pass the
+  // check below, we should only compare direct children of BrowserView.
+  child_contents_view = child_contents_view->parent()->parent();
   CHECK(parent_view->GetIndexOf(overlay_view_) >
         parent_view->GetIndexOf(child_contents_view));
 
@@ -2030,9 +2025,6 @@ void LensOverlayController::OnSidePanelDidOpen() {
 
 void LensOverlayController::SetOverlayRoundedCorner() {
   CHECK(overlay_view_ && overlay_web_view_);
-  if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
-    return;
-  }
 
   const bool should_round_corner = IsResultsSidePanelShowing();
   const float radius =

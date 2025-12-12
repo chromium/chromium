@@ -134,13 +134,11 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
-        browser_view, contents_view_));
+  mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
+      browser_view, contents_view_));
 
-    container_outline_ =
-        AddChildView(std::make_unique<ContentsContainerOutline>(mini_toolbar_));
-  }
+  container_outline_ =
+      AddChildView(std::make_unique<ContentsContainerOutline>(mini_toolbar_));
 
   view_bounds_observer_.Observe(contents_view_);
 }

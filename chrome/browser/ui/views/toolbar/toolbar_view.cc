@@ -370,11 +370,9 @@ void ToolbarView::Init() {
     reload_ = container_view_->AddChildView(std::move(reload));
   }
   home_ = container_view_->AddChildView(std::move(home));
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    std::unique_ptr<SplitTabsToolbarButton> split =
-        std::make_unique<SplitTabsToolbarButton>(browser_);
-    split_tabs_ = container_view_->AddChildView(std::move(split));
-  }
+  std::unique_ptr<SplitTabsToolbarButton> split =
+      std::make_unique<SplitTabsToolbarButton>(browser_);
+  split_tabs_ = container_view_->AddChildView(std::move(split));
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       ((contextual_tasks::kShowEntryPoint.Get() ==

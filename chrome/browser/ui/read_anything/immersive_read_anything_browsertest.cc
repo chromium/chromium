@@ -65,46 +65,17 @@ IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingBrowserTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ImmersiveReadAnythingBrowserTest,
-                         testing::Bool());
-
-class ImmersiveReadAnythingSplitViewBrowserTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ImmersiveReadAnythingSplitViewBrowserTest() {
-    feature_list_.InitWithFeatureStates({
-        {features::kSideBySide, true},
-        {features::kImmersiveReadAnything, IsImmersiveEnabled()},
-    });
-  }
-
-  void SetUpOnMainThread() override {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    ASSERT_NE(browser_view, nullptr);
-    browser_view->GetWidget()->Show();
-
-    chrome::NewTab(browser());
-    browser()->tab_strip_model()->ActivateTabAt(0);
-    std::vector<int> other_tab_indices = {1};
-    split_tabs::SplitTabVisualData visual_data;
-    split_tabs::SplitTabCreatedSource source =
-        split_tabs::SplitTabCreatedSource::kToolbarButton;
-    browser()->tab_strip_model()->AddToNewSplit(other_tab_indices, visual_data,
-                                                source);
-  }
-
- protected:
-  bool IsImmersiveEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingSplitViewBrowserTest,
+IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingBrowserTest,
                        OverlayExistsOnSplitViewsWhenImmersiveIsEnabled) {
+  chrome::NewTab(browser());
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  std::vector<int> other_tab_indices = {1};
+  split_tabs::SplitTabVisualData visual_data;
+  split_tabs::SplitTabCreatedSource source =
+      split_tabs::SplitTabCreatedSource::kToolbarButton;
+  browser()->tab_strip_model()->AddToNewSplit(other_tab_indices, visual_data,
+                                              source);
+
   const auto ContainsReadAnythingOverlay = [](views::View* container) {
     if (!container) {
       return false;
@@ -132,5 +103,5 @@ IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingSplitViewBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ImmersiveReadAnythingSplitViewBrowserTest,
+                         ImmersiveReadAnythingBrowserTest,
                          testing::Bool());

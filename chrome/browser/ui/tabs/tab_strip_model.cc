@@ -576,7 +576,7 @@ std::unique_ptr<DetachedTabCollection>
 TabStripModel::DetachSplitTabForInsertion(
     const split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
+
   CHECK(GetSplitData(split_id));
 
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split =
@@ -1929,7 +1929,6 @@ void TabStripModel::UpdateTabInSplit(tabs::TabInterface* split_tab,
                                      int update_index,
                                      SplitUpdateType update_type) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
 
   tabs::TabInterface* update_tab = GetTabAtIndex(update_index);
 
@@ -2761,7 +2760,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::UmaHistogramCounts1000(
           "Tab.ContextMenu.AddToSplit.SelectedTabsCount",
           selection_model().selected_indices().size());
-      CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
+
       std::vector<int> indices = GetIndicesForCommand(context_index);
       // There are three cases for adding to a split.
       // 1. Selecting an inactive tab and making it a split with the active.

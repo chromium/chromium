@@ -767,12 +767,10 @@ void TabSearchPageHandler::GetTabOrganizationModelStrategy(
 
 void TabSearchPageHandler::GetIsSplit(GetIsSplitCallback callback) {
   bool is_split = false;
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    GURL url = web_ui_->GetWebContents()->GetURL();
-    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
-      is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
-                     ->IsSplit();
-    }
+  GURL url = web_ui_->GetWebContents()->GetURL();
+  if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+    is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
+                   ->IsSplit();
   }
   std::move(callback).Run(is_split);
 }
@@ -1614,9 +1612,6 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
 }
 
 void TabSearchPageHandler::OnSplitTabChanged(const SplitTabChange& change) {
-  if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
-    return;
-  }
   if (change.type != SplitTabChange::Type::kRemoved) {
     return;
   }

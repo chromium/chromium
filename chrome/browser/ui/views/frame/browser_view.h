@@ -1172,7 +1172,7 @@ class BrowserView : public BrowserWindow,
   // |------------------------------------------------------------------------|
   // | Contents container (contents_container_)                               |
   // |  --------------------------------------------------------------------  |
-  // |  |  contents_web_view_ or multi_contents_view_ if defined           |  |
+  // |  |  MultiContentsView (multi_contents_view_)                        |  |
   // |  --------------------------------------------------------------------  |
   // |------------------------------------------------------------------------|
   // | ContentHeightSidePanel (contents_height_side_panel_)                   |
@@ -1286,12 +1286,6 @@ class BrowserView : public BrowserWindow,
 
   // Handled by ContentsLayoutManager.
   raw_ptr<views::View> contents_container_ = nullptr;
-
-  // The view that will replace |contents_container_| and manage devtools and
-  // contents positions as well as other content related features (i.e. contents
-  // scrim, ntp footer, etc). contents_container_view_ only exists if the split
-  // view feature is disabled.
-  raw_ptr<ContentsContainerView> contents_container_view_ = nullptr;
 
   // The view responsible for housing the contents of the vertical tab strip.
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container_ = nullptr;

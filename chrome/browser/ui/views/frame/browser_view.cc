@@ -887,19 +887,11 @@ BrowserView::BrowserView(Browser* browser)
   auto contents_container = std::make_unique<views::View>();
 
   views::View* contents_view;
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    auto multi_contents_view = std::make_unique<MultiContentsView>(
-        this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
-    multi_contents_view_ =
-        contents_container->AddChildView(std::move(multi_contents_view));
-    contents_view = multi_contents_view_;
-  } else {
-    contents_container_view_ = contents_container->AddChildView(
-        std::make_unique<ContentsContainerView>(this));
-    auto* contents_web_view = contents_container_view_->contents_view();
-    contents_web_view->set_is_primary_web_contents_for_window(true);
-    contents_view = contents_container_view_;
-  }
+  auto multi_contents_view = std::make_unique<MultiContentsView>(
+      this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
+  multi_contents_view_ =
+      contents_container->AddChildView(std::move(multi_contents_view));
+  contents_view = multi_contents_view_;
 
   // Create the view that will house the Lens overlay. This view is visible but
   // transparent view that is used as a container for the Lens overlay WebView.
@@ -1089,7 +1081,6 @@ BrowserView::~BrowserView() {
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
   main_shadow_overlay_ = nullptr;
-  contents_container_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
@@ -1208,30 +1199,16 @@ views::View* BrowserView::GetSidePanelAnimationContent() {
 }
 
 ContentsContainerView* BrowserView::GetActiveContentsContainerView() {
-  if (multi_contents_view_) {
-    return multi_contents_view_->GetActiveContentsContainerView();
-  }
-  return contents_container_view_;
+  return multi_contents_view_->GetActiveContentsContainerView();
 }
 
 ContentsContainerView* BrowserView::GetContentsContainerViewFor(
     content::WebContents* web_contents) {
-  if (multi_contents_view_) {
-    return multi_contents_view_->GetContentsContainerViewFor(web_contents);
-  }
-
-  if (contents_container_view_->contents_view()->web_contents() ==
-      web_contents) {
-    return contents_container_view_;
-  }
-
-  return nullptr;
+  return multi_contents_view_->GetContentsContainerViewFor(web_contents);
 }
 
 std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
-  return multi_contents_view_
-             ? multi_contents_view_->contents_container_views()
-             : std::vector<ContentsContainerView*>{contents_container_view_};
+  return multi_contents_view_->contents_container_views();
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1875,16 +1852,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       }
     }
 
-    if (multi_contents_view_) {
-      multi_contents_view_->ExecuteOnEachVisibleContentsView(
-          base::BindRepeating([](ContentsWebView* contents_view) {
-            contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
-          }));
-    } else {
-      contents_container_view_->contents_view()
-          ->GetWebContentsCloseHandler()
-          ->ActiveTabChanged();
-    }
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+        }));
 
     if (loading_bar_) {
       loading_bar_->SetWebContents(new_contents);
@@ -1970,16 +1941,11 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   // We need to reset the current tab contents to null before it gets
   // freed. This is because the focus manager performs some operations
   // on the selected WebContents when it is removed.
-  if (multi_contents_view_) {
-    multi_contents_view_->ExecuteOnEachVisibleContentsView(
-        base::BindRepeating([](ContentsWebView* contents_view) {
-          contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
-        }));
-  } else {
-    contents_container_view_->contents_view()
-        ->GetWebContentsCloseHandler()
-        ->ActiveTabChanged();
-  }
+  multi_contents_view_->ExecuteOnEachVisibleContentsView(
+      base::BindRepeating([](ContentsWebView* contents_view) {
+        contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
+      }));
+
   if (loading_bar_) {
     loading_bar_->SetWebContents(nullptr);
   }
@@ -2016,11 +1982,7 @@ gfx::Rect BrowserView::GetBounds() const {
 
 gfx::Size BrowserView::GetContentsSize() const {
   DCHECK(initialized_);
-  if (multi_contents_view_) {
-    return multi_contents_view_->GetActiveContentsContainerView()->size();
-  } else {
-    return contents_container_view_->size();
-  }
+  return multi_contents_view_->GetActiveContentsContainerView()->size();
 }
 
 void BrowserView::SetContentsSize(const gfx::Size& size) {
@@ -2665,11 +2627,7 @@ void BrowserView::ShowChromeLabs() {
 }
 
 views::WebView* BrowserView::GetActiveContentsWebView() {
-  if (multi_contents_view_) {
-    return multi_contents_view_->GetActiveContentsView();
-  } else {
-    return contents_container_view_->contents_view();
-  }
+  return multi_contents_view_->GetActiveContentsView();
 }
 
 BrowserView* BrowserView::AsBrowserView() {
@@ -3540,20 +3498,16 @@ WebContentsModalDialogHost* BrowserView::GetWebContentsModalDialogHost() {
 
 WebContentsModalDialogHost* BrowserView::GetWebContentsModalDialogHostFor(
     content::WebContents* web_contents) {
-  if (multi_contents_view_) {
-    ContentsContainerView* const contents_container_view =
-        multi_contents_view_->GetContentsContainerViewFor(web_contents);
-    // `contents_container_view` can be null in cases where a modal dialog is
-    // being created for a tab that was just created but isn't attached to the
-    // view yet.
-    if (contents_container_view) {
-      return contents_container_view->web_contents_modal_dialog_host();
-    } else {
-      return GetActiveContentsContainerView()->web_contents_modal_dialog_host();
-    }
+  ContentsContainerView* const contents_container_view =
+      multi_contents_view_->GetContentsContainerViewFor(web_contents);
+  // `contents_container_view` can be null in cases where a modal dialog is
+  // being created for a tab that was just created but isn't attached to the
+  // view yet.
+  if (contents_container_view) {
+    return contents_container_view->web_contents_modal_dialog_host();
+  } else {
+    return GetActiveContentsContainerView()->web_contents_modal_dialog_host();
   }
-
-  return contents_container_view_->web_contents_modal_dialog_host();
 }
 
 BookmarkBarView* BrowserView::GetBookmarkBarView() const {
@@ -3682,16 +3636,10 @@ void BrowserView::OnTabStripModelChanged(
       DCHECK(contents.contents->GetNativeView()->GetRootWindow());
     }
 #endif
-    if (multi_contents_view_) {
-      multi_contents_view_->ExecuteOnEachVisibleContentsView(
-          base::BindRepeating([](ContentsWebView* contents_view) {
-            contents_view->GetWebContentsCloseHandler()->TabInserted();
-          }));
-    } else {
-      contents_container_view_->contents_view()
-          ->GetWebContentsCloseHandler()
-          ->TabInserted();
-    }
+    multi_contents_view_->ExecuteOnEachVisibleContentsView(
+        base::BindRepeating([](ContentsWebView* contents_view) {
+          contents_view->GetWebContentsCloseHandler()->TabInserted();
+        }));
   }
 
   UpdateAccessibleNameForRootView();
@@ -3705,16 +3653,10 @@ void BrowserView::TabStripEmpty() {
 }
 
 void BrowserView::WillCloseAllTabs(TabStripModel* tab_strip_model) {
-  if (multi_contents_view_) {
-    multi_contents_view_->ExecuteOnEachVisibleContentsView(
-        base::BindRepeating([](ContentsWebView* contents_view) {
-          contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
-        }));
-  } else {
-    contents_container_view_->contents_view()
-        ->GetWebContentsCloseHandler()
-        ->WillCloseAllTabs();
-  }
+  multi_contents_view_->ExecuteOnEachVisibleContentsView(
+      base::BindRepeating([](ContentsWebView* contents_view) {
+        contents_view->GetWebContentsCloseHandler()->WillCloseAllTabs();
+      }));
 }
 
 void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
@@ -3722,16 +3664,10 @@ void BrowserView::CloseAllTabsStopped(TabStripModel* tab_strip_model,
   if (reason != kCloseAllCanceled) {
     return;
   }
-  if (multi_contents_view_) {
-    multi_contents_view_->ExecuteOnEachVisibleContentsView(
-        base::BindRepeating([](ContentsWebView* contents_view) {
-          contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
-        }));
-  } else {
-    contents_container_view_->contents_view()
-        ->GetWebContentsCloseHandler()
-        ->CloseAllTabsCanceled();
-  }
+  multi_contents_view_->ExecuteOnEachVisibleContentsView(
+      base::BindRepeating([](ContentsWebView* contents_view) {
+        contents_view->GetWebContentsCloseHandler()->CloseAllTabsCanceled();
+      }));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4379,11 +4315,7 @@ bool BrowserView::GetSavedWindowPlacement(
 }
 
 views::View* BrowserView::GetContentsView() {
-  if (multi_contents_view_) {
-    return multi_contents_view_->GetActiveContentsView();
-  } else {
-    return contents_container_view_->contents_view();
-  }
+  return multi_contents_view_->GetActiveContentsView();
 }
 
 views::ClientView* BrowserView::CreateClientView(views::Widget* widget) {
@@ -4781,15 +4713,11 @@ void BrowserView::MaybeUpdateStoredFocusForWebContents(
 
 std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
   std::vector<ContentsWebView*> contents_views;
-  if (multi_contents_view_) {
-    contents_views.push_back(multi_contents_view_->GetActiveContentsView());
-    ContentsWebView* inactive_contents_view =
-        multi_contents_view_->GetInactiveContentsView();
-    if (multi_contents_view_->IsInSplitView()) {
-      contents_views.push_back(inactive_contents_view);
-    }
-  } else {
-    contents_views.push_back(contents_container_view_->contents_view());
+  contents_views.push_back(multi_contents_view_->GetActiveContentsView());
+  ContentsWebView* inactive_contents_view =
+      multi_contents_view_->GetInactiveContentsView();
+  if (multi_contents_view_->IsInSplitView()) {
+    contents_views.push_back(inactive_contents_view);
   }
   return contents_views;
 }
@@ -4864,14 +4792,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (contents_height_side_panel_) {
     panes->push_back(contents_height_side_panel_);
   }
-  if (multi_contents_view_) {
-    for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
-      panes->push_back(pane);
-    }
-  } else {
-    for (views::View* pane : contents_container_view_->GetAccessiblePanes()) {
-      panes->push_back(pane);
-    }
+  for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
+    panes->push_back(pane);
   }
 }
 

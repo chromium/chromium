@@ -317,44 +317,4 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('tooltipDelete')),
         true);
   });
-
-  test('ShowsMenuItemsForUserWithSplitViewDisabled', async () => {
-    loadTimeData.overrideValues({
-      splitViewEnabled: false,
-      isIncognitoModeAvailable: true,
-    });
-
-    const selection = [service.findBookmarkWithId('3')!];
-    powerBookmarksContextMenu.showAtPosition(
-        new MouseEvent('click'), selection, false, false, false);
-
-    await waitAfterNextRender(powerBookmarksContextMenu);
-
-    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
-        '.dropdown-item');
-    assertEquals(menuItems.length, 6);
-    assertEquals(
-        menuItems[0]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewTab')),
-        true);
-    assertEquals(
-        menuItems[1]!.textContent.includes(
-            loadTimeData.getString('menuOpenNewWindow')),
-        true);
-    assertEquals(
-        menuItems[2]!.textContent.includes(
-            loadTimeData.getString('menuOpenIncognito')),
-        true);
-    assertEquals(
-        menuItems[3]!.textContent.includes(loadTimeData.getString('menuEdit')),
-        true);
-    assertEquals(
-        menuItems[4]!.textContent.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
-        true);
-    assertEquals(
-        menuItems[5]!.textContent.includes(
-            loadTimeData.getString('tooltipDelete')),
-        true);
-  });
 });

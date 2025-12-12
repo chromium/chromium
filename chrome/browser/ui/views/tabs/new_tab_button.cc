@@ -83,10 +83,8 @@ NewTabButtonMenuModel::NewTabButtonMenuModel(BrowserWindowInterface* browser)
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP).value(),
                          kCreateNewTabGroup);
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddNewSplitTabItem();
-  }
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddNewSplitTabItem();
 }
 
 NewTabButtonMenuModel::~NewTabButtonMenuModel() = default;

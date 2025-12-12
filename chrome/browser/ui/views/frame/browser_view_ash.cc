@@ -74,22 +74,20 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
 
   window_scrim_view()->SetRoundedCorners(window_radii);
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    const gfx::RoundedCornersF multi_contents_radii(
-        0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
-        left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
+  const gfx::RoundedCornersF multi_contents_radii(
+      0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
+      left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
 
-    if (multi_contents_view()->background_radii() != multi_contents_radii) {
-      multi_contents_view()->SetBackgroundRadii(multi_contents_radii);
-    }
+  if (multi_contents_view()->background_radii() != multi_contents_radii) {
+    multi_contents_view()->SetBackgroundRadii(multi_contents_radii);
+  }
 
-    if (IsInSplitView()) {
-      // In a non-split view, browser's content (main web content, DevTools, NTP
-      // footer, etc.) extends into the rounded corners. However, in split view,
-      // the content is bordered, making it sufficient to simply round the
-      // background painted by multi_contents_view().
-      return;
-    }
+  if (IsInSplitView()) {
+    // In a non-split view, browser's content (main web content, DevTools, NTP
+    // footer, etc.) extends into the rounded corners. However, in split view,
+    // the content is bordered, making it sufficient to simply round the
+    // background painted by multi_contents_view().
+    return;
   }
 
   views::WebView *devtools_webview =

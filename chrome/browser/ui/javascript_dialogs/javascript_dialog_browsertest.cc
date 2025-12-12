@@ -51,6 +51,8 @@ class JavaScriptDialogTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+
  private:
   friend class JavaScriptDialogDismissalCauseTester;
 };
@@ -484,19 +486,7 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
             dialog_manager->GetTitle(tab, subframe->GetLastCommittedOrigin()));
 }
 
-class JavaScriptDialogForSplitViewTest : public JavaScriptDialogTest {
- public:
-  JavaScriptDialogForSplitViewTest() {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(JavaScriptDialogForSplitViewTest,
+IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
                        HandlesSwappingTabWithDialogIntoSplitView) {
   // Create three tabs with the first two in a split view.
   chrome::NewTab(browser());

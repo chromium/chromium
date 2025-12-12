@@ -585,8 +585,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
   html_source->AddBoolean("showVerticalTabsEnabled",
                           tabs::IsVerticalTabsFeatureEnabled());
-  html_source->AddBoolean("showSplitViewDragAndDropSetting",
-                          base::FeatureList::IsEnabled(features::kSideBySide));
+
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
                           tabs::GetTabSearchPosition(profile) ==
                               tabs::TabSearchPosition::kTrailingTabstrip);

@@ -105,8 +105,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
-      if (bookmarks.size() == 1 && bookmarks.front()->is_url() &&
-          base::FeatureList::IsEnabled(features::kSideBySide)) {
+      if (bookmarks.size() == 1 && bookmarks.front()->is_url()) {
         AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
       }
       AddSeparator(ui::NORMAL_SEPARATOR);
@@ -120,8 +119,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
-    if (bookmarks.size() == 1 && bookmarks.front()->is_url() &&
-        base::FeatureList::IsEnabled(features::kSideBySide)) {
+    if (bookmarks.size() == 1 && bookmarks.front()->is_url()) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
     }
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -561,7 +559,6 @@ void BookmarksPageHandler::ExecuteOpenInNewTabGroupCommand(
 void BookmarksPageHandler::ExecuteOpenInSplitViewCommand(
     const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
-  CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
   ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
 }
 

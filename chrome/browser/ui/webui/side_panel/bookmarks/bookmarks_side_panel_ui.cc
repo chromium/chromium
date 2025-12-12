@@ -207,8 +207,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "bookmarksTreeViewEnabled",
       base::FeatureList::IsEnabled(features::kBookmarksTreeView));
-  source->AddBoolean("splitViewEnabled",
-                     base::FeatureList::IsEnabled(features::kSideBySide));
+
   // TODO(crbug.com/380818698): Replace this with the flag which will be used to
   // launch account storage for bookmarks.
   source->AddBoolean("isBookmarksInTransportModeEnabled",

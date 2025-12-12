@@ -359,19 +359,6 @@ suite('AppearanceHandler', function() {
                           '#splitViewDragAndDrop')!.hidden);
   });
 
-  test('hide split view drag and drop options', async function() {
-    loadTimeData.overrideValues({
-      showSplitViewDragAndDropSetting: false,
-    });
-    createAppearancePage();
-    await microtasksFinished();
-    assertTrue(
-        !!appearancePage.shadowRoot!.querySelector('#splitViewDragAndDrop'));
-    assertTrue(!!appearancePage.shadowRoot!
-                     .querySelector<SettingsToggleButtonElement>(
-                         '#splitViewDragAndDrop')!.hidden);
-  });
-
   test('split view drag and drop toggle updates pref', async function() {
     loadTimeData.overrideValues({
       showSplitViewDragAndDropSetting: true,

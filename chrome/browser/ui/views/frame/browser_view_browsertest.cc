@@ -156,23 +156,8 @@ class BrowserViewTest : public InProcessBrowserTest {
   raw_ptr<DevToolsWindow> devtools_;
 };
 
-class BrowserViewWithoutSideBySideTest : public BrowserViewTest {
- public:
-  BrowserViewWithoutSideBySideTest() {
-    scoped_feature_list_.InitWithFeatures({}, {features::kSideBySide});
-  }
 
-  SidePanel* side_panel() {
-    return browser_view()->contents_height_side_panel();
-  }
 
-  views::View* side_panel_rounded_corner() {
-    return browser_view()->GetSidePanelRoundedCornerForTesting();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 #if BUILDFLAG(IS_CHROMEOS)
 using BrowserViewChromeOSTest = ChromeOSBrowserUITest;
@@ -469,21 +454,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowResetsSize) {
   CloseDevToolsWindow();
   EXPECT_THAT(GetDevToolsWindowSizePrefs(browser()),
               HasDimensions(100, 740, 100, 740));
-}
-
-// Verifies that the side panel's rounded corner is being correctly layed out.
-IN_PROC_BROWSER_TEST_F(BrowserViewWithoutSideBySideTest,
-                       SidePanelRoundedCornerLayout) {
-  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  side_panel_ui->SetNoDelaysForTesting(true);
-  side_panel_ui->Show(SidePanelEntry::Id::kBookmarks);
-  if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-    browser()->GetBrowserView().GetWidget()->LayoutRootViewIfNecessary();
-  }
-  EXPECT_EQ(side_panel()->bounds().x(),
-            side_panel_rounded_corner()->bounds().right());
-  EXPECT_EQ(side_panel()->bounds().y(),
-            side_panel_rounded_corner()->bounds().y());
 }
 
 class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {

@@ -243,14 +243,16 @@ BASE_FEATURE_PARAM(int,
                    "side_by_side_iph_tab_switch_count",
                    3);
 
+// TODO(crbug.com/454347097): Remove this
 bool IsRestoringSplitViewEnabled() {
-  return base::FeatureList::IsEnabled(features::kSideBySide);
+  return true;
 }
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/454347097): Remove this
 bool IsSideBySideKeyboardShortcutEnabled() {
-  return base::FeatureList::IsEnabled(features::kSideBySide);
+  return true;
 }
 
 BASE_FEATURE(kSideBySideFocusClearing, base::FEATURE_ENABLED_BY_DEFAULT);

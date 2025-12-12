@@ -757,10 +757,8 @@ export class BookmarksCommandManagerElement extends
           Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
+          Command.OPEN_SPLIT_VIEW,
         ];
-        if (loadTimeData.getBoolean('splitViewEnabled')) {
-          commands.push(Command.OPEN_SPLIT_VIEW);
-        }
         return commands;
       case MenuSource.TOOLBAR:
         return [
