@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/variant_vector.h"
 
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
@@ -45,7 +41,7 @@ int CompareAgainstSafearray(const std::vector<ScopedVariant>& vector,
   auto vector_iter = vector.begin();
   auto scope_iter = lock_scope->begin();
   for (; vector_iter != vector.end() && scope_iter != lock_scope->end();
-       ++vector_iter, ++scope_iter) {
+       ++vector_iter, UNSAFE_TODO(++scope_iter)) {
     internal::VariantConverter<ElementVartype>::RawSet(&non_owning_temp,
                                                        *scope_iter);
     int compare_result = vector_iter->Compare(non_owning_temp, ignore_case);

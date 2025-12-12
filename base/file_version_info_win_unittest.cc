@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/file_version_info_win.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -109,25 +105,25 @@ TYPED_TEST(FileVersionInfoTest, HardCodedProperties) {
   ASSERT_TRUE(version_info);
 
   int j = 0;
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->company_name()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->company_short_name()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->product_name()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->product_short_name()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->internal_name()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->product_version()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->special_build()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->original_filename()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->file_description()));
-  EXPECT_EQ(kExpectedValues[j++],
+  EXPECT_EQ(UNSAFE_TODO(kExpectedValues[j++]),
             base::AsWStringView(version_info->file_version()));
 }
 

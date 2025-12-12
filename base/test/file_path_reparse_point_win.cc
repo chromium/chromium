@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/test/file_path_reparse_point_win.h"
 
 #include <windows.h>
@@ -14,6 +9,8 @@
 #include <winioctl.h>
 
 #include <utility>
+
+#include "base/compiler_specific.h"
 
 namespace base::test {
 
@@ -106,7 +103,8 @@ bool FilePathReparsePoint::SetReparsePoint(HANDLE source,
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
 
   data->ReparseTag = 0xa0000003;
-  memcpy(data->MountPointReparseBuffer.PathBuffer, target, size_target + 2);
+  UNSAFE_TODO(memcpy(data->MountPointReparseBuffer.PathBuffer, target,
+                     size_target + 2));
 
   data->MountPointReparseBuffer.SubstituteNameLength = size_target;
   data->MountPointReparseBuffer.PrintNameOffset = size_target + 2;

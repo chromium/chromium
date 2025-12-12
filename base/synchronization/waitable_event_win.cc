@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <windows.h>
@@ -137,7 +132,7 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> events) {
       << "Can only wait on " << MAXIMUM_WAIT_OBJECTS << " with WaitMany";
 
   for (size_t i = 0; i < events.size(); ++i) {
-    handles[i] = events[i]->handle();
+    UNSAFE_TODO(handles[i]) = events[i]->handle();
   }
 
   // The cast is safe because count is small - see the CHECK above.

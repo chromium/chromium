@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/power_monitor/battery_level_provider.h"
+
+#include "base/compiler_specific.h"
 
 #define INITGUID
 #include <windows.h>  // Must be in front of other Windows header files.
@@ -51,8 +48,8 @@ base::win::ScopedHandle GetBatteryHandle(
 
   // |interface_detail->DevicePath| is variable size.
   std::vector<uint8_t> raw_buf(required_size);
-  auto* interface_detail =
-      reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA*>(raw_buf.data());
+  auto* interface_detail = UNSAFE_TODO(
+      reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA*>(raw_buf.data()));
   interface_detail->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
   BOOL success = ::SetupDiGetDeviceInterfaceDetail(
