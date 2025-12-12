@@ -122,9 +122,9 @@ std::string BrowserDMTokenStorageLinux::InitClientId() {
   }
 
   std::string machine_id_base64;
-  base::Base64UrlEncodeEarlyStartup(Sha1ForMachineId(machine_id_trimmed),
-                                    base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                    &machine_id_base64);
+  base::Base64UrlEncode(Sha1ForMachineId(machine_id_trimmed),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &machine_id_base64);
 
   client_id_ = machine_id_base64;
   return client_id_;

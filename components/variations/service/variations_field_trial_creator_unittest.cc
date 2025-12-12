@@ -510,9 +510,8 @@ class FieldTrialCreatorTest : public ::testing::Test {
     CHECK(base::WriteFile(seed_file_path(), compressed_seed));
 
     // Write the seed for the seed file experiment's control-group clients.
-    local_state()->SetString(
-        prefs::kVariationsCompressedSeed,
-        base::Base64EncodeEarlyStartup(base::as_byte_span(compressed_seed)));
+    local_state()->SetString(prefs::kVariationsCompressedSeed,
+                             base::Base64Encode(compressed_seed));
 
     // Allows and writes an empty signature for the test seed.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

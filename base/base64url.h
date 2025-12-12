@@ -37,15 +37,6 @@ BASE_EXPORT void Base64UrlEncode(std::string_view input,
                                  Base64UrlEncodePolicy policy,
                                  std::string* output);
 
-// Same as Base64UrlEncode(), but does not access any base::Feature.
-// This is only necessary for code that runs at early startup before
-// base::FeatureList registration. As such, there is only a span version.
-// TODO(crbug.com/468035603): Remove this once Base64Encode() stops accessing
-// base::Feature.
-BASE_EXPORT void Base64UrlEncodeEarlyStartup(span<const uint8_t> input,
-                                             Base64UrlEncodePolicy policy,
-                                             std::string* output);
-
 enum class Base64UrlDecodePolicy {
   // Require inputs contain trailing padding if non-aligned.
   REQUIRE_PADDING,

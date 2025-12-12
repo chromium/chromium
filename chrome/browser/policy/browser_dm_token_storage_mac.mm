@@ -88,9 +88,8 @@ bool GetDmTokenFilePath(base::FilePath* token_file_path,
   }
 
   std::string filename;
-  base::Base64UrlEncodeEarlyStartup(Sha1ForDmTokenFilePath(client_id),
-                                    base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                    &filename);
+  base::Base64UrlEncode(Sha1ForDmTokenFilePath(client_id),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
   *token_file_path = token_file_path->Append(filename.c_str());
 
   return true;
