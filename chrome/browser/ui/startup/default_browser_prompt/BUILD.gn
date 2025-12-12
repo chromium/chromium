@@ -51,6 +51,7 @@ source_set("impl") {
     ":default_browser_prompt",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:shell_integration",
     "//chrome/browser/infobars",
     "//chrome/browser/ui:ui_features",

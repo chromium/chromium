@@ -6,8 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
@@ -17,6 +21,24 @@
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+void PinToTaskbarResult(bool pinned) {
+  // TODO(crbug.com/343734031): Emit a metric with the pin result. Initially,
+  // taskbar_manager.cc metrics will suffice, but taskbar_manager will most
+  // likely get used by other code.
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
+
 using CloseReason = DefaultBrowserPromptManager::CloseReason;
 
 DefaultBrowserInfoBarManager::DefaultBrowserInfoBarManager() = default;
@@ -24,6 +46,8 @@ DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() = default;
 
 void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
   can_pin_to_taskbar_ = can_pin_to_taskbar;
+
+  browser_list_observation_.Observe(BrowserList::GetInstance());
   browser_tab_strip_tracker_ =
       std::make_unique<BrowserTabStripTracker>(this, this);
   // This will trigger a call to `OnTabStripModelChanged`, which will create
@@ -34,6 +58,8 @@ void DefaultBrowserInfoBarManager::ShowInfoBars(bool can_pin_to_taskbar) {
 void DefaultBrowserInfoBarManager::CloseAllInfoBars() {
   can_pin_to_taskbar_ = false;
   user_initiated_info_bar_close_pending_.reset();
+
+  browser_list_observation_.Reset();
   browser_tab_strip_tracker_.reset();
 
   for (const auto& infobars_entry : infobars_) {
@@ -42,6 +68,35 @@ void DefaultBrowserInfoBarManager::CloseAllInfoBars() {
   }
 
   infobars_.clear();
+}
+
+void DefaultBrowserInfoBarManager::OnBrowserRemoved(Browser* /*browser*/) {
+  if (user_initiated_info_bar_close_pending_.has_value()) {
+    return;
+  }
+
+  // If the last browser window that we are tracking is getting closed, and the
+  // user hasn't interacted with the infobar yet, we record this as IGNORED.
+  bool all_tracked_browser_windows_closed = true;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (ShouldTrackBrowser(browser)) {
+      all_tracked_browser_windows_closed = false;
+      break;
+    }
+  }
+
+  if (!all_tracked_browser_windows_closed) {
+    return;
+  }
+
+  // Reset the observers.
+  browser_tab_strip_tracker_.reset();
+  browser_list_observation_.Reset();
+
+  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Ignore"));
+  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
+                            IGNORE_INFO_BAR_PER_SESSION,
+                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
 }
 
 void DefaultBrowserInfoBarManager::CreateInfoBarForWebContents(
@@ -116,10 +171,40 @@ void DefaultBrowserInfoBarManager::OnAccept() {
                               g_browser_process->local_state()->GetInteger(
                                   prefs::kDefaultBrowserDeclinedCount) +
                                   1);
+  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Accept"));
+  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
+                            ACCEPT_INFO_BAR,
+                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
 
   user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
+
+  // The worker pointer is reference counted. While it is running, the
+  // message loops of the FILE and UI thread will hold references to
+  // it and it will be automatically freed once all its tasks have
+  // finished.
+  base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+      ->StartSetAsDefault(base::DoNothing());
+  if (can_pin_to_taskbar_) {
+#if BUILDFLAG(IS_WIN)
+    // Attempt the pin to taskbar in parallel with bringing up the Windows
+    // settings UI. Serializing the operations is an option, but since the user
+    // might not complete the first operation, serializing would probably make
+    // the second operation less likely to happen.
+    browser_util::PinAppToTaskbar(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
+        base::BindOnce(&PinToTaskbarResult));
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(IS_WIN)
+  }
 }
 
 void DefaultBrowserInfoBarManager::OnDismiss() {
+  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
+  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
+                            DISMISS_INFO_BAR,
+                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
+
   user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
 }

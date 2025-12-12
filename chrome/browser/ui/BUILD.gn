@@ -3017,6 +3017,7 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     # Non-android and non-chromeos-ash circular deps.
     allow_circular_includes_from += [
+      "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/webui/signin:profile_impl",
 
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's

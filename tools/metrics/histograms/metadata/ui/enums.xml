@@ -83,6 +83,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
 
+<!-- LINT.IfChange(DefaultBrowserInfoBarUserInteraction) -->
+
 <enum name="DefaultBrowserInfoBarUserInteraction">
   <int value="0" label="Accept">
     The user clicked the &quot;Set as default&quot; button.
@@ -91,10 +93,17 @@ chromium-metrics-reviews@google.com.
     The user clicked the &quot;Don't ask again&quot; button.
   </int>
   <int value="2" label="Ignore">
-    The user did not interact with the info bar.
+    (Obsolete) The user did not interact with the info bar. Deprecated in M145
+    due to it reporting one count per tab closed.
   </int>
   <int value="3" label="Dismiss">The user explicitly closed the infobar.</int>
+  <int value="4" label="IgnorePerSession">
+    The user did not interact with the info bar. Reports one count per browser
+    session.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h:InfoBarUserInteraction) -->
 
 <enum name="DefaultBrowserState">
   <int value="0" label="Not Default"/>

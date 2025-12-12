@@ -10,6 +10,9 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -34,7 +37,8 @@ class TabStripModel;
 // Default Browser infobars across all tabs and browser windows. It also acts as
 // an observer for InfoBar delegates to record and act on user interaction with
 // the infobars.
-class DefaultBrowserInfoBarManager : public BrowserTabStripTrackerDelegate,
+class DefaultBrowserInfoBarManager : public BrowserListObserver,
+                                     public BrowserTabStripTrackerDelegate,
                                      public TabStripModelObserver,
                                      public infobars::InfoBarManager::Observer,
                                      public ConfirmInfoBarDelegate::Observer {
@@ -50,8 +54,33 @@ class DefaultBrowserInfoBarManager : public BrowserTabStripTrackerDelegate,
   void CloseAllInfoBars();
 
  private:
+  // Possible user interactions with the default browser info bar.
+  // These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  //
+  // LINT.IfChange(InfoBarUserInteraction)
+  enum InfoBarUserInteraction {
+    // The user clicked the "OK" (i.e., "Set as default") button.
+    ACCEPT_INFO_BAR = 0,
+    // The cancel button is deprecated.
+    // CANCEL_INFO_BAR = 1,
+    // Deprecated, new actions should be recorded in the
+    // `IGNORED_INFO_BAR_PER_SESSION` bucket.
+    // IGNORE_INFO_BAR = 2,
+    // The user explicitly closed the infobar.
+    DISMISS_INFO_BAR = 3,
+    // The user did not interact with the infobar before closing the last
+    // browser window.
+    IGNORE_INFO_BAR_PER_SESSION = 4,
+    NUM_INFO_BAR_USER_INTERACTION_TYPES
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserInfoBarUserInteraction)
+
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
+
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override;
 
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
@@ -77,6 +106,9 @@ class DefaultBrowserInfoBarManager : public BrowserTabStripTrackerDelegate,
 
   std::optional<DefaultBrowserPromptManager::CloseReason>
       user_initiated_info_bar_close_pending_;
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_INFOBAR_MANAGER_H_
