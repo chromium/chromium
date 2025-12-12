@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -388,11 +389,15 @@ std::vector<GURL> GetOverridesForChromeURL(
       continue;
     }
 
-    // We can't handle chrome-extension URLs in incognito mode unless the
-    // extension uses split mode.
+    // We only allow chrome: URL overrides in incognito mode if the extension
+    // uses split mode, has been enabled in incognito and this is not a new tab
+    // page override (we never allow the new tab page to be overridden in
+    // incognito since we need to ensure users see details about what incognito
+    // is (and isn't)).
     bool incognito_override_allowed =
         extensions::IncognitoInfo::IsSplitMode(extension) &&
-        extensions::util::IsIncognitoEnabled(extension->id(), profile);
+        extensions::util::IsIncognitoEnabled(extension->id(), profile) &&
+        url.host() != chrome::kChromeUINewTabHost;
     if (profile->IsOffTheRecord() && !incognito_override_allowed) {
       continue;
     }

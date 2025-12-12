@@ -154,10 +154,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
     extension = EnableExtensionInIncognito(extension->id());
 
     // Even after enabling in incognito, the extension still shouldn't override
-    // the new tab page, as only "incognito": "split" extensions can override
-    // incognito chrome pages.
-    // TODO(crbug.com/460732314): Extensions should never be able to override
-    // the new tab page, even with "incognito": "split".
+    // the new tab page.
     ASSERT_TRUE(
         NavigateToURL(incognito_web_contents, GURL("chrome://newtab/")));
     EXPECT_TRUE(ExtensionDoesNotControlPage(incognito_web_contents));
@@ -187,15 +184,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabSplitMode) {
     // Now enable the extension in incognito mode.
     extension = EnableExtensionInIncognito(extension->id());
 
-    // After enabling in incognito the extension will be able to override the
-    // new tab page. The overridden page will call chrome.test.notifyPass().
-    // TODO(crbug.com/460732314): Extensions should never be able to override
-    // the new tab page, even with "incognito": "split".
-    ResultCatcher catcher;
+    // Even after enabling in incognito the extension should still not be able
+    // to override the new tab page. Normally "incognito": "split" extensions
+    // can override incognito chrome pages if they are enabled in incognito, but
+    // we never allow the new tab page to be overridden in incognito since we
+    // need to ensure users see details about what incognito is (and isn't).
     ASSERT_TRUE(
         NavigateToURL(incognito_web_contents, GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(incognito_web_contents, extension->id()));
-    ASSERT_TRUE(catcher.GetNextResult());
+    EXPECT_TRUE(ExtensionDoesNotControlPage(incognito_web_contents));
   }
 }
 
