@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/on_device_translation/features.h"
 
 #include <cstddef>
 

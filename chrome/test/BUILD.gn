@@ -4225,8 +4225,8 @@ if (!is_android) {
         "//chrome/browser/on_device_translation",
         "//chrome/browser/on_device_translation:test_support",
         "//components/component_updater:test_support",
+        "//components/on_device_translation",
         "//components/services/on_device_translation:test_support",
-        "//components/services/on_device_translation/public/cpp",
       ]
     }
 

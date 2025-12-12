@@ -6,7 +6,7 @@ import("//components/services/on_device_translation/buildflags/features.gni")
 
 assert(enable_on_device_translation)
 
-source_set("cpp") {
+source_set("on_device_translation") {
   sources = [
     "features.cc",
     "features.h",
@@ -23,7 +23,7 @@ source_set("unit_tests") {
   sources = [ "features_unittest.cc" ]
   deps = [
     "//base/test:test_support",
-    "//components/services/on_device_translation/public/cpp",
+    "//components/on_device_translation",
     "//testing/gmock",
     "//testing/gtest",
   ]

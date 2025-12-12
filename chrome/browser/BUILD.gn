@@ -7046,7 +7046,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
       "//chrome/services/system_signals/public/cpp/browser",
-      "//components/services/on_device_translation/public/cpp",
+      "//components/on_device_translation",
       "//components/supervised_user/core/common:features",
       "//components/themes:policy",
     ]
@@ -8052,7 +8052,7 @@ static_library("browser") {
   if (enable_on_device_translation) {
     deps += [
       "//chrome/browser/on_device_translation",
-      "//components/services/on_device_translation/public/cpp",
+      "//components/on_device_translation",
     ]
   }
 

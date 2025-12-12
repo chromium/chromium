@@ -24,7 +24,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/crx_file/id_util.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/on_device_translation/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/features.h"

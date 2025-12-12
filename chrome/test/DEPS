@@ -65,6 +65,7 @@ include_rules = [
   "+components/offline_pages/buildflags",
   "+components/offline_pages/core",
   "+components/omnibox/browser",
+  "+components/on_device_translation",
   "+components/optimization_guide",
   "+components/optimization_guide/content",
   "+components/optimization_guide/core",

@@ -921,8 +921,8 @@ test("components_unittests") {
 
   if (enable_on_device_translation) {
     deps += [
+      "//components/on_device_translation:unit_tests",
       "//components/services/on_device_translation:unit_tests",
-      "//components/services/on_device_translation/public/cpp:unit_tests",
     ]
   }
 

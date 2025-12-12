@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_PUBLIC_CPP_FEATURES_H_
-#define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_PUBLIC_CPP_FEATURES_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_FEATURES_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_FEATURES_H_
 
 #include <string_view>
 
@@ -48,4 +48,4 @@ bool IsValidTranslateKitVersion(std::string_view version);
 
 }  // namespace on_device_translation
 
-#endif  // COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_PUBLIC_CPP_FEATURES_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_FEATURES_H_

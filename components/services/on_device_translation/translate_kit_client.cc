@@ -22,8 +22,8 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/on_device_translation/features.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {

@@ -7,7 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/on_device_translation/features.h"
 
 namespace on_device_translation {
 

@@ -21,8 +21,8 @@ source_set("on_device_translation_service") {
   deps = [ ":translate_kit_api_proto" ]
   public_deps = [
     "//base",
+    "//components/on_device_translation",
     "//components/on_device_translation/public/mojom/",
-    "//components/services/on_device_translation/public/cpp",
     "//mojo/public/cpp/bindings",
   ]
 
@@ -46,9 +46,9 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
     "//components/services/on_device_translation:on_device_translation_service",
-    "//components/services/on_device_translation/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
