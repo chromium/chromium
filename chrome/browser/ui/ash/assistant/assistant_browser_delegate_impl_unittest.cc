@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -148,10 +149,10 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     const GURL start_url = GURL("https://example.com/path");
     const webapps::AppId app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
-    auto web_app = std::make_unique<web_app::WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
+
+    auto web_app = web_app::test::CreateWebApp(
+        start_url, web_app::WebAppManagement::kSystem);
     web_app->SetName("test app");
-    web_app->AddSource(web_app::WebAppManagement::kSystem);
     web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
     web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
 

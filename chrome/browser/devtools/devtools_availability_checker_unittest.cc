@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -195,9 +196,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppAllowedByPolicy) {
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
 
-  const webapps::AppId app_id = "test_app_id";
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(GURL("https://allowed-app.com/"));
+  auto web_app = web_app::test::CreateWebApp(GURL("https://allowed-app.com/"));
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_app.get()));
 }
 
@@ -207,9 +206,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppBlockedByPolicy) {
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
 
-  const webapps::AppId app_id = "test_app_id";
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(GURL("https://blocked-app.com/"));
+  auto web_app = web_app::test::CreateWebApp(GURL("https://blocked-app.com/"));
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_app.get()));
 }
 
@@ -219,9 +216,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppDisallowedByPolicy) {
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
 
-  const webapps::AppId app_id = "test_app_id";
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(GURL("https://example.com/"));
+  auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/"));
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_app.get()));
 }
 
@@ -231,9 +226,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppAllowedWhenPolicyIsAllowed) {
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
 
-  const webapps::AppId app_id = "test_app_id";
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(GURL("https://example.com/"));
+  auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/"));
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_app.get()));
 }
 

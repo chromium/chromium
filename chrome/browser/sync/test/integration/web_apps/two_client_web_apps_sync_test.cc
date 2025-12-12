@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
 
   // Install app with name.
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://does-not-exist.org"));
+      GURL("https://does-not-exist.org/scope/a.html"));
   info->title = u"Blue icon";
   info->theme_color = SK_ColorBLUE;
   info->scope = GURL("https://does-not-exist.org/scope");

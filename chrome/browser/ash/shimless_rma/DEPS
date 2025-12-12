@@ -28,6 +28,7 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/web_applications/isolated_web_apps",
+  "+chrome/browser/web_applications/test/web_app_test_utils.h",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app.h",
   "+chrome/browser/web_applications/web_app_provider.h",

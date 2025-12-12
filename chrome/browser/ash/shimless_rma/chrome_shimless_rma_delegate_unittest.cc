@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/pref_names.h"
@@ -157,7 +159,11 @@ class FakeDiagnosticsAppProfileHelperDelegate
     : public DiagnosticsAppProfileHelperDelegate {
  public:
   explicit FakeDiagnosticsAppProfileHelperDelegate(Profile* profile)
-      : web_app_command_scheduler_(*profile) {}
+      : web_app_command_scheduler_(*profile) {
+    web_app_ = web_app::test::CreateWebApp(
+        GURL(base::StrCat({"isolated-app://", kDevIwaId})));
+    web_app_->SetName("App Name");
+  }
   FakeDiagnosticsAppProfileHelperDelegate(
       const DiagnosticsAppProfileHelperDelegate&) = delete;
   ~FakeDiagnosticsAppProfileHelperDelegate() override = default;
@@ -176,19 +182,19 @@ class FakeDiagnosticsAppProfileHelperDelegate
   const web_app::WebApp* GetWebAppByIdUnsafe(
       const webapps::AppId& app_id,
       content::BrowserContext* browser_context) override {
-    return &web_app_;
+    return web_app_.get();
   }
 
   FakeServiceWorkerContext& fake_service_worker_context() {
     return fake_service_worker_context_;
   }
 
-  web_app::WebApp& web_app() { return web_app_; }
+  web_app::WebApp& web_app() { return CHECK_DEREF(web_app_); }
 
  protected:
   FakeServiceWorkerContext fake_service_worker_context_;
   FakeWebAppCommandScheduler web_app_command_scheduler_;
-  web_app::WebApp web_app_{/*app_id=*/""};
+  std::unique_ptr<web_app::WebApp> web_app_;
 };
 
 class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
@@ -279,12 +285,6 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
 
 // Verify the whole flow of `PrepareDiagnosticsAppProfile`.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
-  const auto expected_url_origin =
-      url::Origin::Create(GURL(base::StrCat({"isolated-app://", kDevIwaId})));
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetName("App Name");
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetStartUrl(
-      expected_url_origin.GetURL());
-
   // Call this twice to verify that even if the profile has already been loaded
   // it still works.
   for (int i = 0; i < 2; ++i) {
@@ -407,11 +407,6 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 // return the installed app origin.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        InstalledAppOriginNotSetAfterIwaInstallFailure) {
-  const auto expected_url_origin =
-      url::Origin::Create(GURL(base::StrCat({"isolated-app://", kDevIwaId})));
-  fake_diagnostics_app_profile_helper_delegate_->web_app().SetStartUrl(
-      expected_url_origin.GetURL());
-
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
       network::ParsedPermissionsPolicy{
           {network::ParsedPermissionsPolicyDeclaration{

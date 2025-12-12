@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
   AwaitWebAppQuiescence();
 
   apps::IconInfo icon(GURL("https://example.com/icon.png"), /*size=*/32);
-  GURL app_url("https://example.com/");
+  GURL app_url("https://example.com/scope/index.html");
   GURL scope("https://example.com/scope/");
   webapps::ManifestId manifest_id("https://example.com/manifest-id");
   std::string app_name = "app name";

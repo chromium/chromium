@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
