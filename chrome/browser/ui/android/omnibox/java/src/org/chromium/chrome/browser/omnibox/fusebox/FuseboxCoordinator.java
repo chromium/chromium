@@ -86,6 +86,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
     private final SnackbarManager mSnackbarManager;
+    private final @Nullable ViewportRectProvider mViewportRectProvider;
 
     public FuseboxCoordinator(
             Context context,
@@ -111,6 +112,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
             mViewHolder = null;
             mLocationBarDataProvider = null;
             mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
+            mViewportRectProvider = null;
             return;
         }
 
@@ -126,7 +128,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                 0,
                 0);
         var popupView = LayoutInflater.from(context).inflate(R.layout.fusebox_context_popup, null);
-        @Nullable RectProvider viewportRectProvider = new ViewportRectProvider(mContext);
+        mViewportRectProvider = new ViewportRectProvider(mContext);
 
         var popupWindowBuilder =
                 new AnchoredPopupWindow.Builder(
@@ -139,7 +141,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         popupWindowBuilder.setAnimateFromAnchor(true);
         popupWindowBuilder.setPreferredHorizontalOrientation(
                 HorizontalOrientation.LAYOUT_DIRECTION);
-        popupWindowBuilder.setViewportRectProvider(viewportRectProvider);
+        popupWindowBuilder.setViewportRectProvider(mViewportRectProvider);
 
         var popup = new FuseboxPopup(mContext, popupWindowBuilder.build(), popupView);
         mViewHolder = new FuseboxViewHolder(parent, popup);
@@ -222,6 +224,9 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
             mComposeBoxQueryControllerBridge = null;
+        }
+        if (mViewportRectProvider != null) {
+            mViewportRectProvider.destroy();
         }
     }
 
@@ -403,5 +408,9 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
 
         @Override
         public void onLowMemory() {}
+
+        public void destroy() {
+            mContext.unregisterComponentCallbacks(this);
+        }
     }
 }
