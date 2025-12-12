@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
@@ -132,6 +133,15 @@ class DevToolsSession : public protocol::FrontendChannel,
     return base::BindRepeating(&DevToolsSession::PrepareForReload,
                                base::Unretained(this));
   }
+
+  void EnableDurableMessageCollector(
+      const base::UnguessableToken& devtools_token,
+      network::mojom::NetworkDurableMessageConfigPtr config,
+      base::OnceClosure callback);
+  void DisableDurableMessageCollectorForProfile(
+      const base::UnguessableToken& devtools_token,
+      base::OnceClosure callback);
+  network::mojom::DurableMessageCollector* MaybeGetDurableMessageCollector();
 
  private:
   struct PendingMessage {
@@ -251,6 +261,9 @@ class DevToolsSession : public protocol::FrontendChannel,
   base::OnceClosure runtime_resume_;
   raw_ptr<DevToolsExternalAgentProxyDelegate> proxy_delegate_ = nullptr;
   base::ObserverList<ChildObserver, true, false> child_observers_;
+  mojo::Remote<network::mojom::DurableMessageCollector>
+      durable_message_collector_;
+
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };
 

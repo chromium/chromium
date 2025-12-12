@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
@@ -45,6 +46,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/address_list.h"
@@ -1207,4 +1209,29 @@ void NetworkService::SetTpcdMetadataGrants(
     const std::vector<ContentSettingPatternSource>& settings) {
   tpcd_metadata_manager_->SetGrants(settings);
 }
+
+void NetworkService::AddDurableMessageCollector(
+    mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
+  if (!durable_message_collector_manager_) {
+    durable_message_collector_manager_ =
+        std::make_unique<DevtoolsDurableMessageCollectorManager>();
+  }
+  durable_message_collector_manager_->AddCollector(std::move(receiver));
+}
+
+std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
+NetworkService::GetDurableMessageCollectorsEnabledForProfile(
+    const base::UnguessableToken& devtools_profile) {
+  if (!durable_message_collector_manager_) {
+    return {};
+  }
+
+  return base::ToVector(
+      durable_message_collector_manager_->GetCollectorsEnabledForProfile(
+          devtools_profile),
+      [](DevtoolsDurableMessageCollector* collector) {
+        return collector->GetWeakPtr();
+      });
+}
+
 }  // namespace network

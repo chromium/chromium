@@ -386,7 +386,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(accept_ch_frame_observer),
       resource_request.shared_storage_writable_eligible,
       *context_->GetSharedResourceChecker(),
-      context_->MaybeCreateDurableMessage(
+      context_->MaybeCreateDurableMessages(
           resource_request.throttling_profile_id,
           resource_request.devtools_request_id));
 

@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -78,6 +79,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
+                 DevToolsSession* session,
                  StoragePartition* maybe_storage_partition,
                  base::RepeatingClosure update_loader_factories_callback,
                  DevToolsAgentHostClient* client,
@@ -111,11 +113,12 @@ class NetworkHandler : public DevToolsDomainHandler,
   void SetRenderer(int render_process_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  Response Enable(std::optional<int> max_total_size,
-                  std::optional<int> max_resource_size,
-                  std::optional<int> max_post_data_size,
-                  std::optional<bool> report_direct_socket_traffic,
-                  std::optional<bool> enable_durable_messages) override;
+  void Enable(std::optional<int> max_total_size,
+              std::optional<int> max_resource_size,
+              std::optional<int> max_post_data_size,
+              std::optional<bool> report_direct_socket_traffic,
+              std::optional<bool> enable_durable_messages,
+              std::unique_ptr<EnableCallback> callback) override;
   Response Disable() override;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -383,8 +386,6 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::vector<network::mojom::MatchedNetworkConditionsPtr>
           matched_conditions,
       bool offline);
-  void ConfigureDurableMessageCollector(
-      network::mojom::NetworkDurableMessageConfigPtr config);
   void ProcessDurableMessageOrGetLocalData(
       const String& request_id,
       std::unique_ptr<GetResponseBodyCallback> callback,
@@ -397,7 +398,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   void GotAllCookies(std::unique_ptr<GetAllCookiesCallback> callback,
                      const std::vector<net::CanonicalCookie>& cookies);
-  void MaybeEnableDurableMessages();
+  void MaybeEnableDurableMessages(base::OnceClosure callback);
+  void DisableDurableMessages();
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;
@@ -434,8 +436,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   bool did_modifications_ = false;
   base::OnceClosure cleanup_after_modifications_callback_;
-  mojo::Remote<network::mojom::DurableMessageCollector>
-      durable_message_collector_;
+  const raw_ref<DevToolsSession> root_session_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

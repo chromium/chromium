@@ -185,7 +185,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       bool shared_storage_writable_eligible,
       SharedResourceChecker& shared_resource_checker,
-      base::WeakPtr<DevtoolsDurableMessage> devtools_durable_message);
+      std::vector<base::WeakPtr<DevtoolsDurableMessage>>
+          devtools_durable_messages);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -783,8 +784,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
 
-  // DevTools Durable Message instance, if enabled.
-  base::WeakPtr<DevtoolsDurableMessage> devtools_durable_message_;
+  // DevTools Durable Message instances, if enabled.
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> devtools_durable_messages_;
 
   // Keeps track of raw body sizes transmitted to DevTools.
   int64_t devtools_durable_message_raw_size_ = 0;

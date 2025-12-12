@@ -1,0 +1,15 @@
+Tests that DurableMessages can collect across iframes and past page close
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/abe.png
+YZslx8U4iXiIKe+P8bKX0Y22XRW/x0RGpRK4SuZOzRs=
+Request for http://devtools.oopif.test:8080/inspector-protocol/network/resources/test.css
+rynkW3AvXf6ABFCscl5XL/B2IB0Bma0nZR1lYFQeB2c=
+Request for http://127.0.0.1:8000/inspector-protocol/network/resources/final.js
+6TzWLwt4HAyyo/hW3i47ORj6OblMAovRRzTe07+8Lu4=
+Retrieving responses past first page close
+YZslx8U4iXiIKe+P8bKX0Y22XRW/x0RGpRK4SuZOzRs=
+rynkW3AvXf6ABFCscl5XL/B2IB0Bma0nZR1lYFQeB2c=
+6TzWLwt4HAyyo/hW3i47ORj6OblMAovRRzTe07+8Lu4=
+Retrieving responses past session cleanup
+6TzWLwt4HAyyo/hW3i47ORj6OblMAovRRzTe07+8Lu4=
+DONE
+

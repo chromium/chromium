@@ -8,28 +8,34 @@
 #include <queue>
 
 #include "base/containers/queue.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/devtools_durable_msg.h"
 #include "services/network/devtools_durable_msg_accounting_delegate.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace network {
+
+class DevtoolsDurableMessageCollectorManager;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
     : public DevtoolsDurableMessageAccountingDelegate,
       public mojom::DurableMessageCollector {
  public:
   explicit DevtoolsDurableMessageCollector(
-      base::OnceClosure profile_last_disconnect_handler);
+      base::WeakPtr<DevtoolsDurableMessageCollectorManager> manager);
   ~DevtoolsDurableMessageCollector() override;
 
-  void Configure(mojom::NetworkDurableMessageConfigPtr config) override;
+  void EnableForProfile(const base::UnguessableToken& profile_id,
+                        EnableForProfileCallback callback) override;
+  void DisableForProfile(const base::UnguessableToken& profile_id,
+                         DisableForProfileCallback callback) override;
+  void Configure(mojom::NetworkDurableMessageConfigPtr config,
+                 ConfigureCallback) override;
   void Retrieve(const std::string& devtools_request_id,
                 RetrieveCallback callback) override;
-  void AddReceiver(
-      mojo::PendingReceiver<mojom::DurableMessageCollector> receiver);
   base::WeakPtr<DevtoolsDurableMessage> CreateDurableMessage(
       const std::string& devtools_request_id);
   base::WeakPtr<DevtoolsDurableMessageCollector> GetWeakPtr() {
@@ -42,9 +48,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
   void WillRemoveBytes(DevtoolsDurableMessage& message) override;
 
  private:
-  void OnMojoDisconnect();
-
-  mojo::ReceiverSet<mojom::DurableMessageCollector> receivers_;
   base::queue<base::WeakPtr<DevtoolsDurableMessage>> message_queue_;
 
   int64_t max_buffer_size_ = 0;
@@ -53,10 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
   absl::flat_hash_map<std::string, std::unique_ptr<DevtoolsDurableMessage>>
       request_id_to_message_map_;
 
-  // Callback to get notified when all receivers have disconnected, to clean up.
-  // The collector instance should not be reused after it's been called back.
-  base::OnceClosure profile_last_disconnect_handler_;
-
+  base::WeakPtr<DevtoolsDurableMessageCollectorManager> manager_;
   base::WeakPtrFactory<DevtoolsDurableMessageCollector> weak_factory_{this};
 };
 

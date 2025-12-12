@@ -11897,52 +11897,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
   }
 }
 
-TEST_F(NetworkContextTest, EnableDurableMessageCollector) {
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  const base::UnguessableToken kThrottlingProfileId =
-      base::UnguessableToken::Create();
-
-  EXPECT_EQ(
-      0u,
-      network_context->num_devtools_durable_message_collectors_for_testing());
-
-  // Add a collector.
-  mojo::Remote<mojom::DurableMessageCollector> collector;
-  network_context->EnableDurableMessageCollector(
-      kThrottlingProfileId, collector.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return network_context
-               ->num_devtools_durable_message_collectors_for_testing() == 1;
-  }));
-
-  EXPECT_EQ(
-      1u,
-      network_context->num_devtools_durable_message_collectors_for_testing());
-
-  // Configure the same collector again.
-  mojo::Remote<mojom::DurableMessageCollector> collector2;
-  network_context->EnableDurableMessageCollector(
-      kThrottlingProfileId, collector2.BindNewPipeAndPassReceiver());
-  collector2.FlushForTesting();
-
-  EXPECT_EQ(
-      1u,
-      network_context->num_devtools_durable_message_collectors_for_testing());
-
-  // Disconnect the mojo remote.
-  collector.reset();
-  collector2.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return network_context
-               ->num_devtools_durable_message_collectors_for_testing() == 0;
-  }));
-
-  EXPECT_EQ(
-      0u,
-      network_context->num_devtools_durable_message_collectors_for_testing());
-}
-
 TEST_F(NetworkContextTest, AddQuicHints) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -11976,5 +11930,52 @@ TEST_F(NetworkContextTest, AddQuicHints) {
 }
 
 }  // namespace
+
+TEST_F(NetworkContextTest, MaybeCreateDurableMessages_MultipleCollectors) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  mojo::Remote<mojom::DurableMessageCollector> remote1;
+  network_service_->AddDurableMessageCollector(
+      remote1.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::DurableMessageCollector> remote2;
+  network_service_->AddDurableMessageCollector(
+      remote2.BindNewPipeAndPassReceiver());
+  ASSERT_EQ(network_service_->GetDurableMessageCollectorManagerForTesting()
+                ->GetCollectorsForTesting()
+                .size(),
+            2u);
+
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  base::RunLoop enable_loop1;
+  remote1->EnableForProfile(profile_id, enable_loop1.QuitClosure());
+  enable_loop1.Run();
+  base::RunLoop enable_loop2;
+  remote2->EnableForProfile(profile_id, enable_loop2.QuitClosure());
+  enable_loop2.Run();
+
+  ASSERT_EQ(
+      network_service_->GetDurableMessageCollectorsEnabledForProfile(profile_id)
+          .size(),
+      2u);
+
+  const std::string devtools_request_id = "request-id";
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> durable_messages =
+      network_context->MaybeCreateDurableMessages(profile_id,
+                                                  devtools_request_id);
+  ASSERT_EQ(durable_messages.size(), 2u);
+  for (auto& durable_message : durable_messages) {
+    durable_message->MarkComplete();
+    EXPECT_TRUE(durable_message->is_complete());
+  }
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future1;
+  remote1->Retrieve(devtools_request_id, future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future2;
+  remote2->Retrieve(devtools_request_id, future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
+}
 
 }  // namespace network

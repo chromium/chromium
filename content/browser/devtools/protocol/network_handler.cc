@@ -1209,6 +1209,7 @@ NetworkHandler::NetworkHandler(
     const std::string& host_id,
     const base::UnguessableToken& devtools_token,
     DevToolsIOContext* io_context,
+    DevToolsSession* session,
     StoragePartition* maybe_storage_partition,
     base::RepeatingClosure update_loader_factories_callback,
     DevToolsAgentHostClient* client,
@@ -1230,7 +1231,8 @@ NetworkHandler::NetworkHandler(
       update_loader_factories_callback_(
           std::move(update_loader_factories_callback)),
       cleanup_after_modifications_callback_(
-          std::move(cleanup_after_modifications_callback)) {
+          std::move(cleanup_after_modifications_callback)),
+      root_session_(*session->GetRootSession()) {
   DCHECK(io_context_);
   static bool have_configured_service_worker_context = false;
   if (have_configured_service_worker_context)
@@ -1465,39 +1467,53 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
     storage_partition_ = nullptr;
     browser_context_ = nullptr;
   }
-  MaybeEnableDurableMessages();
+  MaybeEnableDurableMessages(base::DoNothing());
   host_ = frame_host;
   if (background_sync_restorer_)
     background_sync_restorer_->SetStoragePartition(storage_partition_);
 }
 
-Response NetworkHandler::Enable(
-    std::optional<int> max_total_size,
-    std::optional<int> max_resource_size,
-    std::optional<int> max_post_data_size,
-    std::optional<bool> report_direct_socket_traffic,
-    std::optional<bool> enable_durable_messages) {
-  enable_durable_messages_ = enable_durable_messages.value_or(false);
+void NetworkHandler::Enable(std::optional<int> max_total_size,
+                            std::optional<int> max_resource_size,
+                            std::optional<int> max_post_data_size,
+                            std::optional<bool> report_direct_socket_traffic,
+                            std::optional<bool> enable_durable_messages,
+                            std::unique_ptr<EnableCallback> callback) {
+  // Durable Messages require a maxTotalBufferSize to be set, for enabling
+  // collection.
   durable_message_max_total_size_ = max_total_size.value_or(0);
-  if (enable_durable_messages_ && !durable_message_max_total_size_) {
-    return Response::InvalidParams(
-        "maxTotalBufferSize is required with enableDurableMessages");
+  if (enable_durable_messages.value_or(false) &&
+      !durable_message_max_total_size_) {
+    callback->sendFailure(Response::InvalidParams(
+        "maxTotalBufferSize is required with enableDurableMessages"));
+    return;
   }
-  MaybeEnableDurableMessages();
+  enable_durable_messages_ = enable_durable_messages.value_or(false);
   enabled_ = true;
-  return Response::FallThrough();
+  if (enable_durable_messages_) {
+    MaybeEnableDurableMessages(
+        base::BindOnce(&EnableCallback::fallThrough, std::move(callback)));
+    return;
+  }
+  if (enable_durable_messages.has_value() &&
+      enable_durable_messages.value() == false) {
+    // If an explicit `false` is passed, any active collector should be
+    // disabled for this profile.
+    DisableDurableMessages();
+  }
+  callback->fallThrough();
 }
 
-Response NetworkHandler::Disable() {
+DispatchResponse NetworkHandler::Disable() {
   enabled_ = false;
   url_loader_interceptor_.reset();
   SetNetworkConditions({}, /*offline=*/false);
-  durable_message_collector_.reset();
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
   enable_third_party_cookie_restriction_ = false;
   disable_third_party_cookie_metadata_ = false;
   disable_third_party_cookie_heuristics_ = false;
+  DisableDurableMessages();
   return Response::FallThrough();
 }
 
@@ -3221,10 +3237,12 @@ void NetworkHandler::ProcessDurableMessageOrGetLocalData(
 void NetworkHandler::GetResponseBody(
     const String& request_id,
     std::unique_ptr<GetResponseBodyCallback> callback) {
-  if (durable_message_collector_.is_bound()) {
-    CHECK(storage_partition_);
-    CHECK(devtools_token_);
-    durable_message_collector_->Retrieve(
+  CHECK(storage_partition_);
+  CHECK(devtools_token_);
+  network::mojom::DurableMessageCollector* collector =
+      root_session_->MaybeGetDurableMessageCollector();
+  if (collector) {
+    collector->Retrieve(
         request_id,
         base::BindOnce(&NetworkHandler::ProcessDurableMessageOrGetLocalData,
                        weak_factory_.GetWeakPtr(), request_id,
@@ -3447,20 +3465,6 @@ void NetworkHandler::SetNetworkConditions(
   background_sync_restorer_.reset(
       offline ? new BackgroundSyncRestorer(host_id_, storage_partition_)
               : nullptr);
-}
-
-void NetworkHandler::ConfigureDurableMessageCollector(
-    network::mojom::NetworkDurableMessageConfigPtr config) {
-  CHECK(storage_partition_);
-  CHECK(devtools_token_);
-  network::mojom::NetworkContext* context =
-      storage_partition_->GetNetworkContext();
-  if (!durable_message_collector_.is_bound()) {
-    context->EnableDurableMessageCollector(
-        devtools_token_,
-        durable_message_collector_.BindNewPipeAndPassReceiver());
-  }
-  durable_message_collector_->Configure(std::move(config));
 }
 
 namespace {
@@ -4004,19 +4008,23 @@ NetworkHandler::BuildCorsErrorStatus(const network::CorsErrorStatus& status) {
       .Build();
 }
 
-void NetworkHandler::MaybeEnableDurableMessages() {
-  if (!enable_durable_messages_) {
-    durable_message_collector_.reset();
-    return;
-  }
-  if (!storage_partition_ || devtools_token_.is_empty()) {
+void NetworkHandler::MaybeEnableDurableMessages(base::OnceClosure callback) {
+  if (!enable_durable_messages_ || devtools_token_.is_empty()) {
+    std::move(callback).Run();
     return;
   }
   network::mojom::NetworkDurableMessageConfigPtr durable_messages_config;
   durable_messages_config = network::mojom::NetworkDurableMessageConfig::New();
   durable_messages_config->http_storage_max_size =
       durable_message_max_total_size_;
-  ConfigureDurableMessageCollector(std::move(durable_messages_config));
+  root_session_->EnableDurableMessageCollector(
+      devtools_token_, std::move(durable_messages_config), std::move(callback));
+}
+
+void NetworkHandler::DisableDurableMessages() {
+  enable_durable_messages_ = false;
+  root_session_->DisableDurableMessageCollectorForProfile(devtools_token_,
+                                                          base::DoNothing());
 }
 
 }  // namespace protocol

@@ -40,6 +40,8 @@
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/devtools_durable_msg_collector.h"
+#include "services/network/devtools_durable_msg_collector_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
@@ -260,6 +262,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   void SetTLS13EarlyDataEnabled(bool enabled) override;
 
+  // Adds a Durable Message collector to NetworkService, with its lifetime tied
+  // to the pipe associated with the receiver supplied. There may be multiple
+  // collectors enabled concurrently, each created by its own independent
+  // DevTools Root Session.
+  void AddDurableMessageCollector(
+      mojo::PendingReceiver<mojom::DurableMessageCollector> receiver) override;
+
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,
@@ -377,6 +386,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 
   static NetworkService* GetNetworkServiceForTesting();
+
+  std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
+  GetDurableMessageCollectorsEnabledForProfile(
+      const base::UnguessableToken& devtools_profile);
+  DevtoolsDurableMessageCollectorManager*
+  GetDurableMessageCollectorManagerForTesting() {
+    return durable_message_collector_manager_.get();
+  }
 
  private:
   class DelayedDohProbeActivator;
@@ -521,6 +538,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   bool exclusive_cookie_database_locking_ = true;
+
+  std::unique_ptr<DevtoolsDurableMessageCollectorManager>
+      durable_message_collector_manager_;
+
   base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };
 

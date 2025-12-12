@@ -1768,28 +1768,6 @@ void NetworkContext::SetNetworkConditions(
                                       std::move(network_conditions));
 }
 
-void NetworkContext::OnDevToolsDurableMessageClientsDisconnected(
-    const base::UnguessableToken& throttling_profile_id) {
-  devtools_profile_to_durable_message_collectors_.erase(throttling_profile_id);
-}
-
-void NetworkContext::EnableDurableMessageCollector(
-    const base::UnguessableToken& throttling_profile_id,
-    mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
-  auto [it, inserted] =
-      devtools_profile_to_durable_message_collectors_.try_emplace(
-          throttling_profile_id);
-  if (inserted) {
-    auto disconnect_callback = base::BindOnce(
-        &NetworkContext::OnDevToolsDurableMessageClientsDisconnected,
-        base::Unretained(this), throttling_profile_id);
-    it->second = std::make_unique<DevtoolsDurableMessageCollector>(
-        std::move(disconnect_callback));
-  }
-
-  it->second->AddReceiver(std::move(receiver));
-}
-
 void NetworkContext::SetAcceptLanguage(const std::string& new_accept_language) {
   // This may only be called on NetworkContexts created with the constructor
   // that calls MakeURLRequestContext().
@@ -3665,21 +3643,31 @@ void NetworkContext::InitializePrefetchURLLoaderFactory() {
                          CreateURLLoaderFactoryParamsForPrefetch());
 }
 
-base::WeakPtr<DevtoolsDurableMessage> NetworkContext::MaybeCreateDurableMessage(
+std::vector<base::WeakPtr<DevtoolsDurableMessage>>
+NetworkContext::MaybeCreateDurableMessages(
     const std::optional<base::UnguessableToken>& throttling_profile_id,
     const std::optional<std::string>& devtools_request_id) {
   if (!throttling_profile_id.has_value() || !devtools_request_id.has_value()) {
-    return nullptr;
+    return {};
   }
 
-  auto collector_it = devtools_profile_to_durable_message_collectors_.find(
-      throttling_profile_id.value());
-  if (collector_it == devtools_profile_to_durable_message_collectors_.end()) {
-    return nullptr;
+  auto collectors =
+      network_service_->GetDurableMessageCollectorsEnabledForProfile(
+          throttling_profile_id.value());
+  if (collectors.empty()) {
+    return {};
   }
 
-  return collector_it->second->CreateDurableMessage(
-      devtools_request_id.value());
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> messages;
+  messages.reserve(collectors.size());
+  for (auto& collector : collectors) {
+    if (!collector) {
+      continue;
+    }
+    messages.push_back(
+        collector->CreateDurableMessage(devtools_request_id.value()));
+  }
+  return messages;
 }
 
 }  // namespace network

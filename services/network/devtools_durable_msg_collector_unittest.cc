@@ -10,19 +10,35 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/filter/filter_source_stream_test_util.h"
+#include "services/network/devtools_durable_msg_collector_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 
 class DevtoolsDurableMessageCollectorTest : public testing::Test {
- public:
-  void OnAllClientsDisconnectedCallback() {
-    CountEvent();
-    disconnect_called_ = true;
+ protected:
+  struct CollectorBundle {
+    mojo::Remote<mojom::DurableMessageCollector> remote;
+    raw_ptr<DevtoolsDurableMessageCollector> collector;
+  };
+
+  CollectorBundle CreateAndConfigureCollector(
+      DevtoolsDurableMessageCollectorManager& manager,
+      uint64_t max_storage_size) {
+    mojo::Remote<mojom::DurableMessageCollector> collector_remote;
+    manager.AddCollector(collector_remote.BindNewPipeAndPassReceiver());
+    Configure(
+        collector_remote,
+        network::mojom::NetworkDurableMessageConfig::New(max_storage_size));
+
+    auto collectors = manager.GetCollectorsForTesting();
+    EXPECT_FALSE(collectors.empty());
+    auto collector = collectors.back();
+    EXPECT_NE(collector, nullptr);
+    return {std::move(collector_remote), collector};
   }
 
- protected:
   void WaitForEventCount(int event_count_expected) {
     event_count_expected_ = event_count_expected;
     base::RunLoop run_loop;
@@ -53,16 +69,39 @@ class DevtoolsDurableMessageCollectorTest : public testing::Test {
     msg->MarkComplete();
   }
 
+  void Configure(
+      const mojo::Remote<mojom::DurableMessageCollector>& collector_remote,
+      network::mojom::NetworkDurableMessageConfigPtr config) {
+    base::RunLoop run_loop;
+    collector_remote->Configure(std::move(config), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void EnableForProfile(
+      const mojo::Remote<mojom::DurableMessageCollector>& collector_remote,
+      const base::UnguessableToken& token) {
+    base::RunLoop run_loop;
+    collector_remote->EnableForProfile(token, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void DisableForProfile(
+      const mojo::Remote<mojom::DurableMessageCollector>& collector_remote,
+      const base::UnguessableToken& token) {
+    base::RunLoop run_loop;
+    collector_remote->DisableForProfile(token, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   void RetrieveEmptyAndCountEvent(
       const mojo::Remote<mojom::DurableMessageCollector>& collector_remote,
       const std::string& request_id) {
     collector_remote->Retrieve(
-        request_id,
-        base::BindLambdaForTesting(
-            [this](std::optional<mojo_base::BigBuffer> bytes_out) -> void {
-              EXPECT_FALSE(bytes_out.has_value());
-              CountEvent();
-            }));
+        request_id, base::BindLambdaForTesting(
+                        [this](std::optional<mojo_base::BigBuffer> bytes_out) {
+                          EXPECT_FALSE(bytes_out.has_value());
+                          CountEvent();
+                        }));
   }
 
   void RetrieveAndCountEvent(
@@ -70,35 +109,29 @@ class DevtoolsDurableMessageCollectorTest : public testing::Test {
       const std::string& request_id,
       std::string verify_message_str) {
     collector_remote->Retrieve(
-        request_id,
-        base::BindLambdaForTesting(
-            [this, verify_message = std::move(verify_message_str)](
-                std::optional<mojo_base::BigBuffer> bytes_out) -> void {
-              EXPECT_EQ(base::as_string_view(bytes_out.value()),
-                        verify_message);
-              CountEvent();
-            }));
+        request_id, base::BindLambdaForTesting(
+                        [this, verify_message = std::move(verify_message_str)](
+                            std::optional<mojo_base::BigBuffer> bytes_out) {
+                          EXPECT_EQ(base::as_string_view(bytes_out.value()),
+                                    verify_message);
+                          CountEvent();
+                        }));
   }
-
-  bool IsDisconnectCalledback() { return disconnect_called_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure run_loop_quit_closure_;
   int event_count_ = 0;
   int event_count_expected_ = 0;
-  bool disconnect_called_ = false;
 };
 
 TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
-  DevtoolsDurableMessageCollector collector(base::DoNothing());
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/1000));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/1000);
 
   std::string request_id1 = "req1";
-  auto msg1 = collector.CreateDurableMessage(request_id1);
+  auto msg1 = collector->CreateDurableMessage(request_id1);
   ASSERT_NE(msg1, nullptr);
   std::string test_message_1 = "abcdefghij";
   auto [first_chunk, second_chunk] =
@@ -109,7 +142,7 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
   RetrieveAndCountEvent(collector_remote, request_id1, test_message_1);
 
   std::string request_id2 = "req2";
-  auto msg2 = collector.CreateDurableMessage(request_id2);
+  auto msg2 = collector->CreateDurableMessage(request_id2);
   ASSERT_NE(msg2, nullptr);
   std::string test_message_2 = "zyxwvutsrqponm";
   AddBytes(msg2, test_message_2);
@@ -120,14 +153,12 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
-  DevtoolsDurableMessageCollector collector(base::DoNothing());
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/10));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
 
   std::string req_id = "req1";
-  auto msg1 = collector.CreateDurableMessage(req_id);
+  auto msg1 = collector->CreateDurableMessage(req_id);
   ASSERT_NE(msg1, nullptr);
 
   std::string test_message = "12345678901";
@@ -145,14 +176,12 @@ TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectMessageBeyondLimit) {
-  DevtoolsDurableMessageCollector collector(base::DoNothing());
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/10));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
 
   std::string req_id = "req1";
-  auto msg1 = collector.CreateDurableMessage(req_id);
+  auto msg1 = collector->CreateDurableMessage(req_id);
   ASSERT_NE(msg1, nullptr);
 
   std::string test_message = "12345678901";
@@ -167,31 +196,28 @@ TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectMessageBeyondLimit) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
-  DevtoolsDurableMessageCollector collector(base::BindRepeating(
-      &DevtoolsDurableMessageCollectorTest::OnAllClientsDisconnectedCallback,
-      base::Unretained(this)));
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/10));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
 
   std::string req_id_1 = "req1";
   std::string str_message_1 = "12345";
-  auto msg1 = collector.CreateDurableMessage(req_id_1);
+  auto msg1 = collector->CreateDurableMessage(req_id_1);
   ASSERT_NE(msg1, nullptr);
 
   std::string req_id_2 = "req2";
   std::string str_message_2 = "678";
-  auto msg2 = collector.CreateDurableMessage(req_id_2);
+  auto msg2 = collector->CreateDurableMessage(req_id_2);
   ASSERT_NE(msg2, nullptr);
 
   std::string req_id_3 = "req3";
   std::string str_message_3 = "90123";
-  auto msg3 = collector.CreateDurableMessage(req_id_3);
+  auto msg3 = collector->CreateDurableMessage(req_id_3);
   ASSERT_NE(msg3, nullptr);
 
   AddBytes(msg1, str_message_1);
   MarkComplete(msg1);
+
   // Verify that the first message is stored and retrievable.
   RetrieveAndCountEvent(collector_remote, req_id_1, str_message_1);
   WaitForEventCount(1);
@@ -207,25 +233,17 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
   RetrieveAndCountEvent(collector_remote, req_id_2, str_message_2);
   RetrieveAndCountEvent(collector_remote, req_id_3, str_message_3);
   WaitForEventCount(3);
-  EXPECT_FALSE(IsDisconnectCalledback());
-
-  // Verify that all clients disconnected triggers the disconnect callback.
-  collector_remote.reset();
-  WaitForEventCount(1);
-  EXPECT_TRUE(IsDisconnectCalledback());
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest,
        CorrectlyHandlesRequestIdOverwrite) {
-  DevtoolsDurableMessageCollector collector(base::DoNothing());
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/10));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
 
   std::string req_id_overwrite = "req-overwrite";
   std::string first_message_body = "12345";
-  auto msg1 = collector.CreateDurableMessage(req_id_overwrite);
+  auto msg1 = collector->CreateDurableMessage(req_id_overwrite);
   ASSERT_NE(msg1, nullptr);
   AddBytes(msg1, first_message_body);
   MarkComplete(msg1);
@@ -236,7 +254,7 @@ TEST_F(DevtoolsDurableMessageCollectorTest,
   // Now, overwrite the same request ID, simulating a redirect.
   // This new message is smaller.
   std::string second_message_body = "abc";
-  auto msg2 = collector.CreateDurableMessage(req_id_overwrite);
+  auto msg2 = collector->CreateDurableMessage(req_id_overwrite);
   ASSERT_NE(msg2, nullptr);
   AddBytes(msg2, second_message_body);
   MarkComplete(msg2);
@@ -249,7 +267,7 @@ TEST_F(DevtoolsDurableMessageCollectorTest,
   // Create another message that will force an eviction.
   std::string req_id_filler = "req-filler";
   std::string filler_body = "87654321";
-  auto msg3 = collector.CreateDurableMessage(req_id_filler);
+  auto msg3 = collector->CreateDurableMessage(req_id_filler);
   AddBytes(msg3, filler_body);
   MarkComplete(msg3);
 
@@ -261,14 +279,12 @@ TEST_F(DevtoolsDurableMessageCollectorTest,
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveDecodesGzipBody) {
-  DevtoolsDurableMessageCollector collector(base::DoNothing());
-  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
-      /*max_storage_size=*/100));
-  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
-  collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
+  DevtoolsDurableMessageCollectorManager manager;
+  auto [collector_remote, collector] =
+      CreateAndConfigureCollector(manager, /*max_storage_size=*/100);
 
   const std::string devtools_request_id = "request1";
-  auto msg1 = collector.CreateDurableMessage(devtools_request_id);
+  auto msg1 = collector->CreateDurableMessage(devtools_request_id);
   ASSERT_NE(msg1, nullptr);
   msg1->set_client_decoding_types({net::SourceStreamType::kGzip});
 

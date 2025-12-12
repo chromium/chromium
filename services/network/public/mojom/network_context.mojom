@@ -646,11 +646,6 @@ struct MatchedNetworkConditions {
   NetworkConditions conditions;
 };
 
-struct NetworkDurableMessageConfig {
-  // Maximum size for the durable storage.
-  uint64 http_storage_max_size;
-};
-
 // Represents a shared dictionary.
 // Spec:
 // https://datatracker.ietf.org/doc/draft-ietf-httpbis-compression-dictionary/
@@ -928,17 +923,6 @@ struct URLLoaderFactoryParams {
   // `NetworkContext::network_revocation_nonces_`.
   // If no value is present, network restrictions will not be checked.
   mojo_base.mojom.UnguessableToken? network_restrictions_id;
-};
-
-// Represents a Durable Message Collector instance tied to a throttling profile.
-interface DurableMessageCollector {
-  // Configures the collector instance.
-  Configure(NetworkDurableMessageConfig config);
-
-  // Retrieve a collected Durable Message for the given DevTools request ID,
-  // if one is available.
-  Retrieve(string devtools_request_id)
-      => (mojo_base.mojom.BigBuffer? message);
 };
 
 // If allowlisted_patterns is empty then it falls back to the earlier use case
@@ -1282,11 +1266,6 @@ interface NetworkContext {
   // throttling_profile_id.
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
                        array<MatchedNetworkConditions> conditions);
-
-  // Enables network level storage of HTTP request/response bodies.
-  EnableDurableMessageCollector(
-      mojo_base.mojom.UnguessableToken throttling_profile_id,
-      pending_receiver<DurableMessageCollector> receiver);
 
   // Updates the Accept-Language header to be used for requests.
   SetAcceptLanguage(string new_accept_language);

@@ -391,10 +391,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override {}
-  void EnableDurableMessageCollector(
-      const base::UnguessableToken& throttling_profile_id,
-      mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
-      override {}
   void AddQuicHints(
       const std::vector<url::SchemeHostPort>& origins,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}

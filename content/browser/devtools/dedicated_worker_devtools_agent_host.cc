@@ -75,7 +75,7 @@ bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session);
   session->CreateAndAddHandler<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token(), GetIOContext(),
+      GetId(), devtools_worker_token(), GetIOContext(), session,
       GetProcessHost()->GetStoragePartition(), base::DoNothing(),
       session->GetClient());
   return true;

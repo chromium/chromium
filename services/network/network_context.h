@@ -320,10 +320,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void SetNetworkConditions(
       const base::UnguessableToken& throttling_profile_id,
       std::vector<mojom::MatchedNetworkConditionsPtr> conditions) override;
-  void EnableDurableMessageCollector(
-      const base::UnguessableToken& throttling_profile_id,
-      mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
-      override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
@@ -616,10 +612,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   size_t GetNumOutstandingResolveHostRequestsForTesting() const;
 
-  size_t num_devtools_durable_message_collectors_for_testing() const {
-    return devtools_profile_to_durable_message_collectors_.size();
-  }
-
   size_t pending_proxy_lookup_requests_for_testing() const {
     return proxy_lookup_requests_.size();
   }
@@ -696,9 +688,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return shared_resource_checker_.get();
   }
 
-  // Create a Durable Message for the request and DevTools Profile ID,
-  // if durable message collection is enabled on the Devtools profile.
-  base::WeakPtr<DevtoolsDurableMessage> MaybeCreateDurableMessage(
+  // Creates Durable Messages for the request and DevTools Profile ID,
+  // for each collector that is enabled for the profile.
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> MaybeCreateDurableMessages(
       const std::optional<base::UnguessableToken>& throttling_profile_id,
       const std::optional<std::string>& devtools_request_id);
 
@@ -844,11 +836,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::SchemeHostPort& scheme_host_port);
 
   void InitializePrefetchURLLoaderFactory();
-
-  // Invoked when DevTools DurableMessage Clients for a profile are
-  // disconnected.
-  void OnDevToolsDurableMessageClientsDisconnected(
-      const base::UnguessableToken& throttling_profile_id);
 
   void QueueReportInternal(
       const std::string& type,
@@ -1107,11 +1094,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // This needs to be ordered after cookie_manager_ as it maintains a reference
   // to the cookie settings object from cookie_manager_.
   std::unique_ptr<SharedResourceChecker> shared_resource_checker_;
-
-  // DevTools Durable Message Collectors. Created on first use.
-  absl::flat_hash_map<base::UnguessableToken,
-                      std::unique_ptr<DevtoolsDurableMessageCollector>>
-      devtools_profile_to_durable_message_collectors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

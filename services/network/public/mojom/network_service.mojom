@@ -7,6 +7,8 @@ module network.mojom;
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -463,4 +465,42 @@ interface NetworkService {
 
   // Enables or disables TLS 1.3 Early Data.
   SetTLS13EarlyDataEnabled(bool enabled);
+
+  // Adds a Durable Message collector to NetworkService, with its lifetime tied
+  // to the pipe associated with the receiver supplied. There may be multiple
+  // collectors enabled concurrently.
+  // Durable Messages enable network level storage of HTTP request/response
+  // bodies. Storage will be destroyed when the receiver is disconnected.
+  AddDurableMessageCollector(
+      pending_receiver<DurableMessageCollector> receiver);
+};
+
+struct NetworkDurableMessageConfig {
+  // Maximum size for the durable storage.
+  uint64 http_storage_max_size;
+};
+
+// DurableMessageCollector interface represents a single response body
+// collector. Each instance is self-owned, and is destroyed when the
+// receiver is disconnected. The collector is created by the NetworkService
+// in response to a AddDurableMessageCollector() call from the Browser process.
+// The collector may be handling more than one DevTools Profile, enabled and
+// disabled via EnableForProfile() and DisableForProfile() calls from
+// the Browser process.
+interface DurableMessageCollector {
+  // Configures the collector instance.
+  Configure(NetworkDurableMessageConfig config) => ();
+
+  // Enable body collection per DevTools Profile ID.
+  // This does not affect response bodies that are already stored.
+  EnableForProfile(mojo_base.mojom.UnguessableToken throttling_profile_id)
+    => ();
+  // Disable body collection per DevTools Profile ID.
+  // This does not affect response bodies that are already stored.
+  DisableForProfile(mojo_base.mojom.UnguessableToken throttling_profile_id)
+    => ();
+
+  // Retrieve a collected Durable Message for the given DevTools request ID,
+  // if one is available.
+  Retrieve(string devtools_request_id) => (mojo_base.mojom.BigBuffer? message);
 };
