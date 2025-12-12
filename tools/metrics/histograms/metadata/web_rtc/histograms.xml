@@ -1515,6 +1515,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.NegotiatedFeedbackType"
+    enum="PeerConnectionRtcpFeedbackType" expires_after="2026-06-10">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Records the preferred congestion control format negotiated. Recorded after
+    the first connection establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.ProvisionalAnswer"
     enum="PeerConnectionProvisionalAnswer" expires_after="2024-06-30">
   <owner>hta@chromium.org</owner>

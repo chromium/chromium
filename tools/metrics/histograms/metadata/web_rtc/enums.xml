@@ -218,6 +218,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Remote"/>
 </enum>
 
+<enum name="PeerConnectionRtcpFeedbackType">
+  <int value="0" label="None"/>
+  <int value="1" label="CCM"/>
+  <int value="2" label="LNTF"/>
+  <int value="3" label="NACK"/>
+  <int value="4" label="REMB"/>
+  <int value="5" label="Transport-CC"/>
+  <int value="6" label="CCFB"/>
+</enum>
+
 <enum name="PeerConnectionRtcpMux">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
