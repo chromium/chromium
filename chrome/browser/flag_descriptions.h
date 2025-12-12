@@ -5957,8 +5957,7 @@ inline constexpr char kReadAnythingImagesViaAlgorithmDescription[] =
 inline constexpr char kReadAnythingImmersiveReadingModeName[] =
     "Reading Mode Experimental Immersive Mode";
 inline constexpr char kReadAnythingImmersiveReadingModeDescription[] =
-    "Enables the infrastructure for Immersive Reading Mode. No visual "
-    "changes currently included.";
+    "Enables the infrastructure for Immersive Reading Mode.";
 
 inline constexpr char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 inline constexpr char kReadAnythingReadAloudDescription[] =
