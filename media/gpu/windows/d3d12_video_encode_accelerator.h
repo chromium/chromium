@@ -212,6 +212,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   base::queue<BitstreamBuffer> bitstream_buffers_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
+  // Persistent D3D12 resources for if the input frame needs to be copied from
+  // shared memory.
+  Microsoft::WRL::ComPtr<ID3D12Resource> upload_buffer_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+  Microsoft::WRL::ComPtr<ID3D12Resource> input_texture_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+
   // Cache for shared handle to D3D12Resource mapping when caching is enabled.
   // LRU cache that maps DXGIHandleToken to the corresponding ID3D12Resource.
   base::LRUCache<gfx::DXGIHandleToken, Microsoft::WRL::ComPtr<ID3D12Resource>>

@@ -714,13 +714,21 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
   D3D12_RESOURCE_DESC input_texture_desc = CD3DX12_RESOURCE_DESC::Tex2D(
       DXGI_FORMAT_NV12, config_.input_visible_size.width(),
       config_.input_visible_size.height(), 1, 1);
-  Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
-  HRESULT hr = device_->CreateCommittedResource(
-      &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &input_texture_desc,
-      D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&input_texture));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
-    return nullptr;
+  if (!input_texture_ ||
+      input_texture_->GetDesc().Width < input_texture_desc.Width ||
+      input_texture_->GetDesc().Height < input_texture_desc.Height) {
+    HRESULT hr = device_->CreateCommittedResource(
+        &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE,
+        &input_texture_desc, D3D12_RESOURCE_STATE_COMMON, nullptr,
+        IID_PPV_ARGS(&input_texture_));
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to CreateCommittedResource for input_texture";
+      return nullptr;
+    }
+    std::wstring debug_name = std::format(L"D3D12VEA input_texture_ {}x{}",
+                                          config_.input_visible_size.width(),
+                                          config_.input_visible_size.height());
+    CHECK_EQ(input_texture_->SetName(debug_name.c_str()), S_OK);
   }
 
   gfx::Size y_size = VideoFrame::PlaneSize(
@@ -731,18 +739,25 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
 
   D3D12_RESOURCE_DESC upload_buffer_desc =
       CD3DX12_RESOURCE_DESC::Buffer(uv_offset + uv_size.GetArea());
-  Microsoft::WRL::ComPtr<ID3D12Resource> upload_buffer;
-  hr = device_->CreateCommittedResource(
-      &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE, &upload_buffer_desc,
-      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&upload_buffer));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
-    return nullptr;
+  if (!upload_buffer_ ||
+      upload_buffer_->GetDesc().Width < upload_buffer_desc.Width) {
+    HRESULT hr = device_->CreateCommittedResource(
+        &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE,
+        &upload_buffer_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+        IID_PPV_ARGS(&upload_buffer_));
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to CreateCommittedResource for upload_buffer";
+      return nullptr;
+    }
+    std::wstring debug_name = std::format(L"D3D12VEA upload_buffer_ {}x{}",
+                                          config_.input_visible_size.width(),
+                                          config_.input_visible_size.height());
+    CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
   }
 
   {
     ScopedD3D12ResourceMap map;
-    if (!map.Map(upload_buffer.Get())) {
+    if (!map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
       return nullptr;
     }
@@ -760,7 +775,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
   }
 
   copy_command_queue_->CopyBufferToNV12Texture(
-      input_texture.Get(), upload_buffer.Get(), 0, y_size.width(), uv_offset,
+      input_texture_.Get(), upload_buffer_.Get(), 0, y_size.width(), uv_offset,
       uv_size.width());
 
   // TODO(crbug.com/382316466): Let command queue wait on the GPU
@@ -769,7 +784,7 @@ D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     return nullptr;
   }
 
-  return input_texture;
+  return input_texture_;
 }
 
 void D3D12VideoEncodeAccelerator::EncodeTask(
