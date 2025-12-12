@@ -111,7 +111,9 @@ class VerticalTabView : public views::View,
   bool IsFrameActive() const;
   TabStyle::TabSelectionState GetSelectionState() const;
 
-  const tabs::TabInterface* GetTabInterface();
+  const tabs::TabInterface* GetTabInterface() const;
+
+  int GetTabInset() const;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 

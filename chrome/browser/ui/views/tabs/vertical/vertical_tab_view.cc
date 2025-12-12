@@ -221,7 +221,9 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
     flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
         GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
         IsFrameActive(), GetColorProvider()));
-    canvas->DrawRect(GetLocalBounds(), flags);
+    gfx::Rect local_bounds = GetLocalBounds();
+    local_bounds.Inset(GetTabInset());
+    canvas->DrawRect(local_bounds, flags);
   }
 
   views::View::OnPaint(canvas);
@@ -474,12 +476,16 @@ float VerticalTabView::GetHoverOpacity() const {
 }
 
 SkPath VerticalTabView::GetPath() const {
-  const float corner_radius = GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS);
+  const int tab_inset = GetTabInset();
+  const float corner_radius =
+      GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS) - 2 * tab_inset;
   SkVector radius = {corner_radius, corner_radius};
   const SkVector radii[4] = {radius, radius, radius, radius};
   SkPathBuilder path;
-  path.addRRect(
-      SkRRect::MakeRectRadii(SkRect::MakeWH(width(), height()), radii));
+  path.addRRect(SkRRect::MakeRectRadii(SkRect::MakeWH(width() - 2 * tab_inset,
+                                                      height() - 2 * tab_inset),
+                                       radii)
+                    .makeOffset(tab_inset, tab_inset));
   return path.detach();
 }
 
@@ -493,8 +499,16 @@ TabStyle::TabSelectionState VerticalTabView::GetSelectionState() const {
                               : TabStyle::TabSelectionState::kInactive);
 }
 
-const tabs::TabInterface* VerticalTabView::GetTabInterface() {
+const tabs::TabInterface* VerticalTabView::GetTabInterface() const {
   return std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
+}
+
+int VerticalTabView::GetTabInset() const {
+  const tabs::TabInterface* tab = GetTabInterface();
+  if (tab->IsPinned() && tab->IsSplit()) {
+    return GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS);
+  }
+  return 0;
 }
 
 BEGIN_METADATA(VerticalTabView)
