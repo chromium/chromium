@@ -44,53 +44,53 @@ public class CustomTabCountUnitTest {
     @Test
     public void testTabCountSupplier() {
         mTabModelSelectorTabCountSupplier.set(1);
-        assertEquals(1, (int) mCustomTabCount.get());
+        assertEquals(1, mCustomTabCount.get());
         assertFalse(mCustomTabCount.hasTokensForTesting());
 
         mTabModelSelectorTabCountSupplier.set(10);
-        assertEquals(10, (int) mCustomTabCount.get());
+        assertEquals(10, mCustomTabCount.get());
         assertFalse(mCustomTabCount.hasTokensForTesting());
 
         mTabModelSelectorTabCountSupplier.set(6);
-        assertEquals(6, (int) mCustomTabCount.get());
+        assertEquals(6, mCustomTabCount.get());
         assertFalse(mCustomTabCount.hasTokensForTesting());
     }
 
     @Test
     public void testCustomTabCount() {
         int token = mCustomTabCount.setCount(4);
-        assertEquals(4, (int) mCustomTabCount.get());
+        assertEquals(4, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         mTabModelSelectorTabCountSupplier.set(10);
-        assertEquals(4, (int) mCustomTabCount.get());
+        assertEquals(4, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         mCustomTabCount.releaseCount(token);
-        assertEquals(10, (int) mCustomTabCount.get());
+        assertEquals(10, mCustomTabCount.get());
         assertFalse(mCustomTabCount.hasTokensForTesting());
     }
 
     @Test
     public void testMultipleTokens() {
         int token1 = mCustomTabCount.setCount(4);
-        assertEquals(4, (int) mCustomTabCount.get());
+        assertEquals(4, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         int token2 = mCustomTabCount.setCount(5);
-        assertEquals(5, (int) mCustomTabCount.get());
+        assertEquals(5, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         mTabModelSelectorTabCountSupplier.set(10);
-        assertEquals(5, (int) mCustomTabCount.get());
+        assertEquals(5, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         mCustomTabCount.releaseCount(token1);
-        assertEquals(5, (int) mCustomTabCount.get());
+        assertEquals(5, mCustomTabCount.get());
         assertTrue(mCustomTabCount.hasTokensForTesting());
 
         mCustomTabCount.releaseCount(token2);
-        assertEquals(10, (int) mCustomTabCount.get());
+        assertEquals(10, mCustomTabCount.get());
         assertFalse(mCustomTabCount.hasTokensForTesting());
     }
 }
