@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -303,7 +304,7 @@ DropShadowFilterOperation* ResolveDropShadow(
   // The shadow blur can have different standard deviations in the X and Y
   // directions. `stdDeviation` can be specified as either a single number
   // (same X & Y blur) or a vector of two numbers (different X & Y blurs).
-  gfx::PointF blur = {2.0f, 2.0f};
+  gfx::SizeF blur = {2.0f, 2.0f};
   if (dict.HasProperty("stdDeviation", no_throw)) {
     base::expected<gfx::PointF, String> std_deviation =
         ResolveFloatOrVec2f("stdDeviation", dict, exception_state);
@@ -313,8 +314,7 @@ DropShadowFilterOperation* ResolveDropShadow(
                          std_deviation.error().Utf8().c_str()));
       return nullptr;
     }
-    blur = *std_deviation;
-    blur.SetToMax({0.0f, 0.0f});
+    blur = gfx::SizeF(std_deviation->x(), std_deviation->y());
   }
 
   StyleColor flood_color =

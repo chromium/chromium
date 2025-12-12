@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_FILTER_OPERATION_H_
 
 #include <iosfwd>
-#include <sstream>
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -377,23 +376,13 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
-  String DebugString() const override {
-    std::stringstream ss;
-    ss << shadow_.GetColor();
-    char buf[256];
-    snprintf(buf, sizeof(buf),
-             "<drop shadow: x=%f y=%f blur=%f spread=%f opacity=%f color=%s>",
-             shadow_.X(), shadow_.Y(), shadow_.Blur(), shadow_.Spread(),
-             shadow_.Opacity(), ss.str().c_str());
-    return buf;
-  }
-
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const DropShadowFilterOperation* other =
         static_cast<const DropShadowFilterOperation*>(&o);
     return shadow_ == other->shadow_;
   }
+  String DebugString() const override;
 
  private:
   ShadowData shadow_;

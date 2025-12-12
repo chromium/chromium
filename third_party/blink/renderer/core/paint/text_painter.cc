@@ -90,7 +90,7 @@ sk_sp<cc::DrawLooper> CreateDrawLooper(
     for (wtf_size_t i = shadow_vector.size(); i--;) {
       const ShadowData& shadow = shadow_vector[i];
       draw_looper_builder.AddShadow(
-          shadow.Offset(), shadow.Blur(),
+          shadow.Offset(), shadow.BlurRadius(),
           shadow.GetColor().Resolve(current_color, color_scheme),
           DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
     }

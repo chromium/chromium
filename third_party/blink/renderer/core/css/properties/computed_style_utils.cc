@@ -3771,7 +3771,7 @@ CSSValue* ComputedStyleUtils::ValueForShadowData(const ShadowData& shadow,
                                                  CSSValuePhase value_phase) {
   CSSPrimitiveValue* x = ZoomAdjustedPixelValue(shadow.X(), style);
   CSSPrimitiveValue* y = ZoomAdjustedPixelValue(shadow.Y(), style);
-  CSSPrimitiveValue* blur = ZoomAdjustedPixelValue(shadow.Blur(), style);
+  CSSPrimitiveValue* blur = ZoomAdjustedPixelValue(shadow.BlurValue(), style);
   CSSPrimitiveValue* spread =
       use_spread ? ZoomAdjustedPixelValue(shadow.Spread(), style) : nullptr;
   CSSIdentifierValue* shadow_style =

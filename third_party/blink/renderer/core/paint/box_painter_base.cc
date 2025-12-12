@@ -221,21 +221,21 @@ void AdjustRectForSideClipping(gfx::RectF& rect,
                                const ShadowData& shadow,
                                PhysicalBoxSides sides_to_include) {
   if (!sides_to_include.left) {
-    float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
+    float extend_by = std::max(shadow.X(), 0.0f) + shadow.BlurRadius();
     rect.Offset(-extend_by, 0);
     rect.set_width(rect.width() + extend_by);
   }
   if (!sides_to_include.top) {
-    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
+    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.BlurRadius();
     rect.Offset(0, -extend_by);
     rect.set_height(rect.height() + extend_by);
   }
   if (!sides_to_include.right) {
-    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
+    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.BlurRadius();
     rect.set_width(rect.width() - shrink_by);
   }
   if (!sides_to_include.bottom) {
-    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
+    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.BlurRadius();
     rect.set_height(rect.height() - shrink_by);
   }
 }
@@ -244,7 +244,8 @@ void AdjustRectForSideClipping(gfx::RectF& rect,
 // if the shadow has an offset of zero, no blur and no spread. In that case it
 // will have no visual effect and can be skipped.
 bool ShadowIsFullyObscured(const ShadowData& shadow) {
-  return shadow.Offset().IsZero() && shadow.Blur() == 0 && shadow.Spread() == 0;
+  return shadow.Offset().IsZero() && shadow.BlurRadius() == 0 &&
+         shadow.Spread() == 0;
 }
 
 }  // namespace
@@ -328,7 +329,8 @@ void BoxPainterBase::PaintNormalBoxShadow(
     // Draw only the shadow. If the color of the shadow is transparent we will
     // set an empty draw looper.
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow.Offset(), shadow.Blur(), shadow_color,
+    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurRadius(),
+                                  shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
@@ -390,7 +392,7 @@ namespace {
 inline gfx::RectF AreaCastingShadowInHole(const gfx::RectF& hole_rect,
                                           const ShadowData& shadow) {
   gfx::RectF bounds = hole_rect;
-  bounds.Outset(shadow.Blur());
+  bounds.Outset(shadow.BlurRadius());
 
   if (shadow.Spread() < 0)
     bounds.Outset(-shadow.Spread());
@@ -453,7 +455,8 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     }
 
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow.Offset(), shadow.Blur(), shadow_color,
+    draw_looper_builder.AddShadow(shadow.Offset(), shadow.BlurRadius(),
+                                  shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
