@@ -292,7 +292,7 @@ const base::FeatureParam<base::TimeDelta>
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE(kForcedDiceMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForcedDiceMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
