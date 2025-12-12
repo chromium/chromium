@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] H.264 SEI recovery point frames are treated as keyframes.
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'decode' on 'VideoDecoder': A key frame is required after configure() or flush(). If you're using AVC formatted H.264 you must fill out the description field in the VideoDecoderConfig."
+Harness: the test ran to completion.
+
