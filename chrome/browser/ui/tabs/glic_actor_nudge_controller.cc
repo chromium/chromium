@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace tabs {
@@ -34,8 +33,7 @@ GlicActorNudgeController::GlicActorNudgeController(
       browser_(browser),
       tab_strip_action_container_(tab_strip_action_container),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
-  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     RegisterActorNudgeStateCallback();
     UpdateCurrentActorNudgeState();
   }
@@ -79,15 +77,10 @@ void GlicActorNudgeController::OnStateUpdateImpl(
       // TODO(crbug.com/458391262) revisit or cleanup implementation here for
       // m144.
     case ActorTaskNudgeState::Text::kCompleteTasks:
-      if (!base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
-        tab_strip_action_container_->TriggerGlicActorNudge(
-            l10n_util::GetStringUTF16(IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL));
-      }
       break;
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign) &&
-      tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
+  if (tab_strip_action_container_->GetIsShowingGlicActorTaskIconNudge()) {
     actor::ui::RecordTaskNudgeShown(actor_task_nudge_state);
   }
 }

@@ -91,7 +91,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
              { {features::kGlicActorUiTaskIconName, "true"} }},
-            {features::kGlicActorUiNudgeRedesign, {}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
             {features::kTabstripComboButton, {}},
             {features::kTabstripDeclutter, {}},

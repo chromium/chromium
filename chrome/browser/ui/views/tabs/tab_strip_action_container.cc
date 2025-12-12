@@ -481,29 +481,19 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
       std::min(border_insets.top(), border_insets.bottom());
   border_insets.set_top_bottom(min_vertical_inset, min_vertical_inset);
 
-  const bool is_redesign_enabled =
-      base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign);
   // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
   if (glic_actor_task_icon_ && glic_actor_task_icon_->IsDrawn()) {
     gfx::Insets task_icon_border;
-    const gfx::Insets right_icon_border = gfx::Insets().set_left_right(
-        is_redesign_enabled ? 0 : kInsideBorderAroundGlicButtons,
-        kOutsideBorderAroundGlicButtons);
+    const gfx::Insets right_icon_border =
+        gfx::Insets().set_left_right(0, kOutsideBorderAroundGlicButtons);
     const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
         kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
-    if (is_redesign_enabled) {
       task_icon_border = right_icon_border + border_insets;
       glic_border = left_icon_border + border_insets;
-    } else {
-      task_icon_border = left_icon_border + border_insets;
-      glic_border = right_icon_border + border_insets;
-    }
     glic_actor_task_icon_->SetBorder(
         views::CreateEmptyBorder(task_icon_border));
-    if (is_redesign_enabled) {
       // Force a background repaint to account for the new border insets.
       glic_actor_task_icon_->RefreshBackground();
-    }
   } else {
     // Reset GlicButton border if Task Icon is hidden.
     glic_border = gfx::Insets().set_left_right(border_insets.top(),
@@ -511,10 +501,8 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
                   border_insets;
   }
   glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
-  if (is_redesign_enabled) {
     // Force a background repaint to account for the new border insets.
     glic_button_->RefreshBackground();
-  }
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -653,21 +641,11 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
       tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
   CHECK(icon_manager);
 
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     ActorTaskListBubbleController* controller =
         ActorTaskListBubbleController::From(
             tab_strip_controller_->GetBrowserWindowInterface());
     controller->ShowBubble(glic_actor_task_icon_);
     actor::ui::LogTaskNudgeClick(icon_manager->GetCurrentActorTaskNudgeState());
-  } else {
-    glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
-        tab_strip_controller_->GetBrowserWindowInterface(),
-        /*prevent_close=*/false, glic::mojom::InvocationSource::kActorTaskIcon);
-
-    if (glic_actor_task_icon_->GetIsShowingNudge()) {
-      icon_manager->ClearStoppedTasks();
-    }
-  }
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -728,7 +706,7 @@ void TabStripActionContainer::ShowGlicActorNudge(
   glic_button_->SuppressLabel();
   ShowGlicActorTaskIcon();
   glic_actor_task_icon_->ShowNudgeLabel(nudge_text);
-  HighlightGlicActorTaskIcon();
+  glic_actor_task_icon_->HighlightTaskIcon();
   ShowTabStripNudge(glic_actor_task_icon_);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -745,12 +723,8 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
   }
   glic_button_ =
       glic_actor_button_container_->AddChildView(std::move(glic_button_));
-  // When kGlicActorUiNudgeRedesign is enabled, the GlicButton should be to the
-  // left of the GlicActorTaskIcon.
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     glic_actor_task_icon_->SetVisible(true);
     glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
-  }
 
   glic_actor_button_container_->SetVisible(true);
   UpdateGlicActorButtonContainerBorders();
@@ -789,26 +763,6 @@ bool TabStripActionContainer::GetIsShowingGlicActorTaskIconNudge() {
   return glic_actor_task_icon_ && glic_actor_task_icon_->GetIsShowingNudge();
 #else
   return false;
-#endif  // BUILDFLAG(ENABLE_GLIC)
-}
-
-void TabStripActionContainer::HighlightGlicActorTaskIcon() {
-#if BUILDFLAG(ENABLE_GLIC)
-  CHECK(glic_actor_task_icon_);
-
-  glic_actor_task_icon_->HighlightTaskIcon();
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_GLIC)
-}
-
-void TabStripActionContainer::UnhighlightGlicActorTaskIcon() {
-#if BUILDFLAG(ENABLE_GLIC)
-  CHECK(glic_actor_task_icon_);
-
-  glic_actor_task_icon_->SetDefaultColors();
-#else
-  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

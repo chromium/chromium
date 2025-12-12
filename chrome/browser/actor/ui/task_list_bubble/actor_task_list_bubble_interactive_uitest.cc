@@ -45,7 +45,6 @@ class ActorTaskListBubbleInteractiveUiTest
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiTaskIconName, "true"}}},
-            {features::kGlicActorUiNudgeRedesign, {}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
         },
         {});

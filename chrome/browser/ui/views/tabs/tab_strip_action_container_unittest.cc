@@ -88,8 +88,7 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
   std::unique_ptr<Browser> browser_;
 };
 
-class TabStripActionContainerTest : public ChromeViewsTestBase,
-                                    public ::testing::WithParamInterface<bool> {
+class TabStripActionContainerTest : public ChromeViewsTestBase {
  public:
   TabStripActionContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
@@ -101,11 +100,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
         {features::kGlicActorUi,
          {{features::kGlicActorUiTaskIconName, "true"}}}};
     std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.push_back({features::kGlicActorUiNudgeRedesign, {}});
-    } else {
-      disabled_features.push_back(features::kGlicActorUiNudgeRedesign);
-    }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
@@ -193,10 +187,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
         glic_nudge_controller_.get());
   }
 
-  static std::string GetParamName(const ::testing::TestParamInfo<bool>& info) {
-    return info.param ? "NudgeRedesign" : "NoNudgeRedesign";
-  }
-
   void SetActiveTabChangedCallback(
       base::RepeatingCallback<void(BrowserWindowInterface*)> cb) {
     active_tab_changed_callback_ = cb;
@@ -236,22 +226,17 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
       active_tab_changed_callback_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         TabStripActionContainerTest,
-                         ::testing::Bool(),
-                         &TabStripActionContainerTest::GetParamName);
-
-TEST_P(TabStripActionContainerTest, GlicButtonDrawing) {
+TEST_F(TabStripActionContainerTest, GlicButtonDrawing) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_P(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
+TEST_F(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
   BuildGlicContainer(/*use_otr_profile=*/true);
   EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
+TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
             tab_strip_action_container_->children()[0]);
@@ -279,7 +264,7 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
-TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
+TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
@@ -301,27 +286,17 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
       tab_strip_action_container_->glic_actor_button_container()->children(),
       SizeIs(2));
 
-  const bool nudge_redesign = GetParam();
-  // With redesign, the GlicButton is to the left of the GlicActorTaskIcon.
-  if (nudge_redesign) {
     ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
               tab_strip_action_container_->glic_actor_button_container()
                   ->children()[0]);
     ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
               tab_strip_action_container_->glic_actor_button_container()
                   ->children()[1]);
-  } else {
-    ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
-              tab_strip_action_container_->glic_actor_button_container()
-                  ->children()[0]);
-    ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
-              tab_strip_action_container_->glic_actor_button_container()
-                  ->children()[1]);
-  }
+
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
-TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
@@ -329,7 +304,7 @@ TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
 
-TEST_P(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
+TEST_F(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->SetDelegate(tab_strip_action_container_.get());
 
@@ -358,12 +333,7 @@ class TabStripActionContainerTestWithProduct
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         TabStripActionContainerTestWithProduct,
-                         ::testing::Bool(),
-                         &TabStripActionContainerTest::GetParamName);
-
-TEST_P(TabStripActionContainerTestWithProduct, OrdersButtonsCorrectly) {
+TEST_F(TabStripActionContainerTestWithProduct, OrdersButtonsCorrectly) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
