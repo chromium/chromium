@@ -254,15 +254,8 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
   draw_callback(recorder_->getRecordingCanvas());
 
-  if (!surface_) {
-    const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
-    const auto props =
-        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-    surface_ =
-        SkSurfaces::Raster(info_.makeAlphaType(kPremul_SkAlphaType), &props);
-    if (!surface_) {
-      return nullptr;
-    }
+  if (!IsValid()) {
+    return nullptr;
   }
 
   if (recorder_->HasReleasableDrawOps()) {
