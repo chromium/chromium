@@ -199,8 +199,6 @@ struct HistoryGraph: View {
     let axisXRange =
       (sortedHistoryDates.first?.key ?? Date())...(sortedHistoryDates.last?.key ?? Date())
 
-    /// TODO(b/333894542): Configure audio graph for accessibility and ensure labels
-    /// for line marks and rule marks are accessible.
     Chart {
       ForEach(sortedHistoryDates, id: \.key) { date, price in
         /// Displaying the area mark under the line mark.
