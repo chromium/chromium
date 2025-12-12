@@ -85,8 +85,10 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
       state_(std::make_unique<ResetableState>()),
       signin_prefs_(*profile->GetPrefs()) {
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
-  scoped_browser_collection_observation_.Observe(
-      ProfileBrowserCollection::GetForProfile(profile));
+  auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile);
+  if (browser_collection) {
+    scoped_browser_collection_observation_.Observe(browser_collection);
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ProfileManagementDisclaimerService::

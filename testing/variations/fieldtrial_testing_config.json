@@ -10170,26 +10170,6 @@
             ]
         }
     ],
-    "EnforceManagementDisclaimer": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "PolicyDisclaimerRegistrationRetryDelay": "6h"
-                    },
-                    "enable_features": [
-                        "EnforceManagementDisclaimer"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnhancedFieldsForSecOps": [
         {
             "platforms": [

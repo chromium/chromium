@@ -283,7 +283,7 @@ constexpr base::FeatureParam<SeamlessSigninStringType>
 // management disclaimer when they open Chrome. Every time the primary signed in
 // account changes to a managed account, the management disclaimer will be
 // shown. This is only for desktop platforms.
-BASE_FEATURE(kEnforceManagementDisclaimer, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnforceManagementDisclaimer, base::FEATURE_ENABLED_BY_DEFAULT);
 // The delay between policy registration retry.
 const base::FeatureParam<base::TimeDelta>
     kPolicyDisclaimerRegistrationRetryDelay{
