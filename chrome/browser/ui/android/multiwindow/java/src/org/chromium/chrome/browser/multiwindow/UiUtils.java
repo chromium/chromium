@@ -24,16 +24,14 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -70,7 +68,7 @@ public class UiUtils {
         mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
         mIncognitoFavicon =
-                isIncognitoAsWindowEnabled()
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
                         ? mContext.getResources()
                                 .getDrawable(
                                         R.drawable.ic_incognito_circle_fill_24dp,
@@ -116,27 +114,6 @@ public class UiUtils {
      */
     public static boolean isRecentlyClosedTabsAndWindowsEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS);
-    }
-
-    /**
-     * Checks whether the Android Open Incognito As Window feature is enabled.
-     *
-     * @deprecated Use {@link
-     *     org.chromium.chrome.browser.incognito.IncognitoUtils#isIncognitoAsWindowEnabled()}
-     *     instead.
-     * @return {@code true} if the Android Open Incognito As Window feature is enabled, {@code
-     *     false} otherwise.
-     */
-    // TODO(crbug.com/448671285): Shift away from isIncognitoAsWindowEnabled() to calling
-    // IncognitoUtils function
-    @Deprecated
-    public static boolean isIncognitoAsWindowEnabled() {
-        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
-        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        ContextUtils.getApplicationContext())
-                                && !DeviceInfo.isAutomotive())
-                        || DeviceInfo.isDesktop());
     }
 
     /**
@@ -260,7 +237,7 @@ public class UiUtils {
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             // Show 'incognito tab' only when we have any restorable incognito tabs.
             title =
-                    isIncognitoAsWindowEnabled()
+                    IncognitoUtils.shouldOpenIncognitoAsWindow()
                             ? res.getString(R.string.instance_switcher_title_incognito_window)
                             : res.getString(R.string.notification_incognito_tab);
         } else {
@@ -285,7 +262,7 @@ public class UiUtils {
         } else if (totalTabCount == 0) { // <ex>No tabs</ex>
             desc = res.getString(R.string.instance_switcher_tab_count_zero);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
-            if (isIncognitoAsWindowEnabled()) { // <ex>2 tabs</ex>
+            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) { // <ex>2 tabs</ex>
                 desc =
                         res.getQuantityString(
                                 R.plurals.instance_switcher_tab_count_nonzero,
@@ -429,7 +406,7 @@ public class UiUtils {
      * @return Whether a new Chrome instance has not yet started loading a URL on its tab.
      */
     private boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
-        if (isIncognitoAsWindowEnabled()) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return !item.isIncognitoSelected
                     && totalTabCount == 1
                     && TextUtils.isEmpty(item.url)
