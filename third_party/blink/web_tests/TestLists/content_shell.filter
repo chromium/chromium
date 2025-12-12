@@ -267,12 +267,7 @@ external/wpt/css/css-masking/clip-path/clip-path-inline-010.html
 external/wpt/css/css-masking/clip-path/clip-path-reference-box-004.html
 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html
 external/wpt/css/css-masking/mask-svg-content/mask-with-rotation.svg
-external/wpt/css/css-multicol/getclientrects-000.html
-external/wpt/css/css-multicol/getclientrects-001.html
 external/wpt/css/css-multicol/multicol-fill-auto-block-children-002.xht
-external/wpt/css/css-multicol/multicol-under-vertical-rl-scroll.html
-external/wpt/css/css-multicol/multicol-width-ch-001.xht
-external/wpt/css/css-multicol/table/table-cell-as-multicol.html
 external/wpt/css/cssom/getComputedStyle-insets-relpos-inline.html
 external/wpt/css/cssom-view/getBoundingClientRect-shy.html
 external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
@@ -827,7 +822,6 @@ external/wpt/pointerevents/crashtests/longpress-crash.html
 # content_shell, when run under Fontations.
 # See crbug.com/397880053 and crbug.com/339041663.
 external/wpt/css/css-break/*
-external/wpt/css/css-multicol/*
 external/wpt/css/css-overflow/keyboard-scroll.html
 external/wpt/css/css-page/*
 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-001.html
@@ -878,6 +872,14 @@ external/wpt/css/css-shapes/spec-examples/shape-outside-016.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-017.html
 external/wpt/css/printing/input-file-print.html
 virtual/fragmented-oof-in-cb/*
+
+# Print tests that don't run reliably on headless, see bugs linked from
+# https://chromium-review.googlesource.com/c/chromium/src/+/6357592.
+external/wpt/css/css-multicol/auto-fill-auto-size-001-print.html
+external/wpt/css/css-multicol/auto-fill-auto-size-002-print.html
+external/wpt/css/css-multicol/column-balancing-paged-001-print.html
+external/wpt/css/css-multicol/crashtests/multicol-at-page-boundary-print.html
+external/wpt/css/css-multicol/multicol-height-002-print.xht
 
 # This times out on headless, on Mac only. It takes appreciably longer locally on my Mac on headless. Not sure why.
 external/wpt/html/semantics/popovers/popover-focus-2.html
