@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
-#include "third_party/blink/renderer/core/page/page_popup_controller.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
@@ -1350,10 +1349,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(close_task_handler_);
   visitor->Trace(opener_);
   visitor->Trace(storage_namespace_);
-  visitor->Trace(page_popup_controller_);
-  visitor->Trace(no_state_prefetch_client_);
-  visitor->Trace(audio_graph_tracer_);
-  visitor->Trace(internal_settings_);
   Supplementable::Trace(visitor);
 }
 
@@ -1596,7 +1591,7 @@ void Page::PrepareForLeakDetection() {
   // object through the Page supplement. Prepares for leak detection by removing
   // all InternalSetting objects from Pages.
   for (Page* page : OrdinaryPages()) {
-    page->SetInternalSettings(ForwardDeclaredMember<InternalSettings>(nullptr));
+    page->RemoveSupplement<InternalSettingsPageSupplementBase>();
 
     // V8CrowdsourcedCompileHintsProducer keeps v8::Script objects alive until
     // the page becomes interactive. Give it a chance to clean up.

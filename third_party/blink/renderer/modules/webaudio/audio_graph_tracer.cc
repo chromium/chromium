@@ -14,16 +14,19 @@
 
 namespace blink {
 
+const unsigned AudioGraphTracer::kSupplementIndex =
+    static_cast<unsigned>(Page::Supplements::kAudioGraphTracer);
+
 void AudioGraphTracer::ProvideAudioGraphTracerTo(Page& page) {
-  page.SetAudioGraphTracer(MakeGarbageCollected<AudioGraphTracer>(page));
+  page.ProvideSupplement(MakeGarbageCollected<AudioGraphTracer>(page));
 }
 
-AudioGraphTracer::AudioGraphTracer(Page& page) : page_(&page) {}
+AudioGraphTracer::AudioGraphTracer(Page& page) : Supplement(page) {}
 
 void AudioGraphTracer::Trace(Visitor* visitor) const {
-  visitor->Trace(page_);
   visitor->Trace(inspector_agent_);
   visitor->Trace(contexts_);
+  Supplement<Page>::Trace(visitor);
 }
 
 void AudioGraphTracer::SetInspectorAgent(InspectorWebAudioAgent* agent) {
@@ -149,7 +152,7 @@ void AudioGraphTracer::DidDisconnectNodeParam(AudioNode* source_node,
 }
 
 AudioGraphTracer* AudioGraphTracer::FromPage(Page* page) {
-  return page->GetAudioGraphTracer();
+  return Supplement<Page>::From<AudioGraphTracer>(page);
 }
 
 AudioGraphTracer* AudioGraphTracer::FromWindow(const LocalDOMWindow& window) {

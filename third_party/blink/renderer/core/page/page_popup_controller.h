@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -48,10 +49,11 @@ class Page;
 class PagePopup;
 class PagePopupClient;
 
-class PagePopupController : public ScriptWrappable {
+class PagePopupController : public ScriptWrappable, public Supplement<Page> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   PagePopupController(Page&, PagePopup&, PagePopupClient*);
 
   static PagePopupController* From(Page&);
@@ -82,7 +84,6 @@ class PagePopupController : public ScriptWrappable {
       bool children_updated);
 
  private:
-  Member<Page> page_;
   PagePopup& popup_;
   std::optional<gfx::Point> popup_origin_;
 

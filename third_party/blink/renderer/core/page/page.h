@@ -75,7 +75,6 @@ class ColorProvider;
 }  // namespace ui
 
 namespace blink {
-class AudioGraphTracer;
 class AutoscrollController;
 class BrowserControls;
 class ChromeClient;
@@ -86,12 +85,10 @@ class DragCaret;
 class DragController;
 class FocusController;
 class Frame;
-class InternalSettings;
 class LinkHighlight;
 class LocalFrame;
 class LocalFrameView;
 class MediaFeatureOverrides;
-class NoStatePrefetchClient;
 class PageAnimator;
 struct PageScaleConstraints;
 class PageScaleConstraintsSet;
@@ -99,16 +96,15 @@ class PluginData;
 class PointerLockController;
 class PreferenceOverrides;
 class ScopedPagePauser;
-class ScrollbarTheme;
 class ScrollingCoordinator;
-class PagePopupController;
+class ScrollbarTheme;
 class Settings;
 class SpatialNavigationController;
-class StorageNamespace;
 class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
+class StorageNamespace;
 
 typedef uint64_t LinkHash;
 
@@ -117,13 +113,19 @@ typedef uint64_t LinkHash;
 //
 // Note that frames can be local or remote to this process.
 class CORE_EXPORT Page final : public GarbageCollected<Page>,
-                               public Supplementable<Page, 1>,
+                               public Supplementable<Page, 5>,
                                public SettingsDelegate,
                                public PageScheduler::Delegate {
   friend class Settings;
 
  public:
-  enum class Supplements { kSuspendCaptureObserver = 0 };
+  enum class Supplements {
+    kAudioGraphTracer = 0,
+    kInternalSettings = 1,
+    kNoStatePrefetchClient = 2,
+    kSuspendCaptureObserver = 3,
+    kPagePopupController = 4,
+  };
 
   // Any pages not owned by a web view should be created using this method.
   static Page* CreateNonOrdinary(
@@ -546,44 +548,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
-  PagePopupController* GetPagePopupController() const {
-    return page_popup_controller_;
-  }
-  void SetPagePopupController(PagePopupController* page_popup_controller) {
-    page_popup_controller_ = page_popup_controller;
-  }
-
   ForwardDeclaredMember<StorageNamespace> GetStorageNamespace() const {
     return storage_namespace_;
   }
   void SetStorageNamespace(
       ForwardDeclaredMember<StorageNamespace> storage_namespace) {
     storage_namespace_ = storage_namespace;
-  }
-
-  ForwardDeclaredMember<NoStatePrefetchClient> GetNoStatePrefetchClient()
-      const {
-    return no_state_prefetch_client_;
-  }
-  void SetNoStatePrefetchClient(
-      ForwardDeclaredMember<NoStatePrefetchClient> no_state_prefetch_client) {
-    no_state_prefetch_client_ = no_state_prefetch_client;
-  }
-
-  ForwardDeclaredMember<AudioGraphTracer> GetAudioGraphTracer() const {
-    return audio_graph_tracer_;
-  }
-  void SetAudioGraphTracer(
-      ForwardDeclaredMember<AudioGraphTracer> audio_graph_tracer) {
-    audio_graph_tracer_ = audio_graph_tracer;
-  }
-
-  ForwardDeclaredMember<InternalSettings> GetInternalSettings() const {
-    return internal_settings_;
-  }
-  void SetInternalSettings(
-      ForwardDeclaredMember<InternalSettings> internal_settings) {
-    internal_settings_ = internal_settings;
   }
 
  private:
@@ -778,24 +748,15 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   Member<CloseTaskHandler> close_task_handler_;
 
-  Member<PagePopupController> page_popup_controller_;
-
   ForwardDeclaredMember<StorageNamespace> storage_namespace_;
-  ForwardDeclaredMember<NoStatePrefetchClient> no_state_prefetch_client_;
-  ForwardDeclaredMember<AudioGraphTracer> audio_graph_tracer_;
-  ForwardDeclaredMember<InternalSettings> internal_settings_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;
 
-class CORE_EXPORT InternalSettingsPageSupplementBase
-    : public GarbageCollectedMixin {
+class CORE_EXPORT InternalSettingsPageSupplementBase : public Supplement<Page> {
  public:
-  explicit InternalSettingsPageSupplementBase(Page& page) : page_(&page) {}
-  void Trace(Visitor* visitor) const override { visitor->Trace(page_); }
-
- protected:
-  Member<Page> page_;
+  using Supplement<Page>::Supplement;
+  static constexpr auto kSupplementIndex = Page::Supplements::kInternalSettings;
 };
 
 }  // namespace blink

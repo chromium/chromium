@@ -38,19 +38,19 @@ namespace blink {
 
 // static
 NoStatePrefetchClient* NoStatePrefetchClient::From(Page* page) {
-  return page->GetNoStatePrefetchClient();
+  return Supplement<Page>::From<NoStatePrefetchClient>(page);
 }
 
 NoStatePrefetchClient::NoStatePrefetchClient(Page& page,
                                              WebNoStatePrefetchClient* client)
-    : page_(&page), client_(client) {}
+    : Supplement<Page>(page), client_(client) {}
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
   return client_ && client_->IsPrefetchOnly();
 }
 
 void ProvideNoStatePrefetchClientTo(Page& page, NoStatePrefetchClient* client) {
-  page.SetNoStatePrefetchClient(client);
+  NoStatePrefetchClient::ProvideTo(page, client);
 }
 
 }  // namespace blink
