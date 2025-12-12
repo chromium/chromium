@@ -237,11 +237,13 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
              hasNewData:
                  (std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>)
                      item_configurations {
-  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+  [self activeTabHasNewData:item_configurations.empty()
+                                ? nullptr
+                                : item_configurations[0].get()];
 }
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
-  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+  [self activeTabHasNewData:nullptr];
 }
 
 - (void)contextualPanelOpened:(ContextualPanelTabHelper*)tabHelper {
@@ -465,7 +467,55 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
 - (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
-  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+  [self resetTimersAndUIStateAnimated:NO];
+
+  if (!config) {
+    [self.consumer hideBadge];
+    return;
+  }
+
+  // Prevents entrypoint from showing while the Gemini promo is showing.
+  if (IsPageActionMenuEnabled()) {
+    BwgTabHelper* BWGTabHelper =
+        BwgTabHelper::FromWebState(_webStateList->GetActiveWebState());
+    if (BWGTabHelper) {
+      if (BWGTabHelper->ShouldPreventContextualPanelEntryPoint()) {
+        [self.consumer hideBadge];
+        return;
+      }
+    }
+  }
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      contextualPanelTabHelper->GetMetricsData();
+
+  if (!metricsData) {
+    ContextualPanelTabHelper::EntrypointMetricsData metricData;
+    metricData.entrypoint_item_type = config->item_type;
+    contextualPanelTabHelper->SetMetricsData(metricData);
+  } else if (!metricsData->appearance_time) {
+    metricsData->appearance_time = base::Time::Now();
+  }
+
+  // TODO(crbug.com/467513851): Implement [self setEntrypointConfig].
+  [self.consumer setContextualPanelItemType:config->item_type];
+  [self.consumer
+      transitionToContextualPanelOpenedState:
+          contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()];
+
+  // Special case for first entrypoint appearances where an IPH is shown
+  // instead of the large entrypoint. If showing the IPH fails, will fallback to
+  // showing the large entrypoint.
+  if ([self canShowEntrypointIPHWithConfig:config]) {
+    // TODO(crbug.com/467510797): Implement IPH Timer.
+    return;
+  }
+
+  // TODO(crbug.com/467513869): Implement large entrypoint timer for contextual.
 }
 
 // Whether to show the Contextual Panel Entrypoint IPH given a `config`.
