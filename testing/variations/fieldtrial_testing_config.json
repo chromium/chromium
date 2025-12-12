@@ -21645,15 +21645,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Moderate_v1",
+                    "name": "Enabled_Conservative_14d",
                     "params": {
-                        "experiment_version": "1",
+                        "experiment_version": "2",
                         "max_engagement_score": "0.0",
                         "min_engagement_score_delta": "3.0",
                         "min_notification_count": "4",
                         "shadow_run": "false",
                         "waiting_for_metrics_days": "1",
-                        "waiting_time_as_proposed": "1d"
+                        "waiting_time_as_proposed": "14d"
                     },
                     "enable_features": [
                         "SafetyHubDisruptiveNotificationRevocation"
