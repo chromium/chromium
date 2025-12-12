@@ -333,7 +333,7 @@ std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
   if (!IsValueInRangeForNumericType<off_t>(offset)) {
-    return -1;
+    return std::nullopt;
   }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort",
