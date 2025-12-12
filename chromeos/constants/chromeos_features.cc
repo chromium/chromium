@@ -161,6 +161,10 @@ BASE_FEATURE(kFeatureManagementDisableChromeCompose,
 // feature management module.
 BASE_FEATURE(kFeatureManagementGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, it enabled GLIC on 8GB devices (or higher) bypassing the CBX device
+// requirement.
+BASE_FEATURE(kGlicEnableFor8GbDevices, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables rounded windows. This flag is intended to be controlled by the
 // feature management module.
 BASE_FEATURE(kFeatureManagementRoundedWindows,
