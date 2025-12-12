@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ContextAddedMethod) -->
+
+<enum name="ContextAddedMethod">
+  <int value="0" label="ContextMenu"/>
+  <int value="1" label="CopyPaste"/>
+  <int value="2" label="DragAndDrop"/>
+  <int value="3" label="RecentTabChip"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:ComposeboxContextAddedMethod) -->
+
 <!-- LINT.IfChange(AimToolState) -->
 
 <enum name="ContextualSearchAimToolState">

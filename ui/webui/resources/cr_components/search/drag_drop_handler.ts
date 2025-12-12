@@ -8,7 +8,7 @@ import type {DragAndDropHost} from './drag_drop_host.js';
 /*
  * To use, make parent class of interest implement DragDropHost.
  * Host needs a file entrypoint to submit file in its implementation of
- * 'addFiles()'. After, add handler as attribute of parent class. Utilize
+ * 'addDroppedFiles()'. After, add handler as attribute of parent class. Utilize
  * event methods from this class as event listeners in parent class.
  */
 export class DragAndDropHandler {
@@ -62,7 +62,7 @@ export class DragAndDropHandler {
 
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
-      this.host_.getDropTarget().addFiles(files);
+      this.host_.getDropTarget().addDroppedFiles(files);
     }
     this.host_.isDraggingFile = false;
     this.host_.animationState = GlowAnimationState.NONE;

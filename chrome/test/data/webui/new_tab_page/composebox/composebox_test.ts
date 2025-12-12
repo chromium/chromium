@@ -26,6 +26,8 @@ enum Attributes {
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const ADD_TAB_CONTEXT_FN = 'addTabContext';
 const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
+const CONTEXT_ADDED_NTP =
+    'ContextualSearch.ContextAdded.ContextAddedMethod.NewTabPage';
 
 function generateZeroId(): string {
   // Generate 128 bit unique identifier.
@@ -534,6 +536,13 @@ suite('NewTabPageComposeboxTest', () => {
         searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
     assertEquals(fileInfo.fileName, 'foo.pdf');
     assertDeepEquals(fileData.bytes, fileArray);
+    // Assert context added method was context menu.
+    assertEquals(1, metrics.count(CONTEXT_ADDED_NTP));
+    assertEquals(
+        1,
+        metrics.count(
+            CONTEXT_ADDED_NTP,
+            /* CONTEXT_MENU */ 0));
   });
 
   test('delete file', async () => {
@@ -1978,6 +1987,12 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Check that the default paste event was prevented.
     assertTrue(pasteEvent.defaultPrevented);
+    assertEquals(1, metrics.count(CONTEXT_ADDED_NTP));
+    assertEquals(
+        1,
+        metrics.count(
+            CONTEXT_ADDED_NTP,
+            /* COPY_PASTE */ 1));
   });
 
   test('pasting too many files records metric and prevents paste', async () => {

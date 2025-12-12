@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
+import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -19,6 +20,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
+import {recordContextAdditionMethod} from './common.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -215,6 +217,8 @@ export class ContextMenuEntrypointElement extends
       return;
     }
     this.addTabContext_(tabInfo);
+    recordContextAdditionMethod(
+        ComposeboxContextAddedMethod.CONTEXT_MENU, this.metricsSource_);
   }
 
   protected deleteTabContext_(uuid: UnguessableToken) {

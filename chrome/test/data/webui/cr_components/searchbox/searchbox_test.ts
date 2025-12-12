@@ -13,6 +13,8 @@ import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/br
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -114,6 +116,7 @@ suite('NewTabPageRealboxTest', () => {
   let testProxy: TestSearchboxBrowserProxy;
 
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
+  let metrics: MetricsTracker;
 
   setup(async () => {
     loadTimeData.overrideValues({
@@ -137,6 +140,7 @@ suite('NewTabPageRealboxTest', () => {
     testMetricsReporterProxy.setResultFor('getMark', Promise.resolve(null));
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
+    metrics = fakeMetricsPrivate();
 
     realbox = await createAndAppendRealbox();
   });
@@ -512,6 +516,11 @@ suite('NewTabPageRealboxTest', () => {
     // Assert.
     const event = await whenOpenComposeBox;
     assertEquals('deep-search', event.detail.mode);
+    // Calling deep search should not be logged as context being added.
+    assertEquals(
+        0,
+        metrics.count(
+            'ContextualSearch.ContextAdded.ContextAddedMethod.NewTabPage'));
   });
 
   test('clicking create image button opens composebox', async () => {
@@ -3131,7 +3140,7 @@ suite('NewTabPageRealboxTest', () => {
       loadTimeData.overrideValues({composeboxFileMaxCount: 2});
       realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
       let passedFileList: FileList|null = null;
-      realbox.$.context.addFiles = (files: FileList|null) => {
+      realbox.$.context.addPastedFiles = (files: FileList|null) => {
         passedFileList = files;
       };
 
@@ -3232,7 +3241,7 @@ suite('NewTabPageRealboxTest', () => {
       realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
 
       let addFilesCalled = false;
-      realbox.$.context.addFiles = (_files: FileList|null) => {
+      realbox.$.context.addPastedFiles = (_files: FileList|null) => {
         addFilesCalled = true;
       };
 

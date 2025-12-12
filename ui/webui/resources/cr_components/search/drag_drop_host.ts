@@ -14,5 +14,5 @@ export interface DragAndDropHost {
    * animationState is to update searchAnimatedGlowElement's animation,
    * and isDraggingFile is a state that indicates if dragging is occurring.
    */
-  getDropTarget(): {addFiles(files: FileList): void};
+  getDropTarget(): {addDroppedFiles(files: FileList): void};
 }
