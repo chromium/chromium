@@ -9,6 +9,7 @@ import type {AppElement} from './app.js';
 export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<read-anything-header id="header" hidden></read-anything-header>
 <div id="appFlexParent">
   <div id="toolbar-container">
     <read-anything-toolbar

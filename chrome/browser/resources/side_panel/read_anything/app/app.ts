@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './read_anything_header.js';
 import './read_anything_toolbar.js';
 import '/strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
@@ -33,12 +34,14 @@ import {ReadAnythingLogger, TimeFrom} from '../shared/read_anything_logger.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
+import type {ReadAnythingHeaderElement} from './read_anything_header.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
+    header: ReadAnythingHeaderElement,
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
     containerParent: HTMLElement,
