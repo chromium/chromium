@@ -5489,6 +5489,16 @@
     "expiry_milestone": 149
   },
   {
+    "name": "gemini-refactored-fre",
+    "owners": [
+      "adamta@google.com",
+      "joemerramos@google.com",
+      "tarekmakkouk@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "geolocation-element",
     "owners": [
       "andy@chromium.org",

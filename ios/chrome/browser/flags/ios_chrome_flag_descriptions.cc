@@ -708,6 +708,10 @@ const char kGeminiPersonalizationName[] = "GeminiPersonalization";
 const char kGeminiPersonalizationDescription[] =
     "Enables the GeminiPersonalization feature.";
 
+const char kGeminiRefactoredFREName[] = "Gemini Refactored FRE";
+const char kGeminiRefactoredFREDescription[] =
+    "Enables the refactored Gemini First Run Experience (FRE).";
+
 const char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 const char kHandleMdmErrorsForDasherAccountsDescription[] =
