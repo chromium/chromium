@@ -10,6 +10,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -724,6 +725,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_TRUE(task1);
   ASSERT_TRUE(task1_2);
   ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       MoveTabToNewWindowKeepTaskAssociation) {
+  SetUpTasks();
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
+  // Verify tab0 is associated to a task.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  std::optional<ContextualTask> task1 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(web_contents));
+  ASSERT_TRUE(task1.has_value());
+
+  // Move tab 0 to a new window.
+  browser()->tab_strip_model()->delegate()->MoveTabsToNewWindow({0});
+
+  // Verify tab0 is still associated to the same task.
+  std::optional<ContextualTask> task2 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(web_contents));
+  ASSERT_TRUE(task2.has_value());
+  ASSERT_EQ(task1->GetTaskId(), task2->GetTaskId());
 }
 
 class TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest
