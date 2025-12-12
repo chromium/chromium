@@ -1867,6 +1867,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioSinkUseTimestampAligner);
 // WebRTC's security.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);
 
+// TODO(crbug.com/466441366): Stop accepting 'borderless'.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppBorderless);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensionsBySite);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
@@ -1897,6 +1898,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Indicates that renderer is running on an Android XR (AR/VR) device.
 // Enables certain features which are not needed on other platforms.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kXrDevice);
+
+// Enable the 'unframed' display override for IWAs. go/unframed-explainer-doc.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnframedIwa);
 
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for

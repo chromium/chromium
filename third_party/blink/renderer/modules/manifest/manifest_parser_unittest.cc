@@ -1044,6 +1044,27 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
   }
 
+  // Parsing fails for 'unframed' when flag is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({ "display": "unframed" })");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
+  // Parsing fails for 'unframed' when flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({ "display": "unframed" })");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
+  // TODO(crbug.com/466441366): Stop accepting 'borderless'.
   // Parsing fails for 'borderless' when Borderless flag is disabled.
   {
     base::test::ScopedFeatureList feature_list;
@@ -1220,6 +1241,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
+  // TODO(crbug.com/466441366): Stop accepting 'borderless'.
   // Reject 'borderless' when Borderless flag is disabled.
   {
     base::test::ScopedFeatureList feature_list;
@@ -1236,6 +1258,27 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "borderless" ] })");
+    EXPECT_FALSE(manifest->display_override.empty());
+    EXPECT_EQ(manifest->display_override[0],
+              blink::mojom::DisplayMode::kBorderless);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject 'unframed' when flag is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({ "display_override": [ "unframed" ] })");
+    EXPECT_TRUE(manifest->display_override.empty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'unframed' as an alias for `kBorderless` when flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({ "display_override": [ "unframed" ] })");
     EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBorderless);

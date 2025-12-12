@@ -371,14 +371,19 @@ bool ManifestParser::Parse() {
     if (display_override == mojom::blink::DisplayMode::kWindowControlsOverlay) {
       UseCounter::Count(execution_context_,
                         WebFeature::kWebAppWindowControlsOverlay);
-    } else if (display_override == mojom::blink::DisplayMode::kBorderless) {
+    } else if (display_override == mojom::blink::DisplayMode::kBorderless &&
+               base::FeatureList::IsEnabled(
+                   blink::features::kWebAppBorderless)) {
       UseCounter::Count(execution_context_, WebFeature::kWebAppBorderless);
+    } else if (display_override == mojom::blink::DisplayMode::kBorderless) {
+      UseCounter::Count(execution_context_, WebFeature::kUnframedIwa);
     } else if (display_override == mojom::blink::DisplayMode::kTabbed) {
       UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
     }
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppBorderless) ||
+      base::FeatureList::IsEnabled(blink::features::kUnframedIwa)) {
     manifest_->borderless_url_patterns =
         ParseUrlPatterns(root_object.get(), "borderless_url_patterns");
   }
@@ -925,6 +930,7 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     }
 
     if (!base::FeatureList::IsEnabled(blink::features::kWebAppBorderless) &&
+        !base::FeatureList::IsEnabled(blink::features::kUnframedIwa) &&
         display_enum == mojom::blink::DisplayMode::kBorderless) {
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }

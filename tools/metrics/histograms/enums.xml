@@ -11107,6 +11107,7 @@ from previous Chrome versions.
   <int value="-1143974359" label="AllowAiModeMatches:enabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143452448" label="NtpComprehensiveThemeRealbox:enabled"/>
+  <int value="-1143251582" label="UnframedIwa:disabled"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
   <int value="-1142933895" label="ReduceDisplayNotifications:disabled"/>
   <int value="-1142034548" label="BuiltInModuleKvStorage:enabled"/>
@@ -16255,6 +16256,7 @@ from previous Chrome versions.
   <int value="666163273" label="WebMachineLearningNeuralNetwork:enabled"/>
   <int value="666428855" label="MediaRemotingWithoutFullscreen:enabled"/>
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
+  <int value="666929890" label="UnframedIwa:enabled"/>
   <int value="667262414" label="IOSPromoBookmarkBubble:disabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="668342684" label="TabModelInitFixes:disabled"/>

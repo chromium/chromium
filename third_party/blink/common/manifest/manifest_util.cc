@@ -4,7 +4,10 @@
 
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
+#include <string>
+
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
@@ -85,7 +88,7 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
     case blink::mojom::DisplayMode::kTabbed:
       return "tabbed";
     case blink::mojom::DisplayMode::kBorderless:
-      return "borderless";
+      return "unframed";
     case blink::mojom::DisplayMode::kPictureInPicture:
       return "picture-in-picture";
   }
@@ -105,8 +108,13 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
   if (base::EqualsCaseInsensitiveASCII(display, "tabbed"))
     return blink::mojom::DisplayMode::kTabbed;
-  if (base::EqualsCaseInsensitiveASCII(display, "borderless"))
+  // TODO(crbug.com/466441366): Stop accepting "borderless".
+  if (base::EqualsCaseInsensitiveASCII(display, "borderless")) {
     return blink::mojom::DisplayMode::kBorderless;
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "unframed")) {
+    return blink::mojom::DisplayMode::kBorderless;
+  }
   if (base::EqualsCaseInsensitiveASCII(display, "picture-in-picture")) {
     return blink::mojom::DisplayMode::kPictureInPicture;
   }

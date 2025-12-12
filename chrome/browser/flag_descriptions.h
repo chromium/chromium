@@ -1732,6 +1732,11 @@ inline constexpr char kIwaKeyDistributionComponentExpCohortName[] =
 inline constexpr char kIwaKeyDistributionComponentExpCohortDescription[] =
     "Specifies the experimental cohort for the Iwa Key Distribution component.";
 
+inline constexpr char kEnableUnframedIwaName[] =
+    "Unframed display mode for Isolated Web Apps";
+inline constexpr char kEnableUnframedIwaDescription[] =
+    "Enables the unframed display mode for Isolated Web Apps.";
+
 inline constexpr char kEnableControlledFrameName[] = "Enable Controlled Frame";
 inline constexpr char kEnableControlledFrameDescription[] =
     "Enables experimental support for Controlled Frame. See "

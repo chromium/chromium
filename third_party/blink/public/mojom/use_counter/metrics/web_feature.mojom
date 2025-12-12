@@ -5077,6 +5077,7 @@ enum WebFeature {
   kSVGFESpecularLightingElement = 5761,
   kSVGFETileElement = 5762,
   kSVGFETurbulenceElement = 5763,
+  kUnframedIwa = 5764,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -4520,6 +4520,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-unframed-iwa",
+    "owners": [ "edmanp@google.com", "iwa-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-unicorn-chrome-activity-reporting",
     "owners": [ "michaelcheco@google.com", "zhangwenyu@google.com" ],
     "expiry_milestone": 150

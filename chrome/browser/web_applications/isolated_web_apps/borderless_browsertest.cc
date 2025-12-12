@@ -134,7 +134,7 @@ class BorderlessBrowserTest : public WebAppBrowserTestBase {
  public:
   BorderlessBrowserTest()
       : WebAppBrowserTestBase(
-            {features::kIsolatedWebApps, blink::features::kWebAppBorderless},
+            {features::kIsolatedWebApps, blink::features::kUnframedIwa},
             {}) {}
 
  protected:

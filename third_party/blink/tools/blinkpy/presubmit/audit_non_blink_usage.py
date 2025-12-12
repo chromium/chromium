@@ -446,6 +446,10 @@ _CONFIG = [
         'allowed': ['base::EqualsCaseInsensitiveASCII'],
     },
     {
+        'paths': ['third_party/blink/common/manifest/manifest_util.cc'],
+        'allowed': ['base::EqualsCaseInsensitiveASCII'],
+    },
+    {
         'paths': [
             'third_party/blink/common/page_state/page_state_serialization.cc',
         ],

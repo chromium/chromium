@@ -6116,6 +6116,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      STRING_VALUE_TYPE(component_updater::kIwaKeyDistributionComponentExpCohort,
                        "")},
+    {"enable-unframed-iwa", flag_descriptions::kEnableUnframedIwaName,
+     flag_descriptions::kEnableUnframedIwaDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kUnframedIwa)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -6162,6 +6165,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-desktop-pwas-sub-apps", flag_descriptions::kDesktopPWAsSubAppsName,
      flag_descriptions::kDesktopPWAsSubAppsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kDesktopPWAsSubApps)},
+    // TODO(crbug.com/466441366): Remove "borderless".
     {"enable-desktop-pwas-borderless",
      flag_descriptions::kDesktopPWAsBorderlessName,
      flag_descriptions::kDesktopPWAsBorderlessDescription, kOsDesktop,
