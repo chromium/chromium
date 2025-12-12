@@ -1159,7 +1159,6 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
     notification_tester_->SetNotificationAddedClosure(quit_barrier);
     push_service->OnMessage(app_identifier.app_id(), message);
     run_loop.Run();
-    notification_tester_->SetNotificationAddedClosure(base::DoNothing());
   }
 
   push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
