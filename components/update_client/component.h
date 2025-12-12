@@ -68,8 +68,6 @@ struct UpdateContext;
 // kCanUpdate will transition to kUpdateError.
 class Component {
  public:
-  using CallbackHandleComplete = base::OnceCallback<void()>;
-
   Component(const UpdateContext& update_context, const std::string& id);
   Component(const Component&) = delete;
   Component& operator=(const Component&) = delete;
@@ -77,7 +75,7 @@ class Component {
 
   // Handles the current state of the component and makes it transition
   // to the next component state before |callback_handle_complete_| is invoked.
-  void Handle(CallbackHandleComplete callback_handle_complete);
+  void Handle(base::OnceClosure callback_handle_complete);
 
   CrxUpdateItem GetCrxUpdateItem() const;
 
@@ -384,7 +382,7 @@ class Component {
   // Contains the events which are therefore serialized in the requests.
   std::vector<base::Value::Dict> events_;
 
-  CallbackHandleComplete callback_handle_complete_;
+  base::OnceClosure callback_handle_complete_;
   std::unique_ptr<State> state_;
   const raw_ref<const UpdateContext> update_context_;
 

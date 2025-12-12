@@ -73,7 +73,7 @@ bool Component::is_foreground() const {
   return update_context_->is_foreground;
 }
 
-void Component::Handle(CallbackHandleComplete callback_handle_complete) {
+void Component::Handle(base::OnceClosure callback_handle_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_);
 

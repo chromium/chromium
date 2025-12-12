@@ -43,10 +43,6 @@ class URLLoaderPostInterceptor {
   using InterceptedRequest =
       std::tuple<std::string, net::HttpRequestHeaders, GURL>;
 
-  // Called when the load associated with the url request is intercepted
-  // by this object:.
-  using UrlJobRequestReadyCallback = base::OnceCallback<void()>;
-
   // Allows a generic string maching interface when setting up expectations.
   class RequestMatcher {
    public:
@@ -113,7 +109,7 @@ class URLLoaderPostInterceptor {
   // using idle run loops. A paused request can be resumed after this callback
   // has been invoked.
   void url_job_request_ready_callback(
-      UrlJobRequestReadyCallback url_job_request_ready_callback);
+      base::OnceClosure url_job_request_ready_callback);
 
   int GetHitCountForURL(const GURL& url);
 
@@ -154,7 +150,7 @@ class URLLoaderPostInterceptor {
 
   std::vector<GURL> filtered_urls_;
 
-  UrlJobRequestReadyCallback url_job_request_ready_callback_;
+  base::OnceClosure url_job_request_ready_callback_;
 };
 
 class PartialMatch : public URLLoaderPostInterceptor::RequestMatcher {

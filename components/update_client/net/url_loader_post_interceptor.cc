@@ -135,7 +135,7 @@ void URLLoaderPostInterceptor::Resume() {
 }
 
 void URLLoaderPostInterceptor::url_job_request_ready_callback(
-    UrlJobRequestReadyCallback url_job_request_ready_callback) {
+    base::OnceClosure url_job_request_ready_callback) {
   url_job_request_ready_callback_ = std::move(url_job_request_ready_callback);
 }
 
