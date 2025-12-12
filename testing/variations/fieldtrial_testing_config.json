@@ -11559,6 +11559,26 @@
             ]
         }
     ],
+    "GlicIPH_GlicTryIt": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_GlicTryIt"
+                    ],
+                    "disable_features": [
+                        "IPH_GlicPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicMediaData": [
         {
             "platforms": [
