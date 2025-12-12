@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/search_engines/dse_reset_dialog.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -244,6 +246,17 @@ const AutocompleteSchemeClassifier& ChromeOmniboxClient::GetSchemeClassifier()
 
 AutocompleteClassifier* ChromeOmniboxClient::GetAutocompleteClassifier() {
   return AutocompleteClassifierFactory::GetForProfile(profile_);
+}
+
+omnibox::OmniboxPopupCloser* ChromeOmniboxClient::GetOmniboxPopupCloser() {
+  if (!browser_) {
+    return nullptr;
+  }
+  auto* bwf = browser_->browser_window_features();
+  if (!bwf) {
+    return nullptr;
+  }
+  return bwf->omnibox_popup_closer();
 }
 
 bool ChromeOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {

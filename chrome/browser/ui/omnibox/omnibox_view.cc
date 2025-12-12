@@ -212,21 +212,7 @@ void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
 void OmniboxView::RevertAll() {
   // This will clear the model's `user_input_in_progress_`.
   controller()->edit_model()->Revert();
-
-  // This will stop the `AutocompleteController`. This should happen after
-  // `user_input_in_progress_` is cleared above; otherwise, closing the popup
-  // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
-  // try to update the views which are unnecessary since they'll be thrown
-  // away during the model revert anyways.
-  CloseOmniboxPopup();
-
   TextChanged();
-}
-
-void OmniboxView::CloseOmniboxPopup() {
-  controller()->StopAutocomplete(/*clear_result=*/true);
-  // Reset focus ring for the AIM button if it was set.
-  ApplyFocusRingToAimButton(false);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

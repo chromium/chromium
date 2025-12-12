@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -239,6 +240,10 @@ class OmniboxViewTest : public InProcessBrowserTest {
     BrowserWindow* window = browser()->window();
     LocationBar* location_bar = window->GetLocationBar();
     return location_bar->GetOmniboxController();
+  }
+
+  omnibox::OmniboxPopupCloser* GetOmniboxPopupCloser() {
+    return browser()->browser_window_features()->omnibox_popup_closer();
   }
 
   static void SendKeyForBrowser(const Browser* browser,
@@ -1371,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
 
   // Close the popup and select all.
-  omnibox_view->CloseOmniboxPopup();
+  GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
   omnibox_view->SelectAll(false);
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 
@@ -1380,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   EXPECT_EQ(kSearchText, omnibox_view->GetText());
   EXPECT_TRUE(GetOmniboxController()->IsPopupOpen());
-  omnibox_view->CloseOmniboxPopup();
+  GetOmniboxPopupCloser()->CloseWithReason(omnibox::PopupCloseReason::kOther);
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
 
   // Pasting amid text should yield the expected text and re-open the popup.

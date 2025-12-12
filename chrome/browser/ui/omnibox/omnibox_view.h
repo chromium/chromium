@@ -135,11 +135,6 @@ class OmniboxView {
   // changed by the user.
   virtual void UpdatePopup() = 0;
 
-  // Closes the autocomplete popup, if it's open. The name |ClosePopup|
-  // conflicts with the OSX class override as that has a base class that also
-  // defines a method with that name.
-  virtual void CloseOmniboxPopup();
-
   // Sets the focus to the omnibox. |is_user_initiated| is true when the user
   // explicitly focused the omnibox, and false when the omnibox was
   // automatically focused (like for browser startup or NTP load).

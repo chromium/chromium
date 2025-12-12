@@ -199,6 +199,7 @@ class AppBrowserController;
 
 namespace omnibox {
 class AiModePageActionController;
+class OmniboxPopupCloser;
 }  // namespace omnibox
 
 // This class owns the core controllers for features that are scoped to a given
@@ -502,6 +503,10 @@ class BrowserWindowFeatures {
     return searchbox_context_data_.get();
   }
 
+  omnibox::OmniboxPopupCloser* omnibox_popup_closer() {
+    return omnibox_popup_closer_.get();
+  }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -780,6 +785,8 @@ class BrowserWindowFeatures {
       ai_mode_page_action_controller_;
 
   std::unique_ptr<SearchboxContextData> searchbox_context_data_;
+
+  std::unique_ptr<omnibox::OmniboxPopupCloser> omnibox_popup_closer_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

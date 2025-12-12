@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
@@ -825,6 +826,9 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
   find_bar_owner_ = std::make_unique<FindBarOwnerViews>(browser_view);
 
+  omnibox_popup_closer_ =
+      std::make_unique<omnibox::OmniboxPopupCloser>(browser_view);
+
   // Initialize post-BrowserView-dependent embedder features last.
   embedder_browser_window_features_->InitPostBrowserViewConstruction(
       browser_view);
@@ -915,6 +919,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // TODO(crbug.com/423956131): Update reset order once FindBarController is
   // deterministically constructed.
   find_bar_controller_.reset();
+
+  omnibox_popup_closer_.reset();
 
   split_tab_highlight_controller_.reset();
 

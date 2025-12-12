@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -2028,7 +2029,15 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
 }
 
 void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
-  GetOmniboxView()->CloseOmniboxPopup();
+  if (!browser_) {
+    return;
+  }
+
+  if (auto* popup_closer =
+          browser_->browser_window_features()->omnibox_popup_closer()) {
+    popup_closer->CloseWithReason(
+        omnibox::PopupCloseReason::kLocationIconDragged);
+  }
 }
 
 SkColor LocationBarView::GetSecurityChipColor(

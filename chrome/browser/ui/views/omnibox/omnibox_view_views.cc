@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -506,6 +507,15 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 void OmniboxViewViews::RevertAll() {
   saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::RevertAll();
+  // This will stop the `AutocompleteController`. This should happen after
+  // `user_input_in_progress_` is cleared in `OmniboxView::RevertAll()`;
+  // otherwise, closing the popup will trigger unnecessary
+  // `AutocompleteClassifier::Classify()` calls to try to update the views
+  // which are unnecessary since they'll be thrown away during the model revert
+  // anyways.
+  if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kRevertAll);
+  }
   UpdateAccessibleTextSelection();
 }
 
@@ -1458,7 +1468,9 @@ bool OmniboxViewViews::OnMouseDragged(const ui::MouseEvent& event) {
   }
 
   if (HasTextBeingDragged()) {
-    CloseOmniboxPopup();
+    if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+      popup_closer->CloseWithReason(omnibox::PopupCloseReason::kTextDrag);
+    }
   }
 
   const bool handled = views::Textfield::OnMouseDragged(event);
@@ -1674,18 +1686,18 @@ void OmniboxViewViews::OnBlur() {
 
   controller()->edit_model()->OnWillKillFocus();
 
-  // If ZeroSuggest is active, and there is evidence that there is a text
-  // update to show, revert to ensure that update is shown now.  Otherwise,
-  // at least call CloseOmniboxPopup(), so that if ZeroSuggest is in the
-  // midst of running but hasn't yet opened the popup, it will be halted.
-  // If we fully reverted in this case, we'd lose the cursor/highlight
-  // information saved above.
+  // If `ZeroSuggest` is active, and there is evidence that there is a text
+  // update to show, revert to ensure that update is shown now. Otherwise, at
+  // least close the popup so that if `ZeroSuggest` is in the midst of running
+  // but hasn't yet opened the popup, it will be halted. If we fully reverted in
+  // this case, we'd lose the cursor/highlight information saved above.
   if (!controller()->edit_model()->user_input_in_progress() &&
       controller()->IsPopupOpen() &&
       GetText() != controller()->edit_model()->GetPermanentDisplayText()) {
     RevertAll();
-  } else {
-    CloseOmniboxPopup();
+  } else if (auto* popup_closer =
+                 controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
   }
 
   // Tell the model to reset itself.

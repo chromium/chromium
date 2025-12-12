@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/buildflags.h"
@@ -1425,8 +1424,6 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription paint_as_active_subscription_;
 
   PrefChangeRegistrar registrar_;
-
-  ui::OmniboxPopupCloser omnibox_popup_closer_{this};
 
   base::CallbackListSubscription vertical_tab_subscription_;
 

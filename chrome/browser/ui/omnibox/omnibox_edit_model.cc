@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
@@ -1179,8 +1180,9 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   if (controller_->IsPopupOpen()) {
     base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                   OmniboxEscapeAction::kClosePopup);
-    if (view_) {
-      view_->CloseOmniboxPopup();
+    if (auto* popup_closer = controller_->client()->GetOmniboxPopupCloser()) {
+      popup_closer->CloseWithReason(
+          omnibox::PopupCloseReason::kEscapeKeyPressed);
     }
     return true;
   }
