@@ -69,7 +69,8 @@ std::optional<FrameBounds> GetFrameBounds(
     if (!scroll_event) {
       continue;
     }
-    const viz::BeginFrameArgs& args = scroll_event->begin_frame_args();
+    const ScrollEventMetrics::DispatchBeginFrameArgs& args =
+        scroll_event->dispatch_args();
     viz::BeginFrameId frame_id = args.frame_id;
     bool is_damaging = [&] {
       if (!scroll_event->caused_frame_update()) {
@@ -113,6 +114,13 @@ std::optional<FrameBounds> GetFrameBounds(
 ScrollJankV4Frame::BeginFrameArgsForScrollJank
 ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
     const viz::BeginFrameArgs& args) {
+  return {.frame_time = args.frame_time, .interval = args.interval};
+}
+
+// static
+ScrollJankV4Frame::BeginFrameArgsForScrollJank
+ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
+    const ScrollEventMetrics::DispatchBeginFrameArgs& args) {
   return {.frame_time = args.frame_time, .interval = args.interval};
 }
 
@@ -182,16 +190,16 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     if (!scroll_event) {
       continue;
     }
-    const viz::BeginFrameArgs& original_args = scroll_event->begin_frame_args();
+    const ScrollEventMetrics::DispatchBeginFrameArgs& original_args =
+        scroll_event->dispatch_args();
     bool is_damaging = frame_bounds->IsDamaging(original_args.frame_id);
     // If the frame is damaging, the scroll event should be associated with the
     // presented frame (because that's the first frame where the user could see
     // the damage). If the frame is non-damaging, it should instead be
     // associated with its original frame (because the user isn't able to tell
     // when/whether it was presented).
-    const viz::BeginFrameArgs& effective_args =
-        is_damaging ? presented_args : original_args;
-    const viz::BeginFrameId& effective_frame_id = effective_args.frame_id;
+    const viz::BeginFrameId& effective_frame_id =
+        is_damaging ? presented_args.frame_id : original_args.frame_id;
     // Find the position where `effective_frame_id` is or should be in the map.
     auto it = frame_id_to_args_and_events.lower_bound(effective_frame_id);
     if (it != frame_id_to_args_and_events.end() &&
@@ -205,7 +213,9 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
       frame_id_to_args_and_events.emplace_hint(
           it, effective_frame_id,
           ArgsAndEvents{
-              .args = BeginFrameArgsForScrollJank::From(effective_args),
+              .args = is_damaging
+                          ? BeginFrameArgsForScrollJank::From(presented_args)
+                          : BeginFrameArgsForScrollJank::From(original_args),
               .is_damaging = is_damaging,
               .events = {scroll_event},
           });

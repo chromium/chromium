@@ -31,8 +31,8 @@ class EventMetricsTestCreator {
   struct ScrollEventParams {
     base::TimeTicks timestamp = kDefaultTimestamp;
     std::optional<bool> caused_frame_update = std::nullopt;
-    std::optional<std::reference_wrapper<const viz::BeginFrameArgs>>
-        begin_frame_args = std::nullopt;
+    std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args =
+        std::nullopt;
   };
 
   std::unique_ptr<ScrollEventMetrics> CreateGestureScrollBegin(
@@ -50,8 +50,8 @@ class EventMetricsTestCreator {
     std::optional<bool> did_scroll = std::nullopt;
     std::optional<bool> is_synthetic = std::nullopt;
     std::optional<EventMetrics::TraceId> trace_id = std::nullopt;
-    std::optional<std::reference_wrapper<const viz::BeginFrameArgs>>
-        begin_frame_args = std::nullopt;
+    std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args =
+        std::nullopt;
   };
 
   std::unique_ptr<ScrollUpdateEventMetrics> CreateFirstGestureScrollUpdate(

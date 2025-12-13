@@ -163,7 +163,7 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
     bool is_synthetic = scroll_update->is_synthetic();
     if (is_synthetic) {
       base::TimeTicks begin_frame_ts =
-          scroll_update->begin_frame_args().frame_time;
+          scroll_update->dispatch_args().frame_time;
       if (begin_frame_ts < first_synthetic_input_begin_frame_ts) {
         first_synthetic_input_begin_frame_ts = begin_frame_ts;
         first_synthetic_input_trace_id = scroll_update->trace_id();

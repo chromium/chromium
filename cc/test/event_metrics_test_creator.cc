@@ -126,8 +126,8 @@ EventMetricsTestCreator::CreateScrollEventMetrics(ui::EventType type,
   if (params.caused_frame_update.has_value()) {
     event->set_caused_frame_update(*params.caused_frame_update);
   }
-  if (params.begin_frame_args.has_value()) {
-    event->set_begin_frame_args(*params.begin_frame_args);
+  if (params.dispatch_args.has_value()) {
+    event->set_dispatch_args(*params.dispatch_args);
   }
   return event;
 }
@@ -157,8 +157,8 @@ EventMetricsTestCreator::CreateScrollUpdateEventMetrics(
   if (params.is_synthetic.has_value()) {
     event->set_is_synthetic(*params.is_synthetic);
   }
-  if (params.begin_frame_args.has_value()) {
-    event->set_begin_frame_args(*params.begin_frame_args);
+  if (params.dispatch_args.has_value()) {
+    event->set_dispatch_args(*params.dispatch_args);
   }
   return event;
 }

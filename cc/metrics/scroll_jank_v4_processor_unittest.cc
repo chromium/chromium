@@ -23,6 +23,7 @@ namespace cc {
 
 namespace {
 
+using DispatchBeginFrameArgs = ScrollEventMetrics::DispatchBeginFrameArgs;
 using TraceId = EventMetrics::TraceId;
 using QueryResult = base::test::TestTraceProcessor::QueryResult;
 using ::testing::ElementsAre;
@@ -247,14 +248,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(11),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(10);
@@ -270,14 +271,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10 + 1),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -294,7 +295,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -320,7 +321,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
              .caused_frame_update = true,
              .did_scroll = true,
              .trace_id = TraceId(650),
-             .begin_frame_args = args}));
+             .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     expected_results.ExpectIsNotJanky(650);
@@ -345,7 +346,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -367,7 +368,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentDamagingFrameProduction) {
     end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
         {.timestamp = next_input_generation_ts_,
          .caused_frame_update = false,
-         .begin_frame_args = args}));
+         .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, args);
 
@@ -406,14 +407,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(11),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(10);
@@ -429,14 +430,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10 + 1),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -459,21 +460,21 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(110),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(111),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(112),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsJanky(
@@ -492,14 +493,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10 + 1),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -519,7 +520,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(510),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsJanky(510, "MISSED_VSYNC_AT_START_OF_FLING(5)");
@@ -535,7 +536,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -561,7 +562,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
              .caused_frame_update = true,
              .did_scroll = true,
              .trace_id = TraceId(650),
-             .begin_frame_args = args}));
+             .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     expected_results.ExpectIsNotJanky(650);
@@ -587,7 +588,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(i * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(i * 10);
@@ -606,7 +607,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(810),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsJanky(810, "MISSED_VSYNC_DURING_FLING(9)");
@@ -622,7 +623,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(10 * i),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(10 * i);
@@ -644,7 +645,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentDamagingFrameProduction) {
     end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
         {.timestamp = next_input_generation_ts_,
          .caused_frame_update = false,
-         .begin_frame_args = args}));
+         .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, args);
 
@@ -689,14 +690,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(11),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(10);
@@ -717,14 +718,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10 + 1),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
@@ -732,14 +733,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 2),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 3),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -773,14 +774,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 1),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(damaging_frame * 10);
@@ -806,14 +807,14 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(350),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(351),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(350);
@@ -859,7 +860,8 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
                .caused_frame_update = false,
                .did_scroll = false,
                .trace_id = TraceId(damaging_frame * 10),
-               .begin_frame_args = non_damaging_args}));
+               .dispatch_args =
+                   DispatchBeginFrameArgs::From(non_damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -880,7 +882,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
                .caused_frame_update = true,
                .did_scroll = true,
                .trace_id = TraceId(damaging_frame * 10 + 1),
-               .begin_frame_args = damaging_args}));
+               .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -915,7 +917,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
          .caused_frame_update = true,
          .did_scroll = true,
          .trace_id = TraceId(650),
-         .begin_frame_args = args}));
+         .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         metrics, next_presentation_ts_, args);
     expected_results.ExpectIsNotJanky(650);
@@ -963,7 +965,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(damaging_frame * 10);
@@ -986,7 +988,7 @@ TEST_P(ScrollJankV4ProcessorTest, ConsistentMixedFrameProduction) {
     end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
         {.timestamp = next_input_generation_ts_,
          .caused_frame_update = false,
-         .begin_frame_args = end_args}));
+         .dispatch_args = DispatchBeginFrameArgs::From(end_args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, end_args);
 
@@ -1041,14 +1043,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       first_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(11),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           first_metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(10);
@@ -1069,14 +1071,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10 + 1),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
@@ -1084,14 +1086,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 2),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 3),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1135,21 +1137,21 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(110),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(111),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(112),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
@@ -1157,14 +1159,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(113),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(114),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1209,14 +1211,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ - kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = false,
            .did_scroll = false,
            .trace_id = TraceId(damaging_frame * 10 + 1),
-           .begin_frame_args = non_damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(non_damaging_args)}));
       // Two inputs for a presented damaging frame.
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_,
@@ -1224,14 +1226,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 2),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 3),
-           .begin_frame_args = damaging_args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1265,14 +1267,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10 + 1),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(damaging_frame * 10);
@@ -1298,14 +1300,14 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(350),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
           {.timestamp = next_input_generation_ts_ + kVsyncInterval / 2,
            .delta = 5.0f,
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(351),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(350);
@@ -1355,7 +1357,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = false,
                .did_scroll = false,
                .trace_id = TraceId(360),
-               .begin_frame_args = non_damaging_args}));
+               .dispatch_args =
+                   DispatchBeginFrameArgs::From(non_damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1378,7 +1381,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = true,
                .did_scroll = true,
                .trace_id = TraceId(361),
-               .begin_frame_args = damaging_args}));
+               .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1407,7 +1410,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = false,
                .did_scroll = false,
                .trace_id = TraceId(damaging_frame * 10),
-               .begin_frame_args = non_damaging_args}));
+               .dispatch_args =
+                   DispatchBeginFrameArgs::From(non_damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1428,7 +1432,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = true,
                .did_scroll = true,
                .trace_id = TraceId(damaging_frame * 10 + 1),
-               .begin_frame_args = damaging_args}));
+               .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1462,7 +1466,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
              .caused_frame_update = true,
              .did_scroll = true,
              .trace_id = TraceId(650),
-             .begin_frame_args = args}));
+             .dispatch_args = DispatchBeginFrameArgs::From(args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         last_metrics_in_fixed_window, next_presentation_ts_, args);
     expected_results.ExpectIsNotJanky(650);
@@ -1514,7 +1518,8 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = false,
                .did_scroll = false,
                .trace_id = TraceId(660),
-               .begin_frame_args = non_damaging_args}));
+               .dispatch_args =
+                   DispatchBeginFrameArgs::From(non_damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           non_damaging_metrics, next_presentation_ts_, non_damaging_args);
       switch (GetParam().variant) {
@@ -1536,7 +1541,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
                .caused_frame_update = true,
                .did_scroll = true,
                .trace_id = TraceId(661),
-               .begin_frame_args = damaging_args}));
+               .dispatch_args = DispatchBeginFrameArgs::From(damaging_args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           damaging_metrics, next_presentation_ts_, damaging_args);
       switch (GetParam().variant) {
@@ -1563,7 +1568,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
            .caused_frame_update = true,
            .did_scroll = true,
            .trace_id = TraceId(damaging_frame * 10),
-           .begin_frame_args = args}));
+           .dispatch_args = DispatchBeginFrameArgs::From(args)}));
       processor_.ProcessEventsMetricsForPresentedFrame(
           metrics, next_presentation_ts_, args);
       expected_results.ExpectIsNotJanky(damaging_frame * 10);
@@ -1586,7 +1591,7 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     end_metrics.push_back(metrics_creator_.CreateInertialGestureScrollEnd(
         {.timestamp = next_input_generation_ts_,
          .caused_frame_update = false,
-         .begin_frame_args = end_args}));
+         .dispatch_args = DispatchBeginFrameArgs::From(end_args)}));
     processor_.ProcessEventsMetricsForPresentedFrame(
         end_metrics, next_presentation_ts_, end_args);
 

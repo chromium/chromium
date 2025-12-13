@@ -57,9 +57,11 @@ struct CC_EXPORT ScrollJankV4Frame {
     // See `viz::BeginFrameArgs::interval`.
     base::TimeDelta interval;
 
-    // Note: If this were an explicit constructor, it would prevent us from
+    // Note: If these were explicit constructors, they would prevent us from
     // using designated initializers (e.g. `{.frame_time = X, .interval = Y}`).
     static BeginFrameArgsForScrollJank From(const viz::BeginFrameArgs& args);
+    static BeginFrameArgsForScrollJank From(
+        const ScrollEventMetrics::DispatchBeginFrameArgs& args);
 
     bool operator==(const BeginFrameArgsForScrollJank&) const = default;
   };
