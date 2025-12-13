@@ -176,6 +176,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _infobarBadgeObservation->Reset();
   }
 
+  if (status.old_active_web_state) {
+    [self updateOldActiveWebstate:status.old_active_web_state];
+  }
+
   [self resetTimersAndUIStateAnimated:NO];
 
   // Return early if no new webstates are active.
@@ -495,6 +499,36 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
   _infobarBadgeObservation->Observe(
       InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
+
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(_activeWebState);
+  // In some cases (e.g. tests), an OTR web state (without a
+  // ContextualPanelTabHelper) can be added to the web state list being
+  // observed, even though this mediator is only created for non-OTR browsers.
+  // Just in case, make sure there actually is a ContextualPanelTabHelper.
+  if (!contextualPanelTabHelper) {
+    return;
+  }
+  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()
+                                .get()];
+}
+
+// Update old active WebState.
+- (void)updateOldActiveWebstate:(web::WebState*)webState {
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    return;
+  }
+
+  // Update old active web state's visible time for ContextualPanelEntrypoint.
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(webState);
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      contextualPanelTabHelper->GetMetricsData();
+  if (metricsData && metricsData->appearance_time) {
+    metricsData->time_visible +=
+        base::Time::Now() - metricsData->appearance_time.value();
+    metricsData->appearance_time = std::nullopt;
+  }
 }
 
 // Checks FET (Feature Engagement Tracker) criteria for a given `badgeType`. By
