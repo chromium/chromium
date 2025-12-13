@@ -22,6 +22,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
@@ -265,14 +266,19 @@ void ToolController::ObservationDelayComplete(
       PostInvokeTool(std::move(action_result));
       break;
     case ObservationDelayController::Result::kPageNavigated: {
-      size_t last_navigation_count = observation_delayer_->NavigationCount();
-      // The page navigated, restart the observation.
-      journal().Log(active_state_->tool->JournalURL(), task_->id(),
-                    "ToolController Restarting Observation", {});
-      observation_delayer_ = active_state_->tool->GetObservationDelayer(
-          observation_page_stability_config_);
-      observation_delayer_->SetNavigationCount(last_navigation_count + 1);
-      WaitForObservation(std::move(action_result));
+      if (tabs::TabInterface* tab = active_state_->tool->GetTargetTab().Get()) {
+        size_t last_navigation_count = observation_delayer_->NavigationCount();
+        // The page navigated, restart the observation.
+        journal().Log(active_state_->tool->JournalURL(), task_->id(),
+                      "ToolController Restarting Observation", {});
+        observation_delayer_ = std::make_unique<ObservationDelayController>(
+            *tab->GetContents()->GetPrimaryMainFrame(), task_->id(), journal(),
+            observation_page_stability_config_);
+        observation_delayer_->SetNavigationCount(last_navigation_count + 1);
+        WaitForObservation(std::move(action_result));
+      } else {
+        PostInvokeTool(std::move(action_result));
+      }
       break;
     }
   }
