@@ -236,6 +236,11 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // at runtime.
   source->AddString("handshakeMessage", GetEncodedHandshakeMessage());
 
+  // Force a host for any URL opened in the embedded page. If empty, no change
+  // is made to the URL.
+  source->AddString("forcedEmbeddedPageHost",
+                    contextual_tasks::GetForcedEmbeddedPageHost());
+
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
       "internals",

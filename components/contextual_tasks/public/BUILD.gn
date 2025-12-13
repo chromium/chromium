@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "account_utils_unittest.cc",
     "contextual_task_context_unittest.cc",
     "contextual_task_unittest.cc",
+    "features_unittest.cc",
   ]
 
   deps = [

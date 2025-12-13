@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 
 namespace contextual_tasks {
 
@@ -60,6 +61,10 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasksContext, "ai-page-url",
     "https://www.google.com/search?udm=50"};
+
+// The host that any URL loaded in the embedded WebUi page will be routed to.
+const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{
+    &kContextualTasks, "forced-embedded-page-host", ""};
 
 // The base domains for the sign in page.
 const base::FeatureParam<std::string> kContextualTasksSignInDomains{
@@ -119,6 +124,18 @@ bool ShouldForceGscInTabMode() {
 
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
+}
+
+std::string GetForcedEmbeddedPageHost() {
+  std::string host = kContextualTasksForcedEmbeddedPageHost.Get();
+
+  // If there's a non-empty host, ensure that it is only ever going to a
+  // google.com domain. If not, return the default empty string.
+  if (!host.empty() && !base::EndsWith(host, ".google.com")) {
+    return kContextualTasksForcedEmbeddedPageHost.default_value;
+  }
+
+  return host;
 }
 
 std::vector<std::string> GetContextualTasksSignInDomains() {
