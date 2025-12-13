@@ -113,6 +113,7 @@ def get_sanitizer_env(asan: bool, lsan: bool, msan: bool, tsan: bool,
       msan_options.append('detect_leaks=1')
     extra_env['MSAN_OPTIONS'] = ' '.join(msan_options)
     extra_env['VK_ICD_FILENAMES'] = ''
+    extra_env['VK_LOADER_DRIVERS_DISABLE'] = '*lvp*'
     extra_env['LIBGL_DRIVERS_PATH'] = ''
 
   if tsan:
