@@ -24,7 +24,6 @@ import("//third_party/xnnpack/build_defs.gni")
 config("xnnpack_public_config") {
   include_dirs = [
     "//third_party/pthreadpool/src/include",
-    "src/deps/clog/include",
     "src/include",
     "src/src",
     "src",

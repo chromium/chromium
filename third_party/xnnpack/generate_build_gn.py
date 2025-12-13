@@ -68,7 +68,6 @@ import("//third_party/xnnpack/build_defs.gni")
 config("xnnpack_public_config") {
   include_dirs = [
     "//third_party/pthreadpool/src/include",
-    "src/deps/clog/include",
     "src/include",
     "src/src",
     "src",
@@ -435,8 +434,8 @@ def _generate_supporting_source_set(ss: SourceSet) -> str:
     target = target.replace(
         '%CFLAGS%', ',\n'.join(['    "%s"' % arg for arg in sorted(ss.args)]))
     have_asm_files = any(src.endswith('.S') for src in ss.srcs)
-    target = target.replace('%ASMFLAGS%',
-                            '\n  asmflags = cflags\n' if have_asm_files else '')
+    target = target.replace(
+        '%ASMFLAGS%', '\n  asmflags = cflags\n' if have_asm_files else '')
     target = target.replace(
         '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
     target = target.replace('%TARGET_NAME%', ss.GnName())
