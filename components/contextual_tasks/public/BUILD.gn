@@ -31,6 +31,8 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
+    "//components/url_deduplication",
+    "//components/visited_url_ranking/public",
     "//net",
     "//third_party/re2",
     "//ui/gfx",
@@ -72,6 +74,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager:test_support",
+    "//components/url_deduplication",
+    "//components/visited_url_ranking/public",
     "//testing/gtest",
     "//url",
   ]

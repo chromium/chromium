@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 
 namespace contextual_tasks {
 
@@ -116,6 +118,22 @@ ContextualTaskContext::GetMutableUrlAttachmentsForTesting() {
 
 std::vector<UrlAttachment>& ContextualTaskContext::GetMutableUrlAttachments() {
   return urls_;
+}
+
+bool ContextualTaskContext::ContainsURL(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) const {
+  visited_url_ranking::URLMergeKey merge_key =
+      visited_url_ranking::ComputeURLMergeKey(url, std::u16string(),
+                                              deduplication_helper);
+  for (const auto& attachment : urls_) {
+    if (visited_url_ranking::ComputeURLMergeKey(
+            attachment.GetURL(), std::u16string(), deduplication_helper) ==
+        merge_key) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace contextual_tasks
